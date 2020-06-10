@@ -1,0 +1,21 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+
+        <item name="colorPrimaryDark">@color/lightGrey</item> <!-- Color for the status bar-->
+        <item name="colorAccent">@color/black</item>
+        <item name="android:textColorHint">@color/hintColor</item>
+
+    </style>
+
+    <!-- Search toolbar settings -->
+    <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:fontFamily">@font/open_sans</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+
+</resources>

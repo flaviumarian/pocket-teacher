@@ -1,0 +1,422 @@
+<resources>
+    <string name="app_name">PocketTeacher</string>
+
+    <!-- Facebook login -->
+    <string name="facebook_app_id">677146416430272</string>
+    <string name="fb_login_protocol_scheme">fb677146416430272</string>
+
+
+    <!-- Informative messages -->
+    <string name="message_pocket_teacher">Pocket Teacher</string>
+    <string name="message_login_page_1">Don\'t have an account?</string>
+    <string name="message_login_page_2">Forgot password?</string>
+    <string name="message_or">OR</string>
+    <string name="message_signin_with_social_networks">Sign in with social networks</string>
+    <string name="message_registration_page_1">Who are you?</string>
+    <string name="message_registration_page_2">Student</string>
+    <string name="message_registration_page_3">Teacher</string>
+    <string name="message_registration_page_4">By creating an account you agree to the</string>
+    <string name="message_registration_page_5">and</string>
+    <string name="message_confirmation_sent_1">Action performed!</string>
+    <string name="message_confirmation_sent_2">A confirmation mail has been sent to your email address. You will need the received code in order to activate your account. *</string>
+    <string name="message_confirmation_sent_3">* Make sure to also check the spam folder</string>
+    <string name="message_confirm_email_1">Your account is currently locked.\nPlease insert the confirmation code to unlock.</string>
+    <string name="message_confirm_email_2">Did not receive one?</string>
+    <string name="message_confirm_email_3">Confirmation Successful!</string>
+    <string name="message_confirm_email_4">Email re-sent.</string>
+    <string name="message_forgot_password_1">We just need your registered email address to send you the password reset code </string>
+    <string name="message_forgot_password_2">Don\'t have an account?</string>
+    <string name="message_reset_password_1">Can\'t find it?</string>
+    <string name="message_reset_password_2">Set up new password</string>
+    <string name="message_reset_password_3">Code re-sent.</string>
+    <string name="message_registration_facebook_google_page_1">There is no active account assigned to this email address.</string>
+    <string name="message_registration_facebook_google_page_2">Choose the type of account you want to create</string>
+    <string name="message_user_profile_1">Followers</string>
+    <string name="message_user_profile_2">Description</string>
+    <string name="message_user_profile_3">Subjects</string>
+    <string name="message_user_profile_4">Following</string>
+    <string name="message_settings_teacher_1">All the information provided in this following section is public and any changes can be immediately noticed by other users.</string>
+    <string name="message_settings_teacher_2">Change</string>
+    <string name="message_settings_teacher_3">All the information provided in this following section is private and will not be displayed for the other users.</string>
+    <string name="message_settings_teacher_4">Legal aspects and considerations can be found in the next section.</string>
+    <string name="message_settings_teacher_5">View</string>
+    <string name="message_settings_teacher_6">Be very careful with the following section. The actions is permanent.</string>
+    <string name="message_settings_teacher_7">Delete</string>
+    <string name="message_strings_teacher_8">Delete account</string>
+    <string name="message_change_username_1">Change your current username. You will need your new username for further logins.\nThis action is immediate once you <b>go back</b>. </string>
+    <string name="message_change_privacy_1">Change your current account privacy status.\nThis action is immediate once you <b>go back.</b> </string>
+    <string name="message_change_privacy_2">Student see follow you and access your content without requesting that.</string>
+    <string name="message_change_privacy_3">You need to approve follow requests before students are allowed to see your content.\nGoing back to public after being public will <b>APPROVE</b> all pending follow requests.</string>
+    <string name="message_change_privacy_4">Public account</string>
+    <string name="message_change_privacy_5">Private account</string>
+    <string name="message_change_privacy_6">Teachers can see your profile description and details</string>
+    <string name="message_change_privacy_7">Teachers can not see your profile description and details</string>
+    <string name="message_change_password_1">Change your current password. You will need your new password for further logins.\nEmpty means no change.\nThis action is immediate once you <b>go back</b>.</string>
+    <string name="message_change_email_1">Change your current email. You will be logged out of your account.\n This action is immediate once you <b>go back</b>.</string>
+    <string name="message_change_email_2">WARNING: if you logged in with Facebook/Google it will not change your email there AND you will no longer be able to log in to this account using those platforms.</string>
+    <string name="message_quick_login_1">Change your current login status settings, whether to automatically log you into the account or require the credentials each time.\nIt will be enforced next time open the app.\nThis action is immediate once you <b>go back</b>.</string>
+    <string name="message_quick_login_2">Automatic login</string>
+    <string name="message_edit_profile_1">All changes affect your profile in a very visible way. Keep in mind that anything you do will be easily observable by anyone accessing your profile. </string>
+    <string name="message_change_name_1">Change your current first and last name. By not setting one of them it will result in your name being assigned as <b>Unknown Name</b>.\nThis action is immediate once you <b>go back</b>. </string>
+    <string name="message_change_gender_1">Change your current gender. The major effect this has is on the default profile picture.\nThis action is immediate once you <b>go back</b>. </string>
+    <string name="message_change_gender_2">Male</string>
+    <string name="message_change_gender_3">Female</string>
+    <string name="message_change_gender_4">Not specified.</string>
+    <string name="message_change_university_1">Change your current university.\nMisinforming can be a cause for report and lead to having your account blocked.\nThis action is immediate once you <b>go back</b>.</string>
+    <string name="message_change_university_2">Change your current university.\nThis helps students find you, as they can search for specific universities.\nMisinforming can be a cause for report and lead to having your account blocked.\nThis action is immediate once you <b>go back</b>.</string>
+    <string name="message_change_profile_picture_1">Change your current profile picture. Not setting a profile picture will assign you a generic picture based on your gender.\nThis action is immediate once you <b>go back</b>.</string>
+    <string name="message_change_profile_picture_2">Select</string>
+    <string name="message_change_description_1">Change your current profile description.\nThis helps students better understand who you are and therefore be more inclined to follow you.\nThis action is immediate once you <b>go back</b>.</string>
+    <string name="message_change_description_2">Change your current profile description.\nThis helps teachers better understand who is requesting to follow them.\nThis action is immediate once you <b>go back</b>.</string>
+    <string name="message_unknown_name">Unknown Name</string>
+    <string name="message_unknown_university">Unknown University</string>
+    <string name="message_no_description">No description.</string>
+    <string name="message_folder_fragment_1">SUBJECTS</string>
+    <string name="message_folder_fragment_2">You currently don\'t have any subjects assigned to your account.\nTo get started, add one using the dotted circle to the bottom of the screen. </string>
+    <string name="message_add_subject_1">Select a subject to be added to your existing list by scrolling through the existing options down below.\nThis action is immediate once you <b>go back</b>.</string>
+    <string name="message_add_subject_2">Can\'t find subject on the list?</string>
+    <string name="message_filter">Filter</string>
+    <string name="message_remove_subject_1">Choose the subject(s) you wish to remove.\nThis action is immediate once you <b>go back</b>.</string>
+    <string name="message_remove_subject_2">WARNING</string>
+    <string name="message_remove_subject_3">Deleting a subject will erase all your posts that are related to it.</string>
+    <string name="message_folders_1">You currently don\'t have any folders for this subject.\nAdd one using the dotted circle to the bottom of the screen.</string>
+    <string name="message_folders_2">Folder</string>
+    <string name="message_add_folder_1">Create a new folder where you can add files.\nChoose a fitting title to encourage students to acces it.\nThis action is immediate once you <b>go back</b>.</string>
+    <string name="message_remove_folder_1">Choose the folder(s) you wish to remove.\nThis action is immediate once you <b>go back</b>.</string>
+    <string name="message_remove_folder_2">Deleting a folder will erase all your files that are within it.</string>
+    <string name="message_popup_request_sent">Request sent!</string>
+    <string name="message_popup_report_sent">Report sent!</string>
+    <string name="message_files_page_1">Here you can access all the files in this current folder, and you can also <b>ADD</b> new content.</string>
+    <string name="message_files_page_2">You currently don\'t have any files in this folder.\nPost something using the plus sign at the bottom of the screen!</string>
+    <string name="message_add_file_1">Add a title for the file you wish to add in order to offer a quick idea  of the content.</string>
+    <string name="message_add_file_2">Create a description to let the students know what to expect from the file you are uploading.</string>
+    <string name="message_add_file_3">Formats accepted: .txt, .docx, .pdf, .xlsx</string>
+    <string name="message_add_file_4">Size greater than 10MB! It will not be uploaded!</string>
+    <string name="message_add_file_5">Good file type and size.</string>
+    <string name="message_add_file_6">Invalid file type!</string>
+    <string name="message_post_1">Comments</string>
+    <string name="message_post_2">There are not comments on this post.</string>
+    <string name="message_no_subjects">This teacher has no subjects chosen.</string>
+    <string name="message_see_subject_1">There are no folders for this subject yet. Wait for the teacher to post anything.</string>
+    <string name="message_see_subject_2">Folder</string>
+    <string name="message_see_subject_3">Posts</string>
+    <string name="message_see_subject_4">There are not posts in this folder yet.</string>
+    <string name="message_blocked_users_1">You don\'t have any blocked users.</string>
+    <string name="message_following_1">You are not following anyone at the moment, go to the Explore tab and look for someone!</string>
+    <string name="message_followers_1">You don\'t have any followers yet. Try to post more engaging things to encourage users to follow you!</string>
+    <string name="message_followers_2">Or,</string>
+    <string name="message_follow_requests_1">Swipe <b>right</b> to approve, <b>left</b> to decline.\nTap to view profile.</string>
+    <string name="message_follow_requests_2">No more requests.</string>
+    <string name="message_updates_1">There are no new notifications for you.</string>
+    <string name="message_updates_2">Follow requests</string>
+    <string name="message_search_1">Recommended</string>
+    <string name="message_home_1">You currently don\'t follow anyone!\nGo to explore page and find some awesome teachers!</string>
+    <string name="message_home_2">There are no posts from the teachers you follow.\nStart following more people!</string>
+    <string name="message_home_3">No more posts.</string>
+    <string name="message_password_1">Password successfully changed!</string>
+    <string name="message_password_2">Not different.</string>
+    <string name="message_password_3">Good.</string>
+    <string name="message_password_4">Too short.</string>
+    <string name="message_password_5">Too weak.</string>
+    <string name="message_password_6">Strong.</string>
+    <string name="message_password_7">Matched.</string>
+    <string name="message_password_8">No match.</string>
+    <string name="message_onboarding_1">NEXT</string>
+    <string name="message_onboarding_2">BACK</string>
+    <string name="message_onboarding_3">SKIP</string>
+    <string name="message_onboarding_4">START</string>
+    <string name="message_private_student">This account is set to private. \nAll other information is hidden.</string>
+    <string name="message_profile_teacher">You currently don\'t have any subjects, \ngo to File Management tab and pick some!</string>
+
+
+
+    <!-- Triggering messages -->
+    <string name="trigger_login_page_1"><u>Sign up now!</u></string>
+    <string name="trigger_login_page_2"><u>Reset it here!</u></string>
+    <string name="trigger_registration_page_1"><u>Terms and Conditions</u></string>
+    <string name="trigger_registration_page_2"><u>Privacy Policy</u></string>
+    <string name="trigger_email_confirmation_page">RE-SEND</string>
+    <string name="trigger_sign_up">SIGN UP</string>
+    <string name="trigger_download"><u>DOWNLOAD</u></string>
+
+
+    <!-- Hints -->
+    <string name="hint_username_email">Username/email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+    <string name="hint_verification_code">Verification code</string>
+    <string name="hint_confirmation_code">Confirmation code</string>
+    <string name="hint_reset_password">Reset code</string>
+    <string name="hint_first_name">First Name</string>
+    <string name="hint_last_name">Last Name</string>
+    <string name="hint_university">University</string>
+    <string name="hint_description">Description</string>
+    <string name="hint_subject_title">Subject title</string>
+    <string name="hint_domain">Domain</string>
+    <string name="hint_brief_description">Brief description</string>
+    <string name="hint_new_folder">New folder</string>
+    <string name="hint_title">Title</string>
+    <string name="hint_message">Message</string>
+    <string name="hint_comment">Write a comment...</string>
+    <string name="hint_search_name">Search by name</string>
+    <string name="hint_search_subject">Search by subject</string>
+    <string name="hint_search_domain">Search by domain</string>
+    <string name="hint_search_university">Search by university</string>
+    <string name="hint_details">Details</string>
+
+
+    <!-- Button names -->
+    <string name="button_log_in">Log in</string>
+    <string name="button_facebook">Facebook</string>
+    <string name="button_google">Google</string>
+    <string name="sign_up">Sign up</string>
+    <string name="get_started">Get started</string>
+    <string name="verify_account">Verify Account</string>
+    <string name="button_send_email">Send email</string>
+    <string name="button_verify_reset_code">Verify code</string>
+    <string name="button_change">Change</string>
+    <string name="button_confirm_logout">Yes, take me out</string>
+    <string name="button_logout">Log out</string>
+    <string name="button_next">Next</string>
+    <string name="button_skip">Skip</string>
+    <string name="button_notifications">Notifications</string>
+    <string name="button_reset">Reset</string>
+    <string name="button_clear">Clear</string>
+    <string name="button_request_subject">Request it here</string>
+    <string name="button_send">Send</string>
+    <string name="button_choose_file">Choose file</string>
+    <string name="button_post">Post</string>
+    <string name="button_delete_post">Delete post</string>
+    <string name="button_yes">Yes</string>
+    <string name="button_go_premium">Go premium</string>
+    <string name="button_delete_comment">Delete comment</string>
+    <string name="button_cancel">Cancel</string>
+
+
+    <!-- Image descriptions -->
+    <string name="description_main_app_logo">This is the logo of the application.</string>
+    <string name="description_back_logo">This is the image used to go back.</string>
+    <string name="description_student_image">This is the image used to help choose the type of account.</string>
+    <string name="description_teacher_image">This is the image used to help choose the type of account.</string>
+    <string name="description_telegram">This is an image to show that the email has been sent.</string>
+    <string name="description_email_confirmation">This is the email confirmation image</string>
+    <string name="description_profile_edit_pencil">This is an image of a pencil that references the edit purpose of it.</string>
+    <string name="description_list_item_image_1">This is the image of the item in the listView for settings.</string>
+    <string name="description_list_item_image_2">This is the image of the item in the listView for access.</string>
+    <string name="description_dots">This is the image for options for teachers when choosing to add/remove subjects.</string>
+    <string name="description_minus">This is the image for removing subjects</string>
+    <string name="description_plus">This is the image for adding subjects</string>
+    <string name="description_exit">This image closes the popup or hides the warnings.</string>
+    <string name="description_tick">This is an image that signals the success of an action.</string>
+    <string name="description_subject_logo">This is an image of a subject logo.</string>
+    <string name="description_domain_logo">This is an image of a domain logo.</string>
+    <string name="description_like">This is the image representing the like image.</string>
+    <string name="description_comment">This is the image representing the comment image.</string>
+    <string name="description_profile_image">This is a profile image</string>
+    <string name="description_send_comment">This is the image representing the send comment action.</string>
+    <string name="description_updates_logo">This is the application name.</string>
+    <string name="description_subject_image">This is the image of a subject.</string>
+    <string name="description_search_image">This is the icon of a search item.</string>
+    <string name="description_warning">This image warns the user to pay attention to the information displayed.</string>
+    <string name="description_question">This image signals the presence of additional information.</string>
+    <string name="description_onboarding_image">This is an image that will serve as visual aid for onboarding tabs.</string>
+    <string name="description_arrow">This is an indicator of a certain part of the activity that needs the user\'s attention.</string>
+    <string name="description_report">This is the logo for report image.</string>
+
+
+    <!-- Toolbar names -->
+    <string name="toolbar_confirmation">Confirmation</string>
+    <string name="toolbar_confirm_email">Confirm Email</string>
+    <string name="toolbar_forgot_password">Forgot Password</string>
+    <string name="toolbar_reset_password">Reset Password</string>
+    <string name="toolbar_profile">PROFILE</string>
+    <string name="toolbar_settings">SETTINGS</string>
+    <string name="toolbar_username">USERNAME</string>
+    <string name="toolbar_privacy">PRIVACY</string>
+    <string name="toolbar_password">PASSWORD</string>
+    <string name="toolbar_email">EMAIL</string>
+    <string name="toolbar_quick_login">QUICK LOGIN</string>
+    <string name="toolbar_edit_name">EDIT NAME</string>
+    <string name="toolbar_change_gender">GENDER</string>
+    <string name="toolbar_change_university">UNIVERSITY</string>
+    <string name="toolbar_change_profile_picture">PROFILE PICTURE</string>
+    <string name="toolbar_change_description">DESCRIPTION</string>
+    <string name="toolbar_folder">FILE MANAGEMENT</string>
+    <string name="toolbar_add_subject">ADD SUBJECT</string>
+    <string name="toolbar_remove_subject">REMOVE SUBJECT</string>
+    <string name="toolbar_add_folder">ADD FOLDER</string>
+    <string name="toolbar_remove_folder">REMOVE FOLDER</string>
+    <string name="toolbar_new_file">NEW FILE</string>
+    <string name="toolbar_explore">EXPLORE</string>
+    <string name="toolbar_following">FOLLOWING</string>
+    <string name="toolbar_followers">FOLLOWERS</string>
+    <string name="toolbar_blocked_users">BLOCKED USERS</string>
+    <string name="toolbar_go_premium">GO PREMIUM</string>
+    <string name="toolbar_terms_and_conditions">Terms and Conditions</string>
+    <string name="toolbar_privacy_policy">Privacy Policy</string>
+    <string name="toolbar_follow_requests">Follow Requests</string>
+    <string name="toolbar_notifications">NOTIFICATIONS</string>
+
+
+    <!-- Popups -->
+    <string name="popup_logout_1">LOG OUT</string>
+    <string name="popup_logout_2">Are you sure you want to Log Out?</string>
+    <string name="popup_about_1">ABOUT</string>
+    <string name="popup_about_2">This is an application that was built for purely educational purposes.\nPlease use it in accordance to this and keep in mind the possibility of bugs and multiple other issues that might occur during your time here.</string>
+    <string name="popup_about_3">We hope you enjoy it!</string>
+    <string name="popup_request_subject_1">REQUEST</string>
+    <string name="popup_request_subject_2">Have a subject you want to be available?\nTell us about it and we will make it happen.\nDescription can be blank.</string>
+    <string name="popup_report_1">REPORT</string>
+    <string name="popup_report_2">Leave a message reporting whatever it is that needs investigating.\nTry to be explicit as to what the issues is and where you encountered it.</string>
+    <string name="popup_report_3">Report sent!</string>
+    <string name="popup_delete_file_1">DELETE FILE</string>
+    <string name="popup_delete_file_2">Are you sure you want to delete this post?</string>
+    <string name="popup_unfollow_1">UNFOLLOW</string>
+    <string name="popup_unfollow_2">This is a private account. If you want to follow this user again, you will have to request it and wait for approval.</string>
+    <string name="popup_unfollow_3">Do you wish to continue?</string>
+    <string name="popup_block_user_1">BLOCK USER</string>
+    <string name="popup_block_user_2">Blocking the user deletes all the comments and likes on any of your posts, and also makes it impossible for him to find you.</string>
+    <string name="popup_block_user_3">Are you sure you want to continue?</string>
+    <string name="popup_block_user_4">User blocked.</string>
+    <string name="popup_unblock_user_1">UNBLOCK USER</string>
+    <string name="popup_unblock_user_2">Do you want to unblock this user? He/she will then be able to follow you or see your content again.</string>
+    <string name="popup_unblock_user_3">User unblocked.</string>
+    <string name="popup_request_verification_code_1">REQUEST</string>
+    <string name="popup_request_verification_code_2">In order to get a verification code, we need your school email address OR a regular email address followed by any details that would qualify you as a teacher for this community.</string>
+    <string name="popup_request_verification_code_3">Once the information is checked, a verification code will be sent to you on that email address.</string>
+    <string name="popup_request_verification_code_4">False information will later result in permanently banning the account.</string>
+    <string name="popup_delete_account_1">WARNING</string>
+    <string name="popup_delete_account_2">Are you sure you want to delete your account? All data will be lost and you will surely be missed.</string>
+    <string name="popup_delete_account_3">Action is permanent.</string>
+    <string name="popup_delete_account_4">Account deleted.</string>
+    <string name="popup_delete_account_5">We hope to see you again.</string>
+    <string name="popup_go_back_1">GO BACK</string>
+    <string name="popup_go_back_2">There appears to be some text that you added on this page. It will be lost if you go back.</string>
+    <string name="popup_go_back_3">Do you want to proceed?</string>
+
+
+    <!-- Fragments -->
+    <string name="fragment_search_1">Name</string>
+    <string name="fragment_search_2">Subject</string>
+    <string name="fragment_search_3">Domain</string>
+    <string name="fragment_search_4">University</string>
+    <string name="fragment_search_5">Cancel</string>
+
+    <!-- Menu options -->
+    <string name="bottom_navigation_folder">Folder</string>
+    <string name="bottom_navigation_updates">Updates</string>
+    <string name="bottom_navigation_profile">Profile</string>
+    <string name="bottom_navigation_search">Search</string>
+    <string name="bottom_navigation_home">Home</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_about">About</string>
+    <string name="menu_log_out">Log out</string>
+    <string name="menu_details">Details</string>
+    <string name="menu_report">Report</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="menu_block">See blocked</string>
+    <string name="menu_privacy">Privacy</string>
+    <string name="menu_clear_notifications">Clear notifications</string>
+
+
+    <!-- Terms and conditions -->
+    <string name="terms_and_conditions_1">Terms and conditions</string>
+    <string name="terms_and_conditions_2">These terms and conditions ("Terms", "Agreement") are an agreement between Mobile Application Developer ("Mobile Application Developer", "us", "we" or "our") and you ("User", "you" or "your"). This Agreement sets forth the general terms and conditions of your use of the Pocket Teacher mobile application and any of its products or services (collectively, "Mobile Application" or "Services").</string>
+    <string name="terms_and_conditions_3">Accounts and membership</string>
+    <string name="terms_and_conditions_4">If you create an account in the Mobile Application, you are responsible for maintaining the security of your account and you are fully responsible for all activities that occur under the account and any other actions taken in connection with it. We may, but have no obligation to, monitor and review new accounts before you may sign in and use our Services. Providing false contact information of any kind may result in the termination of your account. You must immediately notify us of any unauthorized uses of your account or any other breaches of security. We will not be liable for any acts or omissions by you, including any damages of any kind incurred as a result of such acts or omissions. We may suspend, disable, or delete your account (or any part thereof) if we determine that you have violated any provision of this Agreement or that your conduct or content would tend to damage our reputation and goodwill. If we delete your account for the foregoing reasons, you may not re-register for our Services. We may block your email address and Internet protocol address to prevent further registration.</string>
+    <string name="terms_and_conditions_5">User content</string>
+    <string name="terms_and_conditions_6">We do not own any data, information or material ("Content") that you submit in the Mobile Application in the course of using the Service. You shall have sole responsibility for the accuracy, quality, integrity, legality, reliability, appropriateness, and intellectual property ownership or right to use of all submitted Content. We may, but have no obligation to, monitor and review Content in the Mobile Application submitted or created using our Services by you. Unless specifically permitted by you, your use of the Mobile Application does not grant us the license to use, reproduce, adapt, modify, publish or distribute the Content created by you or stored in your user account for commercial, marketing or any similar purpose. But you grant us permission to access, copy, distribute, store, transmit, reformat, display and perform the Content of your user account solely as required for the purpose of providing the Services to you. Without limiting any of those representations or warranties, we have the right, though not the obligation, to, in our own sole discretion, refuse or remove any Content that, in our reasonable opinion, violates any of our policies or is in any way harmful or objectionable.</string>
+    <string name="terms_and_conditions_7">Backups</string>
+    <string name="terms_and_conditions_8">We are not responsible for Content residing in the Mobile Application. In no event shall we be held liable for any loss of any Content. It is your sole responsibility to maintain appropriate backup of your Content. Notwithstanding the foregoing, on some occasions and in certain circumstances, with absolutely no obligation, we may be able to restore some or all of your data that has been deleted as of a certain date and time when we may have backed up data for our own purposes. We make no guarantee that the data you need will be available.</string>
+    <string name="terms_and_conditions_9">Links to other mobile applications</string>
+    <string name="terms_and_conditions_10">Although this Mobile Application may link to other mobile applications, we are not, directly or indirectly, implying any approval, association, sponsorship, endorsement, or affiliation with any linked mobile application, unless specifically stated herein. We are not responsible for examining or evaluating, and we do not warrant the offerings of, any businesses or individuals or the content of their mobile applications. We do not assume any responsibility or liability for the actions, products, services, and content of any other third-parties. You should carefully review the legal statements and other conditions of use of any mobile application which you access through a link from this Mobile Application. Your linking to any other off-site mobile applications is at your own risk.</string>
+    <string name="terms_and_conditions_11">Prohibited uses</string>
+    <string name="terms_and_conditions_12">In addition to other terms as set forth in the Agreement, you are prohibited from using the Mobile Application or its Content: (a) for any unlawful purpose; (b) to solicit others to perform or participate in any unlawful acts; (c) to violate any international, federal, provincial or state regulations, rules, laws, or local ordinances; (d) to infringe upon or violate our intellectual property rights or the intellectual property rights of others; (e) to harass, abuse, insult, harm, defame, slander, disparage, intimidate, or discriminate based on gender, sexual orientation, religion, ethnicity, race, age, national origin, or disability; (f) to submit false or misleading information; (g) to upload or transmit viruses or any other type of malicious code that will or may be used in any way that will affect the functionality or operation of the Service or of any related mobile application, other mobile applications, or the Internet; (h) to collect or track the personal information of others; (i) to spam, phish, pharm, pretext, spider, crawl, or scrape; (j) for any obscene or immoral purpose; or (k) to interfere with or circumvent the security features of the Service or any related mobile application, other mobile applications, or the Internet. We reserve the right to terminate your use of the Service or any related mobile application for violating any of the prohibited uses.</string>
+    <string name="terms_and_conditions_13">Intellectual property rights</string>
+    <string name="terms_and_conditions_14">This Agreement does not transfer to you any intellectual property owned by Mobile Application Developer or third-parties, and all rights, titles, and interests in and to such property will remain (as between the parties) solely with Mobile Application Developer. All trademarks, service marks, graphics and logos used in connection with our Mobile Application or Services, are trademarks or registered trademarks of Mobile Application Developer or Mobile Application Developer licensors. Other trademarks, service marks, graphics and logos used in connection with our Mobile Application or Services may be the trademarks of other third-parties. Your use of our Mobile Application and Services grants you no right or license to reproduce or otherwise use any Mobile Application Developer or third-party trademarks.</string>
+    <string name="terms_and_conditions_15">Limitation of liability</string>
+    <string name="terms_and_conditions_16">To the fullest extent permitted by applicable law, in no event will Mobile Application Developer, its affiliates, officers, directors, employees, agents, suppliers or licensors be liable to any person for (a): any indirect, incidental, special, punitive, cover or consequential damages (including, without limitation, damages for lost profits, revenue, sales, goodwill, use of content, impact on business, business interruption, loss of anticipated savings, loss of business opportunity) however caused, under any theory of liability, including, without limitation, contract, tort, warranty, breach of statutory duty, negligence or otherwise, even if Mobile Application Developer has been advised as to the possibility of such damages or could have foreseen such damages. To the maximum extent permitted by applicable law, the aggregate liability of Mobile Application Developer and its affiliates, officers, employees, agents, suppliers and licensors, relating to the services will be limited to an amount greater of one dollar or any amounts actually paid in cash by you to Mobile Application Developer for the prior one month period prior to the first event or occurrence giving rise to such liability. The limitations and exclusions also apply if this remedy does not fully compensate you for any losses or fails of its essential purpose.</string>
+    <string name="terms_and_conditions_17">Indemnification</string>
+    <string name="terms_and_conditions_18">You agree to indemnify and hold Mobile Application Developer and its affiliates, directors, officers, employees, and agents harmless from and against any liabilities, losses, damages or costs, including reasonable attorneys\' fees, incurred in connection with or arising from any third-party allegations, claims, actions, disputes, or demands asserted against any of them as a result of or relating to your Content, your use of the Mobile Application or Services or any willful misconduct on your part.</string>
+    <string name="terms_and_conditions_19">Severability</string>
+    <string name="terms_and_conditions_20">All rights and restrictions contained in this Agreement may be exercised and shall be applicable and binding only to the extent that they do not violate any applicable laws and are intended to be limited to the extent necessary so that they will not render this Agreement illegal, invalid or unenforceable. If any provision or portion of any provision of this Agreement shall be held to be illegal, invalid or unenforceable by a court of competent jurisdiction, it is the intention of the parties that the remaining provisions or portions thereof shall constitute their agreement with respect to the subject matter hereof, and all such remaining provisions or portions thereof shall remain in full force and effect.</string>
+    <string name="terms_and_conditions_21">Dispute resolution</string>
+    <string name="terms_and_conditions_22">The formation, interpretation, and performance of this Agreement and any disputes arising out of it shall be governed by the substantive and procedural laws of Romania without regard to its rules on conflicts or choice of law and, to the extent applicable, the laws of Romania. The exclusive jurisdiction and venue for actions related to the subject matter hereof shall be the courts located in Romania, and you hereby submit to the personal jurisdiction of such courts. You hereby waive any right to a jury trial in any proceeding arising out of or related to this Agreement. The United Nations Convention on Contracts for the International Sale of Goods does not apply to this Agreement.</string>
+    <string name="terms_and_conditions_23">Changes and amendments</string>
+    <string name="terms_and_conditions_24">We reserve the right to modify this Agreement or its policies relating to the Mobile Application or Services at any time, effective upon posting of an updated version of this Agreement in the Mobile Application. When we do, we will post a notification in our Mobile Application. Continued use of the Mobile Application after any such changes shall constitute your consent to such changes. Policy was created with WebsitePolicies.</string>
+    <string name="terms_and_conditions_25">Acceptance of these terms</string>
+    <string name="terms_and_conditions_26">You acknowledge that you have read this Agreement and agree to all its terms and conditions. By using the Mobile Application or its Services you agree to be bound by this Agreement. If you do not agree to abide by the terms of this Agreement, you are not authorized to use or access the Mobile Application and its Services.</string>
+    <string name="terms_and_conditions_27">Contacting us</string>
+    <string name="terms_and_conditions_28">If you would like to contact us to understand more about this Agreement or wish to contact us concerning any matter relating to it, you may send an email to marianflaviu@gmail.com </string>
+    <string name="terms_and_conditions_29">This document was last updated on May 3, 2020</string>
+
+
+    <!-- Privacy Policy -->
+    <string name="privacy_policy_1">Privacy policy</string>
+    <string name="privacy_policy_2">This privacy policy ("Policy") describes how Mobile Application Developer ("Mobile Application Developer", "we", "us" or "our") collects, protects and uses the personally identifiable information ("Personal Information") you ("User", "you" or "your") may provide in the Pocket Teacher mobile application and any of its products or services (collectively, "Mobile Application" or "Services").
+
+It also describes the choices available to you regarding our use of your Personal Information and how you can access and update this information. This Policy does not apply to the practices of companies that we do not own or control, or to individuals that we do not employ or manage.</string>
+    <string name="privacy_policy_3">Automatic collection of information</string>
+    <string name="privacy_policy_4">Our top priority is customer data security and, as such, we exercise the no logs policy. We process only minimal user data, only as much as it is absolutely necessary to maintain the Mobile Application or Services. Information collected automatically is used only to identify potential cases of abuse and establish statistical information regarding Mobile Application traffic and usage. This statistical information is not otherwise aggregated in such a way that would identify any particular user of the system.</string>
+    <string name="privacy_policy_5">Collection of personal information</string>
+    <string name="privacy_policy_6">You can visit the Mobile Application without telling us who you are or revealing any information by which someone could identify you as a specific, identifiable individual. If, however, you wish to use some of the Mobile Application\'s features, you will be asked to provide certain Personal Information (for example, your name and e-mail address). We receive and store any information you knowingly provide to us when you create an account, publish content, or fill any online forms in the Mobile Application. When required, this information may include the following:
+
+Personal details such as name, country of residence, etc.
+Contact information such as email address, address, etc.
+Account details such as user name, unique user ID, password, etc.
+Certain features on the mobile device such as contacts, calendar, gallery, etc.
+You can choose not to provide us with your Personal Information, but then you may not be able to take advantage of some of the Mobile Application\'s features. Users who are uncertain about what information is mandatory are welcome to contact us.</string>
+    <string name="privacy_policy_7">Managing personal information</string>
+    <string name="privacy_policy_8">You are able to delete certain Personal Information we have about you. The Personal Information you can delete may change as the Mobile Application or Services change. When you delete Personal Information, however, we may maintain a copy of the unrevised Personal Information in our records for the duration necessary to comply with our obligations to our affiliates and partners, and for the purposes described below. If you would like to delete your Personal Information or permanently delete your account, you can do so on the settings page of your account in the Mobile Application.</string>
+    <string name="privacy_policy_9">Storing personal information</string>
+    <string name="privacy_policy_10">We will retain and use your Personal Information for the period necessary to comply with our legal obligations, resolve disputes, and enforce our agreements unless a longer retention period is required or permitted by law. We may use any aggregated data derived from or incorporating your Personal Information after you update or delete it, but not in a manner that would identify you personally. Once the retention period expires, Personal Information shall be deleted. Therefore, the right to access, the right to erasure, the right to rectification and the right to data portability cannot be enforced after the expiration of the retention period.</string>
+    <string name="privacy_policy_11">Use and processing of collected information</string>
+    <string name="privacy_policy_12">In order to make our Mobile Application and Services available to you, or to meet a legal obligation, we need to collect and use certain Personal Information. If you do not provide the information that we request, we may not be able to provide you with the requested products or services. Some of the information we collect is directly from you via our Mobile Application. However, we may also collect Personal Information about you from other sources. Any of the information we collect from you may be used for the following purposes:
+
+Create and manage user accounts
+Respond to inquiries and offer support
+Request user feedback
+Improve user experience
+Enforce terms and conditions and policies
+Protect from abuse and malicious users
+Respond to legal requests and prevent harm
+Run and operate our Mobile Application and Services
+Processing your Personal Information depends on how you interact with our Mobile Application, where you are located in the world and if one of the following applies: (i) You have given your consent for one or more specific purposes. This, however, does not apply, whenever the processing of Personal Information is subject to California Consumer Privacy Act or European data protection law; (ii) Provision of information is necessary for the performance of an agreement with you and/or for any pre-contractual obligations thereof; (iii) Processing is necessary for compliance with a legal obligation to which you are subject; (iv) Processing is related to a task that is carried out in the public interest or in the exercise of official authority vested in us; (v) Processing is necessary for the purposes of the legitimate interests pursued by us or by a third party.
+
+Note that under some legislations we may be allowed to process information until you object to such processing (by opting out), without having to rely on consent or any other of the following legal bases below. In any case, we will be happy to clarify the specific legal basis that applies to the processing, and in particular whether the provision of Personal Information is a statutory or contractual requirement, or a requirement necessary to enter into a contract.</string>
+    <string name="privacy_policy_13">Information transfer and storage</string>
+    <string name="privacy_policy_14">Depending on your location, data transfers may involve transferring and storing your information in a country other than your own. You are entitled to learn about the legal basis of information transfers to a country outside the European Union or to any international organization governed by public international law or set up by two or more countries, such as the UN, and about the security measures taken by us to safeguard your information. If any such transfer takes place, you can find out more by checking the relevant sections of this document or inquire with us using the information provided in the contact section.</string>
+    <string name="privacy_policy_15">The rights of users</string>
+    <string name="privacy_policy_16">You may exercise certain rights regarding your information processed by us. In particular, you have the right to do the following: (i) you have the right to withdraw consent where you have previously given your consent to the processing of your information; (ii) you have the right to object to the processing of your information if the processing is carried out on a legal basis other than consent; (iii) you have the right to learn if information is being processed by us, obtain disclosure regarding certain aspects of the processing and obtain a copy of the information undergoing processing; (iv) you have the right to verify the accuracy of your information and ask for it to be updated or corrected; (v) you have the right, under certain circumstances, to restrict the processing of your information, in which case, we will not process your information for any purpose other than storing it; (vi) you have the right, under certain circumstances, to obtain the erasure of your Personal Information from us; (vii) you have the right to receive your information in a structured, commonly used and machine readable format and, if technically feasible, to have it transmitted to another controller without any hindrance. This provision is applicable provided that your information is processed by automated means and that the processing is based on your consent, on a contract which you are part of or on pre-contractual obligations thereof.</string>
+    <string name="privacy_policy_17">The right to object to processing</string>
+    <string name="privacy_policy_18">Where Personal Information is processed for the public interest, in the exercise of an official authority vested in us or for the purposes of the legitimate interests pursued by us, you may object to such processing by providing a ground related to your particular situation to justify the objection. You must know that, however, should your Personal Information be processed for direct marketing purposes, you can object to that processing at any time without providing any justification. To learn, whether we are processing Personal Information for direct marketing purposes, you may refer to the relevant sections of this document.</string>
+    <string name="privacy_policy_19">How to exercise these rights</string>
+    <string name="privacy_policy_20">Any requests to exercise User rights can be directed to Mobile Application Developer through the contact details provided in this document. These requests can be exercised free of charge and will be addressed by Mobile Application Developer as early as possible.</string>
+    <string name="privacy_policy_21">California privacy rights</string>
+    <string name="privacy_policy_22">In addition to the rights as explained in this Privacy Policy, California residents who provide Personal Information (as defined in the statute) to obtain products or services for personal, family, or household use are entitled to request and obtain from us, once a calendar year, information about the Personal Information we shared, if any, with other businesses for marketing uses. If applicable, this information would include the categories of Personal Information and the names and addresses of those businesses with which we shared such personal information for the immediately prior calendar year (e.g., requests made in the current year will receive information about the prior year). To obtain this information please contact us.</string>
+    <string name="privacy_policy_23">Privacy of children</string>
+    <string name="privacy_policy_24">We do not knowingly collect any Personal Information from children under the age of 13. If you are under the age of 13, please do not submit any Personal Information through our Mobile Application or Service. We encourage parents and legal guardians to monitor their children\'s Internet usage and to help enforce this Policy by instructing their children never to provide Personal Information through our Mobile Application or Service without their permission.
+
+If you have reason to believe that a child under the age of 13 has provided Personal Information to us through our Mobile Application or Service, please contact us. You must also be at least 16 years of age to consent to the processing of your Personal Information in your country (in some countries we may allow your parent or guardian to do so on your behalf).</string>
+    <string name="privacy_policy_25">Links to other mobile applications</string>
+    <string name="privacy_policy_26">Our Mobile Application contains links to other mobile applications that are not owned or controlled by us. Please be aware that we are not responsible for the privacy practices of such other mobile applications or third-parties. We encourage you to be aware when you leave our Mobile Application and to read the privacy statements of each and every mobile application that may collect Personal Information.</string>
+    <string name="privacy_policy_27">Information security</string>
+    <string name="privacy_policy_28">We secure information you provide on computer servers in a controlled, secure environment, protected from unauthorized access, use, or disclosure. We maintain reasonable administrative, technical, and physical safeguards in an effort to protect against unauthorized access, use, modification, and disclosure of Personal Information in its control and custody. However, no data transmission over the Internet or wireless network can be guaranteed. Therefore, while we strive to protect your Personal Information, you acknowledge that (i) there are security and privacy limitations of the Internet which are beyond our control; (ii) the security, integrity, and privacy of any and all information and data exchanged between you and our Mobile Application cannot be guaranteed; and (iii) any such information and data may be viewed or tampered with in transit by a third-party, despite best efforts.</string>
+    <string name="privacy_policy_29">Data breach</string>
+    <string name="privacy_policy_30">In the event we become aware that the security of the Mobile Application has been compromised or users Personal Information has been disclosed to unrelated third parties as a result of external activity, including, but not limited to, security attacks or fraud, we reserve the right to take reasonably appropriate measures, including, but not limited to, investigation and reporting, as well as notification to and cooperation with law enforcement authorities. In the event of a data breach, we will make reasonable efforts to notify affected individuals if we believe that there is a reasonable risk of harm to the user as a result of the breach or if notice is otherwise required by law. When we do, we will post a notice in the Mobile Application, send you an email.</string>
+    <string name="privacy_policy_31">Legal disclosure</string>
+    <string name="privacy_policy_32">We will disclose any information we collect, use or receive if required or permitted by law, such as to comply with a subpoena, or similar legal process, and when we believe in good faith that disclosure is necessary to protect our rights, protect your safety or the safety of others, investigate fraud, or respond to a government request.</string>
+    <string name="privacy_policy_33">Changes and amendments</string>
+    <string name="privacy_policy_34">We may update this Privacy Policy from time to time in our discretion and will notify you of any material changes to the way in which we treat Personal Information. When changes are made, we will send you an email to notify you. We may also provide notice to you in other ways in our discretion, such as through contact information you have provided. Any updated version of this Privacy Policy will be effective immediately upon the posting of the revised Privacy Policy unless otherwise specified. Your continued use of the Mobile Application or Services after the effective date of the revised Privacy Policy (or such other act specified at that time) will constitute your consent to those changes. However, we will not, without your consent, use your Personal Data in a manner materially different than what was stated at the time your Personal Data was collected. Policy was created with WebsitePolicies.</string>
+    <string name="privacy_policy_35">Acceptance of this policy</string>
+    <string name="privacy_policy_36">You acknowledge that you have read this Policy and agree to all its terms and conditions. By using the Mobile Application or its Services you agree to be bound by this Policy. If you do not agree to abide by the terms of this Policy, you are not authorized to use or access the Mobile Application and its Services.</string>
+    <string name="privacy_policy_37">Contacting us</string>
+    <string name="privacy_policy_38">If you would like to contact us to understand more about this Policy or wish to contact us concerning any matter relating to individual rights and your Personal Information, you may send an email to marianflaviu@gmail.com</string>
+    <string name="privacy_policy_39">This document was last updated on May 3, 2020</string>
+
+
+</resources>

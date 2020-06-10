@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_more"
+        android:icon="@drawable/ic_more_vert_black_24dp"
+        android:title=""
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/clearNotifications"
+                android:icon="@drawable/ic_close_black_24dp"
+                android:title="@string/menu_clear_notifications"
+                app:showAsAction="ifRoom" />
+
+        </menu>
+    </item>
+
+</menu>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_onboarding"
+    tools:context=".initial_activities.OnboardingT">
+
+    <!-- Skip Button -->
+    <android.widget.Button
+        android:id="@+id/skipBttn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/transparent"
+        android:fontFamily="@font/roboto_bold"
+        android:textStyle="bold"
+        android:text="@string/button_skip"
+        android:textColor="@color/darkGrey" />
+
+    <!-- ViewPager for slides -->
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/dotLinearLayout"
+        android:layout_marginBottom="41dp" />
+
+    <!-- Layout for the dotted indicators of the position of the page -->
+    <LinearLayout
+        android:id="@+id/dotLinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:padding="5dp" />
+
+    <!-- Back Button -->
+    <android.widget.Button
+        android:id="@+id/backBttn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:background="@android:color/transparent"
+        android:fontFamily="@font/roboto_bold"
+        android:textStyle="bold"
+        android:textColor="@color/darkGrey"
+        android:visibility="invisible" />
+
+    <!-- Next Button -->
+    <android.widget.Button
+        android:id="@+id/nextBttn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:background="@android:color/transparent"
+        android:fontFamily="@font/roboto_bold"
+        android:textStyle="bold"
+        android:text="@string/button_next"
+        android:textColor="@color/darkGrey" />
+
+</RelativeLayout>

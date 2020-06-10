@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/folder"
+        android:icon="@drawable/navigation_bar_selector_folder"
+        android:title="@string/bottom_navigation_folder" />
+
+    <item
+        android:id="@+id/updates"
+        android:icon="@drawable/navigation_bar_selector_updates"
+        android:title="@string/bottom_navigation_updates" />
+
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/navigation_bar_selector_profile"
+        android:title="@string/bottom_navigation_profile" />
+
+</menu>

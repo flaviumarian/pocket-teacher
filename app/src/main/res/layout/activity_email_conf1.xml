@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_login_page"
+    tools:context=".initial_activities.EmailConf1">
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/confirmEmailToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lightGrey"
+        android:elevation="10dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ToolbarTheme"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <ImageView
+            android:id="@+id/backIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/description_back_logo"
+            android:src="@drawable/ic_arrow_back_black_24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/open_sans_semibold"
+            android:text="@string/toolbar_confirm_email"
+            android:textColor="@color/black"
+            android:textSize="26sp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Main work surface -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/confirmEmailToolbar">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Lock Shield image-->
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/logo_forgot_password"
+                android:contentDescription="@string/description_email_confirmation" />
+
+            <!-- Information -->
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/imageView"
+                android:layout_marginTop="20dp"
+                android:text="@string/message_confirm_email_1"
+                android:fontFamily="@font/open_sans_semibold"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:textAlignment="center"/>
+
+            <!-- Confirmation Code EditText -->
+            <EditText
+                android:id="@+id/confirmCodeET"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:gravity="center_horizontal"
+                android:drawableStart="@drawable/ic_code_black_24dp"
+                android:importantForAutofill="no"
+                android:fontFamily="@font/roboto"
+                android:textColor="@color/black"
+                android:hint="@string/hint_confirmation_code"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+                android:ems="10"
+                android:maxLength="10"
+                android:inputType="text" />
+
+            <!-- Verify Account Button -->
+            <android.widget.Button
+                android:id="@+id/verifyBttn"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/confirmCodeET"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/shape_button_rounded_edges_light_grey"
+                android:elevation="5dp"
+                android:stateListAnimator="@null"
+                android:fontFamily="@font/open_sans_bold"
+                android:textStyle="bold"
+                android:text="@string/verify_account"
+                android:textColor="@color/black"
+                android:textSize="18sp"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <!-- Re-send message -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/bottomTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text="@string/message_confirm_email_2"
+            android:textColor="@color/black" />
+        <TextView
+            android:id="@+id/reSendTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_bold"
+            android:text="@string/trigger_email_confirmation_page"
+            android:textColor="@color/black" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

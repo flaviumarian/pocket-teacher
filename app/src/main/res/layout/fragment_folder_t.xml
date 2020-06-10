@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/backgroundBlue">
+
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/fileToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lightGrey"
+        android:elevation="10dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ToolbarTheme"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans"
+            android:text="@string/toolbar_folder"
+            android:textColor="@color/black"
+            android:textSize="26sp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Information for when there are no subjects selected -->
+    <TextView
+        android:id="@+id/infoTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:textAlignment="center"
+        android:text="@string/message_folder_fragment_2"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <!-- Main workspace area -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:layout_below="@id/fileToolbar">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="95dp">
+
+            <!-- Information -->
+            <TextView
+                android:id="@+id/subjectsTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/open_sans_bold"
+                android:visibility="invisible"
+                android:text="@string/message_folder_fragment_1"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="22sp" />
+
+            <!-- ListView current subjects -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/subjectsCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/subjectsTV"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:cardElevation="10dp" >
+
+                <ListView
+                    android:id="@+id/subjectsLV"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    />
+
+            </androidx.cardview.widget.CardView>
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
+    <!-- Remove subject -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/removeSubjectC"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="25dp"
+        android:alpha="0"
+        app:cardElevation="10dp"
+        app:cardCornerRadius="30dp"
+        app:cardBackgroundColor="@color/red" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/logo_minus"
+            android:contentDescription="@string/description_minus"/>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Add subject -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/addSubjectC"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="20dp"
+        android:alpha="0"
+        app:cardElevation="10dp"
+        app:cardCornerRadius="30dp"
+        app:cardBackgroundColor="@color/green" >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/logo_plus"
+            android:contentDescription="@string/description_minus"/>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Add/remove subject -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/addRemoveSubjectC"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="20dp"
+        app:cardElevation="10dp"
+        app:cardCornerRadius="35dp"
+        app:cardBackgroundColor="@color/lightGrey" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/logo_dots"
+            android:contentDescription="@string/description_dots"/>
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

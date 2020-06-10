@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightGrey"
+    android:fillViewport="true">
+
+    <!-- App logo -->
+    <ImageView
+        android:id="@+id/appLogoIV"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/app_logo"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/description_main_app_logo" />
+
+    <!-- App title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:textColor="@color/black"
+        android:text="@string/message_pocket_teacher"
+        android:textSize="30sp" />
+
+</RelativeLayout>

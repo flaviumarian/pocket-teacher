@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1087404798837",
+    "firebase_url": "https://pocket-teacher-95d63.firebaseio.com",
+    "project_id": "pocket-teacher-95d63",
+    "storage_bucket": "pocket-teacher-95d63.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1087404798837:android:ea9d1a628e34d1a12cd93c",
+        "android_client_info": {
+          "package_name": "com.licence.pocketteacher"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1087404798837-m1tkmsipb7g1cjn260tl0ossacuq6c84.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBMlmYYXsGf9PB_PmPb8ZHUpDIEavPdAI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1087404798837-m1tkmsipb7g1cjn260tl0ossacuq6c84.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

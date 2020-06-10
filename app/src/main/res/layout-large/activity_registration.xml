@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".initial_activities.Registration">
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/registrationToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lightGrey"
+        android:elevation="10dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ToolbarTheme"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        <ImageView
+            android:id="@+id/backIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/description_back_logo"
+            android:src="@drawable/ic_arrow_back_black_24dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/sign_up"
+            android:textColor="@color/black"
+            android:textSize="26sp"
+            android:fontFamily="@font/open_sans_semibold"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/registrationToolbar">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_registration">
+
+            <!-- Who are you text-->
+            <TextView
+                android:id="@+id/text1TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="@string/message_registration_page_1"
+                android:textSize="26sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/open_sans_bold"/>
+
+            <!-- Student or Teacher choice-->
+            <LinearLayout
+                android:id="@+id/choiceLayout"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/text1TV"
+                android:layout_marginTop="20dp"
+                android:paddingBottom="5dp"
+                android:weightSum="2"
+                android:layout_centerHorizontal="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <!-- Student image -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        app:cardCornerRadius="40dp"
+                        app:cardBackgroundColor="@color/lightGrey">
+
+                        <ImageView
+                            android:id="@+id/studentIV"
+                            android:layout_width="55dp"
+                            android:layout_height="55dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/logo_student"
+                            android:contentDescription="@string/description_student_image"
+                            />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/message_registration_page_2"
+                        android:textSize="16sp"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/open_sans"/>
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+
+                    <!-- Teacher image -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        app:cardBackgroundColor="@color/lightGrey"
+                        app:cardCornerRadius="40dp">
+
+                        <ImageView
+                            android:id="@+id/teacherIV"
+                            android:layout_width="55dp"
+                            android:layout_height="55dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/logo_teacher"
+                            android:contentDescription="@string/description_teacher_image"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/message_registration_page_3"
+                        android:textSize="16sp"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/open_sans"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Username -->
+            <EditText
+                android:id="@+id/usernameET"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/choiceLayout"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:visibility="invisible"
+                android:gravity="center_horizontal"
+                android:drawableStart="@drawable/ic_person_white_24dp"
+                android:importantForAutofill="no"
+                android:fontFamily="@font/roboto"
+                android:textColor="@color/black"
+                android:hint="@string/hint_username"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890._"
+                android:ems="10"
+                android:maxLength="20"
+                android:inputType="text" />
+
+            <!-- Email -->
+            <EditText
+                android:id="@+id/emailET"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/usernameET"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:visibility="invisible"
+                android:gravity="center_horizontal"
+                android:drawableStart="@drawable/ic_email_black_24dp"
+                android:importantForAutofill="no"
+                android:fontFamily="@font/roboto"
+                android:textColor="@color/black"
+                android:hint="@string/hint_email"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890@._"
+                android:ems="10"
+                android:maxLength="30"
+                android:inputType="textEmailAddress" />
+
+            <!-- Password -->
+            <EditText
+                android:id="@+id/passwordET"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/emailET"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:visibility="invisible"
+                android:gravity="center_horizontal"
+                android:drawableStart="@drawable/ic_lock_black_24dp"
+                android:importantForAutofill="no"
+                android:fontFamily="@font/roboto"
+                android:textColor="@color/black"
+                android:hint="@string/hint_password"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.,:;'|\{[]}&amp;&gt;&lt;&quot;+=_-)(*^%$#@!~`"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:maxLength="20" />
+
+            <!-- Password strength progressBar-->
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/emailET"
+                android:layout_marginTop="45dp"
+                android:layout_centerHorizontal="true"
+                android:orientation="horizontal">
+                <ProgressBar
+                    android:id="@+id/passwordPB"
+                    android:layout_width="210dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_gravity="center"
+                    android:visibility="invisible"
+                    style="?android:progressBarStyleHorizontal"
+                    android:max="4"
+                    tools:progress="0" />
+                <TextView
+                    android:id="@+id/passwordProgressTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:visibility="invisible"
+                    android:textSize="12sp"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/roboto"/>
+            </LinearLayout>
+
+
+            <!-- Confirm password -->
+            <EditText
+                android:id="@+id/confirmPasswordET"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/passwordET"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:visibility="invisible"
+                android:gravity="center_horizontal"
+                android:drawableStart="@drawable/ic_lock_black_24dp"
+                android:importantForAutofill="no"
+                android:fontFamily="@font/roboto"
+                android:textColor="@color/black"
+                android:hint="@string/hint_confirm_password"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.,:;'|\{[]}&amp;&gt;&lt;&quot;+=_-)(*^%$#@!~`"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:maxLength="20" />
+
+            <!-- Confirm Password strength progressBar-->
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/passwordET"
+                android:layout_marginTop="45dp"
+                android:layout_centerHorizontal="true"
+                android:orientation="horizontal">
+                <ProgressBar
+                    android:id="@+id/confirmPasswordPB"
+                    android:layout_width="210dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_gravity="center"
+                    android:visibility="invisible"
+                    style="?android:progressBarStyleHorizontal"
+                    android:max="4"
+                    tools:progress="0" />
+                <TextView
+                    android:id="@+id/confirmPasswordProgressTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:visibility="invisible"
+                    android:textSize="12sp"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/roboto"/>
+            </LinearLayout>
+
+
+            <!-- VERIFICATION CODE -->
+            <EditText
+                android:id="@+id/verificationET"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/confirmPasswordET"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal"
+                android:visibility="invisible"
+                android:drawableStart="@drawable/ic_code_black_24dp"
+                android:importantForAutofill="no"
+                android:fontFamily="@font/roboto"
+                android:textColor="@color/black"
+                android:hint="@string/hint_verification_code"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+                android:ems="10"
+                android:inputType="text"
+                android:maxLength="10" />
+
+
+            <!-- Terms and conditions message under button -->
+            <LinearLayout
+                android:id="@+id/bottomLayout"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:paddingBottom="60dp"
+                android:orientation="vertical"
+                android:visibility="invisible"
+                android:layout_centerHorizontal="true">
+
+                <!-- SIGN UP BUTTON -->
+                <Button
+                    android:id="@+id/signUpBttn"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="5dp"
+                    android:elevation="5dp"
+                    android:stateListAnimator="@null"
+                    android:fontFamily="@font/open_sans_bold"
+                    android:text="@string/sign_up"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:background="@drawable/shape_button_rounded_edges_light_grey"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/roboto_light"
+                    android:textColor="@color/black"
+                    android:text="@string/message_registration_page_4"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/termsAndConditionsTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_medium"
+                        android:textColor="@color/black"
+                        android:text="@string/trigger_registration_page_1"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:fontFamily="@font/roboto_light"
+                        android:textColor="@color/black"
+                        android:text="@string/message_registration_page_5"/>
+                    <TextView
+                        android:id="@+id/privacyPolicyTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_medium"
+                        android:textColor="@color/black"
+                        android:text="@string/trigger_registration_page_2"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
+
+        </RelativeLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- File name -->
+    <TextView
+        android:id="@+id/fileTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="40dp"
+        android:fontFamily="@font/roboto"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <!-- Likes image -->
+    <ImageView
+        android:id="@+id/likesIV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="15dp"
+        android:layout_toStartOf="@id/likesTV"
+        android:src="@drawable/ic_favorite_border_black_24dp"
+        android:contentDescription="@string/description_like" />
+
+    <!-- Likes number -->
+    <TextView
+        android:id="@+id/likesTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="15dp"
+        android:layout_toStartOf="@id/commentsIV"
+        android:fontFamily="@font/roboto"
+        android:textColor="@color/black" />
+
+    <!-- Comments image -->
+    <ImageView
+        android:id="@+id/commentsIV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="15dp"
+        android:layout_toStartOf="@id/commentsTV"
+        android:src="@drawable/ic_comment_black_24dp"
+        android:contentDescription="@string/description_list_item_image_2"/>
+
+    <!-- Comments number -->
+    <TextView
+        android:id="@+id/commentsTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_alignParentEnd="true"
+        android:fontFamily="@font/roboto"
+        android:textColor="@color/black" />
+
+</RelativeLayout>

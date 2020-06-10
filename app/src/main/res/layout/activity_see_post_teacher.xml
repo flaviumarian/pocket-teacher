@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundBlue"
+    android:focusableInTouchMode="true">
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/postToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lightGrey"
+        android:elevation="10dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ToolbarTheme"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <ImageView
+            android:id="@+id/backIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/description_back_logo"
+            android:src="@drawable/ic_arrow_back_black_24dp" />
+
+        <TextView
+            android:id="@+id/fileNameTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/open_sans"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="22sp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Main workspace area -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/postToolbar"
+        android:fillViewport="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp">
+
+            <!-- POST -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/postC"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                app:cardBackgroundColor="@color/lightGrey"
+                app:cardElevation="10dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <!-- UPPER part of the post -->
+                    <RelativeLayout
+                        android:id="@+id/upperLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_alignParentTop="true"
+                        android:background="@color/white"
+                        android:elevation="10dp">
+
+                        <!-- Profile picture of the poster-->
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/posterProfilePicC"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="10dp"
+                            app:cardBackgroundColor="@color/lightGrey"
+                            app:cardCornerRadius="20dp"
+                            app:cardElevation="10dp">
+
+                            <!-- Profile image -->
+                            <ImageView
+                                android:id="@+id/profileImageIV"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:contentDescription="@string/description_profile_image"/>
+
+                        </androidx.cardview.widget.CardView>
+
+
+                        <!-- Name and username -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="5dp"
+                            android:layout_toEndOf="@id/posterProfilePicC"
+                            android:orientation="vertical">
+
+                            <!-- Name of the poster -->
+                            <TextView
+                                android:id="@+id/teacherNameTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/open_sans_bold"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <!-- Username of the poster -->
+                            <TextView
+                                android:id="@+id/teacherUsernameTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto"
+                                android:textColor="@color/darkGrey"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+
+                        <!-- Time since posted -->
+                        <TextView
+                            android:id="@+id/timeTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="10dp"
+                            android:fontFamily="@font/roboto"
+                            android:textColor="@color/darkGrey" />
+
+                    </RelativeLayout>
+
+
+                    <!-- MIDDLE part of the post -->
+                    <RelativeLayout
+                        android:id="@+id/middleLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_above="@id/lowerLayout"
+                        android:layout_below="@id/upperLayout">
+
+                        <!-- Title -->
+                        <TextView
+                            android:id="@+id/titleTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="10dp"
+                            android:fontFamily="@font/open_sans_semibold"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+
+                        <!-- Subject and folder -->
+                        <LinearLayout
+                            android:id="@+id/subjectAndFolderLayout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/titleTV"
+                            android:layout_centerHorizontal="true"
+                            android:orientation="horizontal">
+
+                            <!-- Subject name -->
+                            <TextView
+                                android:id="@+id/subjectTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto"
+                                android:textColor="@color/darkGrey" />
+
+                            <View
+                                android:layout_width="5dp"
+                                android:layout_height="1dp"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="5dp"
+                                android:background="@color/black" />
+
+                            <!-- Folder name -->
+                            <TextView
+                                android:id="@+id/folderTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:fontFamily="@font/roboto"
+                                android:textColor="@color/darkGrey"
+                                android:textStyle="italic" />
+
+                        </LinearLayout>
+
+                        <!-- Separator view -->
+                        <View
+                            android:id="@+id/separatorView"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_below="@id/subjectAndFolderLayout"
+                            android:layout_marginStart="60dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="60dp"
+                            android:background="@color/darkGrey" />
+
+                        <ScrollView
+                            android:id="@+id/scrollView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/separatorView"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp">
+                            <!-- Description -->
+                            <TextView
+                                android:id="@+id/descriptionTV"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAlignment="center"
+                                android:textColor="@color/black" />
+                        </ScrollView>
+
+                    </RelativeLayout>
+
+                    <!-- LOWER part of the post -->
+                    <RelativeLayout
+                        android:id="@+id/lowerLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/white"
+                        android:elevation="10dp">
+
+                        <!-- Likes image -->
+                        <ImageView
+                            android:id="@+id/likesIV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="10dp"
+                            android:src="@drawable/ic_favorite_border_black_24dp"
+                            android:contentDescription="@string/description_like"/>
+
+                        <!-- Likes number -->
+                        <TextView
+                            android:id="@+id/likesTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="5dp"
+                            android:layout_toEndOf="@id/likesIV"
+                            android:fontFamily="@font/roboto"
+                            android:textColor="@color/black" />
+
+                        <!-- Comments image -->
+                        <ImageView
+                            android:id="@+id/commentsIV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_toEndOf="@id/likesTV"
+                            android:src="@drawable/ic_comment_black_24dp"
+                            android:contentDescription="@string/description_comment"/>
+
+                        <!-- Likes number -->
+                        <TextView
+                            android:id="@+id/commentsTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="5dp"
+                            android:layout_toEndOf="@id/commentsIV"
+                            android:fontFamily="@font/roboto"
+                            android:textColor="@color/black" />
+
+                        <!-- Download text -->
+                        <TextView
+                            android:id="@+id/downloadTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="10dp"
+                            android:fontFamily="@font/open_sans_bold"
+                            android:text="@string/trigger_download"
+                            android:textColor="@color/black"
+                            android:textStyle="bold" />
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- COMMENTS -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/commentsC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/postC"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                app:cardBackgroundColor="@color/lightGrey"
+                app:cardElevation="10dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!-- UPPER SIDE - COMMENTS -->
+                    <RelativeLayout
+                        android:id="@+id/upperLayout1"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_alignParentTop="true"
+                        android:gravity="center|start"
+                        android:background="@color/white"
+                        android:elevation="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:fontFamily="@font/open_sans_semibold"
+                            android:text="@string/message_post_1"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                    </RelativeLayout>
+
+                    <!-- Message when list is empty-->
+                    <TextView
+                        android:id="@+id/infoTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/upperLayout1"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/roboto"
+                        android:textAlignment="center"
+                        android:text="@string/message_post_2"/>
+
+                    <androidx.core.widget.NestedScrollView
+                        android:id="@+id/nestedCommentsView"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:fillViewport="true"
+                        android:layout_below="@id/upperLayout1">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/commentsRV"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            
+                        </androidx.recyclerview.widget.RecyclerView>
+
+                        <!-- Comments list view-->
+                        <!-- <ListView
+                            android:id="@+id/commentsLV"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:nestedScrollingEnabled="true"/>      -->
+
+                    </androidx.core.widget.NestedScrollView>
+
+
+
+                    <!-- Insert comment -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/nestedCommentsView"
+                        android:layout_margin="10dp"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardElevation="10dp"
+                        app:cardCornerRadius="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@color/white"
+                            android:orientation="horizontal">
+
+                            <EditText
+                                android:id="@+id/commentET"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:inputType="textMultiLine"
+                                android:importantForAutofill="no"
+                                android:layout_weight="0.5"
+                                android:layout_marginStart="5dp"
+                                android:maxLength="150"
+                                android:hint="@string/hint_comment" />
+
+                            <ImageView
+                                android:id="@+id/sendCommentIV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center|bottom"
+                                android:layout_marginStart="5dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginBottom="10dp"
+                                android:src="@drawable/logo_send_grey"
+                                android:contentDescription="@string/description_send_comment"/>
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>

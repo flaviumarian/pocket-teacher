@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.licence.pocketteacher">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <supports-screens
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="false"
+        android:xlargeScreens="false" />
+
+    <application
+        android:allowBackup="true"
+        android:fullBackupContent="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".student.home.SeeStudentStudent"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".student.profile.notifications.SeeNotifications"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.updates.follow_requests.SeeFollowRequests"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".miscellaneous.PrivacyPolicy"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".miscellaneous.TermsAndConditions"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.profile.followers.GoPremium"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.profile.followers.blocked_students.SeeBlocked"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.profile.followers.SeeStudent"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.profile.followers.SeeFollowers"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".student.profile.following.SeeFollowing"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".student.search.SeePostStudent"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".student.search.SeeSubject"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".student.search.SeeTeacher"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.folder.subject.files.SeePostTeacher"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".teacher.folder.subject.files.AddFile"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.folder.subject.files.FilesPage"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.folder.subject.RemoveFolder"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.folder.subject.AddFolder"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.folder.subject.SubjectPage"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".teacher.folder.RemoveSubject"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".teacher.folder.AddSubject"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".student.profile.edit_profile.ChangeDescriptionS"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.profile.edit_profile.ChangeDescriptionT"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".student.profile.edit_profile.ChangeProfilePictureS"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".teacher.profile.edit_profile.ChangeProfilePictureT"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".student.profile.edit_profile.ChangeUniversityS"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.profile.edit_profile.ChangeUniversityT"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".student.profile.edit_profile.ChangeGenderS"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".teacher.profile.edit_profile.ChangeGenderT"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".student.profile.edit_profile.ChangeNameS"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.profile.edit_profile.ChangeNameT"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".student.profile.edit_profile.EditProfileS"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".teacher.profile.edit_profile.EditProfileT"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".student.profile.settings.ChangeQuickLoginS"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".teacher.profile.settings.ChangeQuickLoginT"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoginPage"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".student.profile.settings.ChangeEmailS"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.profile.settings.ChangeEmailT"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".student.profile.settings.ChangePasswordS"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.profile.settings.ChangePasswordT"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".student.profile.settings.ChangeAccountPrivacyS"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".teacher.profile.settings.ChangeAccountPrivacyT"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".student.profile.settings.ChangeUsernameS"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.profile.settings.ChangeUsernameT"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".student.profile.settings.SettingsS"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".teacher.profile.settings.SettingsT"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".initial_activities.OnboardingS"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".initial_activities.OnboardingT"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".initial_activities.RegistrationFbGoogle"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".initial_activities.ResetPassword"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".initial_activities.ForgotPassword"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".teacher.MainPageT"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".initial_activities.EmailConf2"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".initial_activities.EmailConf1"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".student.MainPageS"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".initial_activities.ConfirmationSent"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".initial_activities.Registration"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".OpeningPage"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".miscellaneous.FirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" /> <!-- Facebook login -->
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.licence.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/profile_image_path" />
+        </provider>
+
+
+    </application>
+
+</manifest>

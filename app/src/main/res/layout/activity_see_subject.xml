@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/backgroundBlue"
+    android:focusableInTouchMode="true">
+
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/subjectToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lightGrey"
+        android:elevation="10dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ToolbarTheme"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <ImageView
+            android:id="@+id/backIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/description_back_logo"
+            android:src="@drawable/ic_arrow_back_black_24dp" />
+
+        <TextView
+            android:id="@+id/subjectNameTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:fontFamily="@font/open_sans"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="22sp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Information when there are no folders -->
+    <TextView
+        android:id="@+id/infoTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:visibility="visible"
+        android:fontFamily="@font/open_sans_bold"
+        android:textAlignment="center"
+        android:text="@string/message_see_subject_1"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <!-- Main workspace area -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:layout_below="@id/subjectToolbar">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="95dp">
+
+            <!-- Subject Image -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/subjectLogoCard"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                app:cardCornerRadius="75dp"
+                app:cardElevation="10dp">
+
+                <ImageView
+                    android:id="@+id/subjectLogoIV"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/description_subject_image"/>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Information -->
+            <TextView
+                android:id="@+id/foldersTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/subjectLogoCard"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="40dp"
+                android:visibility="invisible"
+                android:fontFamily="@font/open_sans_bold"
+                android:text="@string/message_see_subject_2"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <!-- ListView folders -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/foldersCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/foldersTV"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                app:cardElevation="10dp" >
+
+                <ListView
+                    android:id="@+id/foldersLV"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    />
+            </androidx.cardview.widget.CardView>
+
+            <!-- Information - no posts for the folder -->
+            <TextView
+                android:id="@+id/info1TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/foldersCard"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:visibility="invisible"
+                android:fontFamily="@font/open_sans_bold"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:text="@string/message_see_subject_4"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <!-- Information -->
+            <TextView
+                android:id="@+id/postsTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/foldersCard"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="40dp"
+                android:visibility="invisible"
+                android:fontFamily="@font/open_sans_bold"
+                android:text="@string/message_see_subject_3"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <!-- ListView posts -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/postsCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/postsTV"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                app:cardElevation="10dp" >
+
+                <ListView
+                    android:id="@+id/postsLV"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    />
+            </androidx.cardview.widget.CardView>
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>
