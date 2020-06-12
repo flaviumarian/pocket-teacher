@@ -60,7 +60,6 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
 
         getSubjectIntent();
         initiateComponents();
-        setListeners();
 
     }
 
@@ -93,112 +92,158 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
         TextView fileNameTV = findViewById(R.id.fileNameTV);
         fileNameTV.setText(fileName);
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // teacher profile image
-        profileImageIV = findViewById(R.id.profileImageIV);
-        String image = HelpingFunctions.getProfileImageBasedOnUsername(teacherUsername);
+                // teacher profile image
+                profileImageIV = findViewById(R.id.profileImageIV);
+                final String image = HelpingFunctions.getProfileImageBasedOnUsername(teacherUsername);
 
-        if(image.equals("")){
-            switch (HelpingFunctions.getGenderBasedOnUsername(teacherUsername)) {
-                case "0":
-                    profileImageIV.setImageResource(R.drawable.profile_picture_male);
-                    break;
-                case "1":
-                    profileImageIV.setImageResource(R.drawable.profile_picture_female);
-                    break;
-                case "2":
-                    profileImageIV.setImageResource(0);
-                    break;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(image.equals("")){
+                            switch (HelpingFunctions.getGenderBasedOnUsername(teacherUsername)) {
+                                case "0":
+                                    profileImageIV.setImageResource(R.drawable.profile_picture_male);
+                                    break;
+                                case "1":
+                                    profileImageIV.setImageResource(R.drawable.profile_picture_female);
+                                    break;
+                                case "2":
+                                    profileImageIV.setImageResource(0);
+                                    break;
+                            }
+                        }else{
+                            profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(image));
+                        }
+                    }
+                });
+
+                // teacher name
+                teacherNameTV = findViewById(R.id.teacherNameTV);
+                final String teacherFirstName = HelpingFunctions.getFirstNameBasedOnUsername(teacherUsername);
+                final String teacherLastName = HelpingFunctions.getLastNameBasedOnUsername(teacherUsername);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(teacherFirstName.equals("") || teacherLastName.equals("")){
+                            teacherNameTV.setText(R.string.message_unknown_name);
+                        }else{
+                            String nameToDisplay = teacherFirstName + " " + teacherLastName;
+                            teacherNameTV.setText(nameToDisplay);
+                        }
+                    }
+                });
+
+
+
+                // teacher username
+                teacherUsernameTV = findViewById(R.id.teacherUsernameTV);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        teacherUsernameTV.setText(teacherUsername);
+                    }
+                });
+
+
+                // FILE INFORMATION
+                final ArrayList<String> fileInformation = HelpingFunctions.getFileInformation(teacherUsername, subject, folder, fileName);
+
+                // Download text
+                downloadTV = findViewById(R.id.downloadTV);
+                fileUrl = fileInformation.get(0);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(fileUrl.equals("null")){
+                            downloadTV.setVisibility(View.INVISIBLE);
+                        }
+                    }
+                });
+
+
+                // Time
+                final TextView timeTV = findViewById(R.id.timeTV);
+
+                // Title
+                final TextView titleTV = findViewById(R.id.titleTV);
+
+                // Subject
+                final TextView subjectTV = findViewById(R.id.subjectTV);
+
+                // Folder
+                final TextView folderTV = findViewById(R.id.folderTV);
+
+                // Description
+                final TextView descriptionTV = findViewById(R.id.descriptionTV);
+
+                // Liked status
+                likesIV = findViewById(R.id.likesIV);
+
+                // Likes number
+                likesTV = findViewById(R.id.likesTV);
+
+                // Comments number
+                commentsTV = findViewById(R.id.commentsTV);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        timeTV.setText(fileInformation.get(3));
+                        titleTV.setText(fileInformation.get(1));
+                        subjectTV.setText(subject);
+                        folderTV.setText(folder);
+                        descriptionTV.setText(fileInformation.get(2));
+
+                        if(likedStatus.equals("1")){
+                            likesIV.setImageResource(R.drawable.ic_favorite_red_24dp);
+                            likesIV.setTag("1");
+                        } else{
+                            likesIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                            likesIV.setTag("0");
+                        }
+
+                        likesTV.setText(likesNumber);
+                        commentsTV.setText(commentsNumber);
+                    }
+                });
+
+                // Recycler View
+                commentsRV = findViewById(R.id.commentsRV);
+
+                // Nested Scroll View
+                nestedScrollView = findViewById(R.id.nestedScrollView);
+                nestedCommentsView = findViewById(R.id.nestedCommentsView);
+
+                // Scroll View
+                scrollView = findViewById(R.id.scrollView);
+
+
+                // Comments
+                infoTV = findViewById(R.id.infoTV);
+                comments = HelpingFunctions.getAllCommentsForPost(teacherUsername, MainPageS.student.getUsername(), subject, folder, fileName);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(comments.size() > 0){
+                            infoTV.setVisibility(View.INVISIBLE);
+                        }else{
+                            infoTV.setVisibility(View.VISIBLE);
+                        }
+
+                    }
+                });
+
+                setListeners();
             }
-        }else{
-            profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(image));
-        }
+        }).start();
 
-        // teacher name
-        teacherNameTV = findViewById(R.id.teacherNameTV);
-        String teacherFirstName = HelpingFunctions.getFirstNameBasedOnUsername(teacherUsername);
-        String teacherLastName = HelpingFunctions.getLastNameBasedOnUsername(teacherUsername);
-        if(teacherFirstName.equals("") || teacherLastName.equals("")){
-            teacherNameTV.setText(R.string.message_unknown_name);
-        }else{
-            String nameToDisplay = teacherFirstName + " " + teacherLastName;
-            teacherNameTV.setText(nameToDisplay);
-        }
-
-
-        // teacher username
-        teacherUsernameTV = findViewById(R.id.teacherUsernameTV);
-        teacherUsernameTV.setText(teacherUsername);
-
-
-        // FILE INFORMATION
-        ArrayList<String> fileInformation = HelpingFunctions.getFileInformation(teacherUsername, subject, folder, fileName);
-
-        // Download text
-        downloadTV = findViewById(R.id.downloadTV);
-        fileUrl = fileInformation.get(0);
-        if(fileUrl.equals("null")){
-            downloadTV.setVisibility(View.INVISIBLE);
-        }
-
-        // Time
-        TextView timeTV = findViewById(R.id.timeTV);
-        timeTV.setText(fileInformation.get(3));
-
-        // Title
-        TextView titleTV = findViewById(R.id.titleTV);
-        titleTV.setText(fileInformation.get(1));
-
-        // Subject
-        TextView subjectTV = findViewById(R.id.subjectTV);
-        subjectTV.setText(subject);
-
-        // Folder
-        TextView folderTV = findViewById(R.id.folderTV);
-        folderTV.setText(folder);
-
-        // Description
-        TextView descriptionTV = findViewById(R.id.descriptionTV);
-        descriptionTV.setText(fileInformation.get(2));
-
-        // Liked status
-        likesIV = findViewById(R.id.likesIV);
-        if(likedStatus.equals("1")){
-            likesIV.setImageResource(R.drawable.ic_favorite_red_24dp);
-            likesIV.setTag("1");
-        } else{
-            likesIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-            likesIV.setTag("0");
-        }
-
-        // Likes number
-        likesTV = findViewById(R.id.likesTV);
-        likesTV.setText(likesNumber);
-
-        // Comments number
-        commentsTV = findViewById(R.id.commentsTV);
-        commentsTV.setText(commentsNumber);
-
-
-        // Recycler View
-        commentsRV = findViewById(R.id.commentsRV);
-
-        // Nested Scroll View
-        nestedScrollView = findViewById(R.id.nestedScrollView);
-        nestedCommentsView = findViewById(R.id.nestedCommentsView);
-
-        // Scroll View
-        scrollView = findViewById(R.id.scrollView);
-
-
-        // Comments
-        infoTV = findViewById(R.id.infoTV);
-        comments = HelpingFunctions.getAllCommentsForPost(teacherUsername, MainPageS.student.getUsername(), subject, folder, fileName);
-        if(comments.size() > 0){
-            infoTV.setVisibility(View.INVISIBLE);
-        }else{
-            infoTV.setVisibility(View.VISIBLE);
-        }
 
     }
 
@@ -385,9 +430,13 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
 
         // Recycler View
         commentsRecyclerAdapter = new CommentsRecyclerAdapter(comments, getApplicationContext());
-        commentsRV.setAdapter(commentsRecyclerAdapter);
-        commentsRV.setLayoutManager(new LinearLayoutManager(this));
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                commentsRV.setAdapter(commentsRecyclerAdapter);
+                commentsRV.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            }
+        });
 
     }
 
