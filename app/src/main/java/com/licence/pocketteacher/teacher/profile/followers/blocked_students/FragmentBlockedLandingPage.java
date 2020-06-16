@@ -38,7 +38,6 @@ public class FragmentBlockedLandingPage extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
 
         return view;
     }
@@ -46,24 +45,43 @@ public class FragmentBlockedLandingPage extends Fragment {
 
     private void initiateComponents(){
 
-        // Image View
-        backIV = view.findViewById(R.id.backIV);
-        searchIV = view.findViewById(R.id.searchIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Recycle View
-        studentsRV = view.findViewById(R.id.studentsRV);
+                // Image View
+                backIV = view.findViewById(R.id.backIV);
+                searchIV = view.findViewById(R.id.searchIV);
 
-        // Array list
-        blockedStudents = HelpingFunctions.getAllBlockedStudents(MainPageT.teacher.getUsername());
-        TextView infoTV = view.findViewById(R.id.infoTV);
-        if(blockedStudents.size() > 0){
-            infoTV.setVisibility(View.INVISIBLE);
-            searchIV.setVisibility(View.VISIBLE);
-        }else{
-            infoTV.setVisibility(View.VISIBLE);
-            searchIV.setVisibility(View.INVISIBLE);
+                // Recycle View
+                studentsRV = view.findViewById(R.id.studentsRV);
 
-        }
+                // Array list
+                blockedStudents = HelpingFunctions.getAllBlockedStudents(MainPageT.teacher.getUsername());
+                final TextView infoTV = view.findViewById(R.id.infoTV);
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Array list
+                            if(blockedStudents.size() > 0){
+                                infoTV.setVisibility(View.INVISIBLE);
+                                searchIV.setVisibility(View.VISIBLE);
+                            }else{
+                                infoTV.setVisibility(View.VISIBLE);
+                                searchIV.setVisibility(View.INVISIBLE);
+                            }
+
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private void setListeners(){

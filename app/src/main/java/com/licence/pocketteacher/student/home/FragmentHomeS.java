@@ -52,7 +52,6 @@ public class FragmentHomeS extends Fragment {
         view = inflater.inflate(R.layout.fragment_home_s, container, false);
 
         initiateComponents();
-        setListeners();
         positionPostOpened = -1; // for when returning to the activity
 
         return view;
@@ -60,81 +59,101 @@ public class FragmentHomeS extends Fragment {
 
 
     private void initiateComponents() {
-        // Text View
-        TextView infoTV = view.findViewById(R.id.infoTV);
-
-        // Image View
-        ImageView arrowIV = view.findViewById(R.id.arrowIV);
-
-        // Swipe Refresh Layout
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
-
-        // ArrayList
-        posts = new ArrayList<>();
-        getNextPosts();
-
-        if (MainPageS.allPosts.size() == 0) {
-            if (Integer.parseInt(HelpingFunctions.getFollowing(MainPageS.student.getUsername())) > 0) {
-                infoTV.setText(R.string.message_home_2);
-            }
-            infoTV.setVisibility(View.VISIBLE);
-            arrowIV.setVisibility(View.VISIBLE);
-
-            swipeRefreshLayout.setRefreshing(false);
-            swipeRefreshLayout.setEnabled(false);
-
-        }else{
-            infoTV.setVisibility(View.INVISIBLE);
-            arrowIV.setVisibility(View.INVISIBLE);
-            swipeRefreshLayout.setEnabled(true);
-        }
 
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Recycler View
-        postsRV = view.findViewById(R.id.postsRV);
-        postsRV.setVisibility(View.VISIBLE);
-        postsRV.setHasFixedSize(true); // improves performance
-        postsRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
+                // Text View
+                final TextView infoTV = view.findViewById(R.id.infoTV);
 
+                // Image View
+                final ImageView arrowIV = view.findViewById(R.id.arrowIV);
 
-        // Adapter
-        postAdapter = new PostAdapter(postsRV, getActivity(), posts);
-        postsRV.setAdapter(postAdapter);
+                // Swipe Refresh Layout
+                swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
+                // ArrayList
+                posts = new ArrayList<>();
 
-        if(!MainPageS.needsRefresh) {
-            // Load more
-            postAdapter.setLoadMore(new LoadMore() {
-                @Override
-                public void onLoadMore() {
+                getNextPosts();
 
-                    if (posts.size() < MainPageS.allPosts.size()) {
-                        posts.add(null);
-                        postAdapter.notifyItemInserted(posts.size() - 1);
+                // Recycler View
+                postsRV = view.findViewById(R.id.postsRV);
 
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                posts.remove(posts.size() - 1);
-                                postAdapter.notifyItemRemoved(posts.size());
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
-                                // load 5 more posts
-                                getNextPosts();
+                            if (MainPageS.allPosts.size() == 0) {
+                                if (Integer.parseInt(HelpingFunctions.getFollowing(MainPageS.student.getUsername())) > 0) {
+                                    infoTV.setText(R.string.message_home_2);
+                                }
+                                infoTV.setVisibility(View.VISIBLE);
+                                arrowIV.setVisibility(View.VISIBLE);
 
-                                postAdapter.notifyDataSetChanged();
-                                postAdapter.setLoaded();
+                                swipeRefreshLayout.setRefreshing(false);
+                                swipeRefreshLayout.setEnabled(false);
+
+                            } else {
+                                infoTV.setVisibility(View.INVISIBLE);
+                                arrowIV.setVisibility(View.INVISIBLE);
+                                swipeRefreshLayout.setEnabled(true);
                             }
-                        }, 1000);
-                    } else {
-                        posts.add(new Post(true));
-                        postAdapter.notifyItemInserted(posts.size() - 1);
-                    }
-                }
-            });
-        }
 
-        MainPageS.resetBadge();
+                            // Recycler View
+                            postsRV.setVisibility(View.VISIBLE);
+                            postsRV.setHasFixedSize(true); // improves performance
+                            postsRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+                            // Adapter
+                            postAdapter = new PostAdapter(postsRV, getActivity(), posts);
+                            postsRV.setAdapter(postAdapter);
+
+                            if (!MainPageS.needsRefresh) {
+                                // Load more
+                                postAdapter.setLoadMore(new LoadMore() {
+                                    @Override
+                                    public void onLoadMore() {
+
+                                        if (posts.size() < MainPageS.allPosts.size()) {
+                                            posts.add(null);
+                                            postAdapter.notifyItemInserted(posts.size() - 1);
+
+                                            new Handler().postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    posts.remove(posts.size() - 1);
+                                                    postAdapter.notifyItemRemoved(posts.size());
+
+                                                    // load 5 more posts
+                                                    getNextPosts();
+
+                                                    postAdapter.notifyDataSetChanged();
+                                                    postAdapter.setLoaded();
+                                                }
+                                            }, 1000);
+                                        } else {
+                                            posts.add(new Post(true));
+                                            postAdapter.notifyItemInserted(posts.size() - 1);
+                                        }
+                                    }
+                                });
+                            }
+
+                            MainPageS.resetBadge();
+
+                            setListeners();
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     private void setListeners() {
@@ -529,44 +548,60 @@ public class FragmentHomeS extends Fragment {
     public void onResume() {
         super.onResume();
 
-        if(MainPageS.needsRefresh){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (MainPageS.needsRefresh) {
 
-            swipeRefreshLayout.setRefreshing(true);
-            swipeRefreshLayout.setEnabled(true);
-            postsRV = view.findViewById(R.id.postsRV);
-            postsRV.setVisibility(View.INVISIBLE);
+                                swipeRefreshLayout.setRefreshing(true);
+                                swipeRefreshLayout.setEnabled(true);
+                                postsRV = view.findViewById(R.id.postsRV);
+                                postsRV.setVisibility(View.INVISIBLE);
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    MainPageS.allPosts.clear();
-                    MainPageS.generateAllPosts();
-                    lastPos = 0;
-                    initiateComponents();
-                    postAdapter.notifyDataSetChanged();
-                    swipeRefreshLayout.setRefreshing(false);
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        MainPageS.allPosts.clear();
+                                        MainPageS.generateAllPosts();
+                                        lastPos = 0;
+                                        initiateComponents();
+                                        postAdapter.notifyDataSetChanged();
+                                        swipeRefreshLayout.setRefreshing(false);
 
+                                    }
+                                }, 2000);
+
+
+                                MainPageS.needsRefresh = false;
+
+                            } else {
+                                if (positionPostOpened != -1) {
+                                    Post post = posts.get(positionPostOpened);
+                                    posts.get(positionPostOpened).setLikedStatus(HelpingFunctions.getLikedStatus(MainPageS.student.getUsername(), post.getUsername(), post.getSubject(), post.getFolder(), post.getTitle()));
+                                    posts.get(positionPostOpened).setLikes(HelpingFunctions.getLikesForPost(post.getUsername(), post.getSubject(), post.getFolder(), post.getTitle()));
+                                    posts.get(positionPostOpened).setComments(HelpingFunctions.getCommentsForPost(post.getUsername(), post.getSubject(), post.getFolder(), post.getTitle()));
+                                    postAdapter.notifyItemChanged(positionPostOpened);
+
+                                    positionPostOpened = -1;
+                                }
+                            }
+
+
+                            // Notification Badge
+                            MainPageS.resetBadge();
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }, 2000);
-
-
-            MainPageS.needsRefresh = false;
-
-        }else {
-            if (positionPostOpened != -1) {
-                Post post = posts.get(positionPostOpened);
-                posts.get(positionPostOpened).setLikedStatus(HelpingFunctions.getLikedStatus(MainPageS.student.getUsername(), post.getUsername(), post.getSubject(), post.getFolder(), post.getTitle()));
-                posts.get(positionPostOpened).setLikes(HelpingFunctions.getLikesForPost(post.getUsername(), post.getSubject(), post.getFolder(), post.getTitle()));
-                posts.get(positionPostOpened).setComments(HelpingFunctions.getCommentsForPost(post.getUsername(), post.getSubject(), post.getFolder(), post.getTitle()));
-                postAdapter.notifyItemChanged(positionPostOpened);
-
-                positionPostOpened = -1;
             }
-        }
+        }).start();
 
-
-        // Notification Badge
-        MainPageS.resetBadge();
 
     }
 }

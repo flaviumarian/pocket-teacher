@@ -52,26 +52,70 @@ public class SettingsS extends AppCompatActivity {
         setContentView(R.layout.activity_settings_s);
 
         initiateComponents();
-        setListeners();
-
-
     }
 
     private void initiateComponents() {
 
-        //Image View
-        backIV = findViewById(R.id.backIV);
 
-        // List Views
-        change1LV = findViewById(R.id.change1LV);
-        change2LV = findViewById(R.id.change2LV);
-        viewLV = findViewById(R.id.viewLV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Button
-        logOutBttn = findViewById(R.id.logOutBttn);
+                //Image View
+                backIV = findViewById(R.id.backIV);
 
-        // Card View
-        deleteAccountC = findViewById(R.id.deleteAccountC);
+                // List Views
+                change1LV = findViewById(R.id.change1LV);
+                change2LV = findViewById(R.id.change2LV);
+                viewLV = findViewById(R.id.viewLV);
+
+                // Button
+                logOutBttn = findViewById(R.id.logOutBttn);
+
+                // Card View
+                deleteAccountC = findViewById(R.id.deleteAccountC);
+
+
+                // set first List View
+                final int[] changesImages = {R.drawable.ic_person_black_24dp, R.drawable.logo_lock};
+                final String[] names = {"Username", "Account Privacy"};
+
+                // set second List View
+                final int[] changesImages1 = {R.drawable.logo_key_black, R.drawable.ic_email_black_24dp, R.drawable.logo_keyhole};
+                final String[] names1 = {"Password", "Email address", "Quick login"};
+
+                // set view settings List View
+                final int[] viewImages = {R.drawable.logo_terms_and_conditions, R.drawable.logo_privacy_policy};
+                final String[] names3 = {"Terms and Conditions", "Privacy Policy"};
+
+
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // set first List View
+                            SettingsS.FirstChangeAdapter firstChangeAdapter = new SettingsS.FirstChangeAdapter(getApplicationContext(), changesImages, names);
+                            change1LV.setAdapter(firstChangeAdapter);
+
+                            // set second List View
+                            SettingsS.SecondChangeAdapter secondChangeAdapter = new SettingsS.SecondChangeAdapter(getApplicationContext(), changesImages1, names1);
+                            change2LV.setAdapter(secondChangeAdapter);
+
+                            // set view settings List View
+                            SettingsS.ViewSettingsAdapter viewSettingsAdapter = new SettingsS.ViewSettingsAdapter(getApplicationContext(), viewImages, names3);
+                            viewLV.setAdapter(viewSettingsAdapter);
+
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
     }
 
@@ -85,28 +129,6 @@ public class SettingsS extends AppCompatActivity {
             }
         });
 
-        // set first List View
-        int[] changesImages = {R.drawable.ic_person_black_24dp, R.drawable.logo_lock};
-        String[] names = {"Username", "Account Privacy"};
-
-        SettingsS.FirstChangeAdapter firstChangeAdapter = new SettingsS.FirstChangeAdapter(getApplicationContext(), changesImages, names);
-        change1LV.setAdapter(firstChangeAdapter);
-
-
-        // set second List View
-        int[] changesImages1 = {R.drawable.logo_key_black, R.drawable.ic_email_black_24dp, R.drawable.logo_keyhole};
-        String[] names1 = {"Password", "Email address", "Quick login"};
-
-        SettingsS.SecondChangeAdapter secondChangeAdapter = new SettingsS.SecondChangeAdapter(getApplicationContext(), changesImages1, names1);
-        change2LV.setAdapter(secondChangeAdapter);
-
-
-        // set view settings List View
-        int[] viewImages = {R.drawable.logo_terms_and_conditions, R.drawable.logo_privacy_policy};
-        String[] names3 = {"Terms and Conditions", "Privacy Policy"};
-
-        SettingsS.ViewSettingsAdapter viewSettingsAdapter = new SettingsS.ViewSettingsAdapter(getApplicationContext(), viewImages, names3);
-        viewLV.setAdapter(viewSettingsAdapter);
 
         // Button
         logOutBttn.setOnClickListener(new View.OnClickListener() {

@@ -63,7 +63,6 @@ public class SeeSubject extends AppCompatActivity {
 
         getSubjectFromIntent();
         initiateComponents();
-        setListeners();
 
     }
 
@@ -83,30 +82,56 @@ public class SeeSubject extends AppCompatActivity {
         subjectToolbar.setTitle("");
         this.setSupportActionBar(subjectToolbar);
 
-        // Image View
-        backIV = findViewById(R.id.backIV);
-        ImageView subjectLogoIV = findViewById(R.id.subjectLogoIV);
-        subjectLogoIV.setImageBitmap(HelpingFunctions.convertBase64toImage(HelpingFunctions.getSubjectImage(subject)));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Text Views
-        infoTV = findViewById(R.id.infoTV);
-        foldersTV = findViewById(R.id.foldersTV);
-        postsTV = findViewById(R.id.postsTV);
-        info1TV = findViewById(R.id.info1TV);
+                // Image View
+                backIV = findViewById(R.id.backIV);
+                final ImageView subjectLogoIV = findViewById(R.id.subjectLogoIV);
 
-        // Toolbar textview
-        TextView subjectNameTV = findViewById(R.id.subjectNameTV);
-        subjectNameTV.setText(subject);
+                // Text Views
+                infoTV = findViewById(R.id.infoTV);
+                foldersTV = findViewById(R.id.foldersTV);
+                postsTV = findViewById(R.id.postsTV);
+                info1TV = findViewById(R.id.info1TV);
+
+                // Toolbar textview
+                final TextView subjectNameTV = findViewById(R.id.subjectNameTV);
+
+                // Folders
+                folders = HelpingFunctions.getFoldersForSubjectAndTeacher(usernameTeacher, subject);
+                Collections.sort(folders);
 
 
-        // Folders
-        folders = HelpingFunctions.getFoldersForSubjectAndTeacher(usernameTeacher, subject);
-        Collections.sort(folders);
+
+                // List View
+                foldersLV = findViewById(R.id.foldersLV);
+                postsLV = findViewById(R.id.postsLV);
+
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Image View
+                            subjectLogoIV.setImageBitmap(HelpingFunctions.convertBase64toImage(HelpingFunctions.getSubjectImage(subject)));
 
 
-        // List View
-        foldersLV = findViewById(R.id.foldersLV);
-        postsLV = findViewById(R.id.postsLV);
+                            // Toolbar textview
+                            subjectNameTV.setText(subject);
+
+                            setListeners();
+
+                        }
+                    });
+
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
 
     }
 

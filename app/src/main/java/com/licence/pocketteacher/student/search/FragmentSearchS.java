@@ -40,7 +40,6 @@ public class FragmentSearchS extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
 
         return view;
     }
@@ -52,17 +51,39 @@ public class FragmentSearchS extends Fragment {
         profileToolbar.setTitle("");
         ((AppCompatActivity) getActivity()).setSupportActionBar(profileToolbar);
 
-        // Image View
-        searchIV = view.findViewById(R.id.searchIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Text View
-        recommendedTV = view.findViewById(R.id.recommendedTV);
+                // Image View
+                searchIV = view.findViewById(R.id.searchIV);
 
-        // Recycle View
-        teachersRV = view.findViewById(R.id.teachersRV);
+                // Text View
+                recommendedTV = view.findViewById(R.id.recommendedTV);
 
-        // Array list
-        premiumTeachers = HelpingFunctions.getAllPremiumTeachers(MainPageS.student.getUsername());
+                // Recycle View
+                teachersRV = view.findViewById(R.id.teachersRV);
+
+                // Array list
+                premiumTeachers = HelpingFunctions.getAllPremiumTeachers(MainPageS.student.getUsername());
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+
+
 
     }
 

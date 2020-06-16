@@ -42,7 +42,6 @@ public class SeeStudent extends AppCompatActivity {
 
         getUsernameFromIntent();
         initiateComponents();
-        setListeners();
     }
 
     private void getUsernameFromIntent(){
@@ -60,88 +59,116 @@ public class SeeStudent extends AppCompatActivity {
         subjectToolbar.setTitle("");
         this.setSupportActionBar(subjectToolbar);
 
-        // Image View
-        backIV = findViewById(R.id.backIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Toolbar username
-        TextView toolbarUsernameTV = findViewById(R.id.toolbarUsernameTV);
-        toolbarUsernameTV.setText(username);
+                // Image View
+                backIV = findViewById(R.id.backIV);
 
-        // Profile picture
-        ImageView profilePictureIV = findViewById(R.id.profilePictureIV);
-        String image = HelpingFunctions.getProfileImageBasedOnUsername(username);
-        if(image.equals("")){
-            switch (HelpingFunctions.getGenderBasedOnUsername(username)) {
-                case "0":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_male);
-                    break;
-                case "1":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_female);
-                    break;
-                case "2":
-                    profilePictureIV.setImageResource(0);
-                    break;
+                // Toolbar username
+                final TextView toolbarUsernameTV = findViewById(R.id.toolbarUsernameTV);
+
+                // Profile picture
+                final ImageView profilePictureIV = findViewById(R.id.profilePictureIV);
+                final String image = HelpingFunctions.getProfileImageBasedOnUsername(username);
+
+                // Name
+                final TextView nameTV = findViewById(R.id.nameTV);
+                final String firstName = HelpingFunctions.getFirstNameBasedOnUsername(username);
+                final String lastName = HelpingFunctions.getLastNameBasedOnUsername(username);
+
+                // Privacy
+                final String privacy = HelpingFunctions.getPrivacyBasedOnUsername(username);
+
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Toolbar username
+                            toolbarUsernameTV.setText(username);
+
+                            // Profile picture
+                            if(image.equals("")){
+                                switch (HelpingFunctions.getGenderBasedOnUsername(username)) {
+                                    case "0":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_male);
+                                        break;
+                                    case "1":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_female);
+                                        break;
+                                    case "2":
+                                        profilePictureIV.setImageResource(0);
+                                        break;
+                                }
+                            }else{
+                                profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(image));
+                            }
+
+                            // Name
+                            if(firstName.equals("") || lastName.equals("")){
+                                nameTV.setText(R.string.message_unknown_name);
+                            }else{
+                                String name = firstName + " " + lastName;
+                                nameTV.setText(name);
+                            }
+
+                            // Privacy
+                            if(privacy.equals("1")){
+                                // PRIVATE
+                                TextView privateTV = findViewById(R.id.privateTV);
+                                privateTV.setVisibility(View.VISIBLE);
+
+                                TextView universityTV = findViewById(R.id.universityTV);
+                                universityTV.setVisibility(View.INVISIBLE);
+
+                                CardView followersCard = findViewById(R.id.followersCard);
+                                followersCard.setVisibility(View.INVISIBLE);
+
+                                TextView infoTV = findViewById(R.id.infoTV);
+                                infoTV.setVisibility(View.INVISIBLE);
+
+                                CardView descriptionCard = findViewById(R.id.descriptionCard);
+                                descriptionCard.setVisibility(View.INVISIBLE);
+
+
+                            }else if (privacy.equals("0")){
+                                // PUBLIC
+
+                                // University
+                                TextView universityTV = findViewById(R.id.universityTV);
+                                String university = HelpingFunctions.getUniversityBasedOnUsername(username);
+                                if(university.equals("")){
+                                    universityTV.setText("");
+                                }else {
+                                    universityTV.setText(university);
+                                }
+
+                                // Followers number
+                                TextView followingTV = findViewById(R.id.followingTV);
+                                followingTV.setText(HelpingFunctions.getFollowing(username));
+
+                                // Description
+                                TextView descriptionTV = findViewById(R.id.descriptionTV);
+                                String description = HelpingFunctions.getProfileDescriptionBasedOnUsername(username);
+                                if(description.equals("")){
+                                    descriptionTV.setText(R.string.message_no_description);
+                                }else {
+                                    descriptionTV.setText(description);
+                                }
+                            }
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
             }
-        }else{
-            profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(image));
-        }
+        }).start();
 
-        // Name
-        TextView nameTV = findViewById(R.id.nameTV);
-        String firstName = HelpingFunctions.getFirstNameBasedOnUsername(username);
-        String lastName = HelpingFunctions.getLastNameBasedOnUsername(username);
-        if(firstName.equals("") || lastName.equals("")){
-            nameTV.setText(R.string.message_unknown_name);
-        }else{
-            String name = firstName + " " + lastName;
-            nameTV.setText(name);
-        }
-
-
-        String privacy = HelpingFunctions.getPrivacyBasedOnUsername(username);
-        if(privacy.equals("1")){
-            // PRIVATE
-            TextView privateTV = findViewById(R.id.privateTV);
-            privateTV.setVisibility(View.VISIBLE);
-
-            TextView universityTV = findViewById(R.id.universityTV);
-            universityTV.setVisibility(View.INVISIBLE);
-
-            CardView followersCard = findViewById(R.id.followersCard);
-            followersCard.setVisibility(View.INVISIBLE);
-
-            TextView infoTV = findViewById(R.id.infoTV);
-            infoTV.setVisibility(View.INVISIBLE);
-
-            CardView descriptionCard = findViewById(R.id.descriptionCard);
-            descriptionCard.setVisibility(View.INVISIBLE);
-
-
-        }else if (privacy.equals("0")){
-            // PUBLIC
-
-            // University
-            TextView universityTV = findViewById(R.id.universityTV);
-            String university = HelpingFunctions.getUniversityBasedOnUsername(username);
-            if(university.equals("")){
-                universityTV.setText("");
-            }else {
-                universityTV.setText(university);
-            }
-
-            // Followers number
-            TextView followingTV = findViewById(R.id.followingTV);
-            followingTV.setText(HelpingFunctions.getFollowing(username));
-
-            // Description
-            TextView descriptionTV = findViewById(R.id.descriptionTV);
-            String description = HelpingFunctions.getProfileDescriptionBasedOnUsername(username);
-            if(description.equals("")){
-                descriptionTV.setText(R.string.message_no_description);
-            }else {
-                descriptionTV.setText(description);
-            }
-        }
     }
 
     private void setListeners(){

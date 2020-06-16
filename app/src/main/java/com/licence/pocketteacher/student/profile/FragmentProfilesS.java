@@ -67,7 +67,6 @@ public class FragmentProfilesS extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
         setFields();
 
         // Clear all notifications
@@ -85,30 +84,54 @@ public class FragmentProfilesS extends Fragment {
         profileToolbar.setTitle("");
         ((AppCompatActivity) getActivity()).setSupportActionBar(profileToolbar);
 
-        //Image Views
-        profilePictureIV = view.findViewById(R.id.profilePictureIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Text Views
-        nameTV = view.findViewById(R.id.nameTV);
-        universityTV = view.findViewById(R.id.universityTV);
-        descriptionTV = view.findViewById(R.id.descriptionTV);
-        followingTV = view.findViewById(R.id.followingTV);
-        followingTV.setText(HelpingFunctions.getFollowing(MainPageS.student.getUsername()));
-        notificationBadgeTV = view.findViewById(R.id.notificationBadgeTV);
-        String notificationNumber = HelpingFunctions.getNumberOfNotifications(MainPageS.student.getUsername());
-        if(notificationNumber.equals("0")){
-            notificationBadgeTV.setVisibility(View.INVISIBLE);
-        }else {
-            notificationBadgeTV.setVisibility(View.VISIBLE);
-            notificationBadgeTV.setText(notificationNumber);
-        }
+                //Image Views
+                profilePictureIV = view.findViewById(R.id.profilePictureIV);
 
-        // Card View
-        editProfileC = view.findViewById(R.id.editProfileC);
-        followersCard = view.findViewById(R.id.followersCard);
+                // Text Views
+                nameTV = view.findViewById(R.id.nameTV);
+                universityTV = view.findViewById(R.id.universityTV);
+                descriptionTV = view.findViewById(R.id.descriptionTV);
+                followingTV = view.findViewById(R.id.followingTV);
 
-        // Button
-        notificationBttn = view.findViewById(R.id.notificationBttn);
+                notificationBadgeTV = view.findViewById(R.id.notificationBadgeTV);
+                final String notificationNumber = HelpingFunctions.getNumberOfNotifications(MainPageS.student.getUsername());
+
+                // Card View
+                editProfileC = view.findViewById(R.id.editProfileC);
+                followersCard = view.findViewById(R.id.followersCard);
+
+                // Button
+                notificationBttn = view.findViewById(R.id.notificationBttn);
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            followingTV.setText(HelpingFunctions.getFollowing(MainPageS.student.getUsername()));
+                            if (notificationNumber.equals("0")) {
+                                notificationBadgeTV.setVisibility(View.INVISIBLE);
+                            } else {
+                                notificationBadgeTV.setVisibility(View.VISIBLE);
+                                notificationBadgeTV.setText(notificationNumber);
+                            }
+
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start();
+
+
 
     }
 
@@ -145,49 +168,75 @@ public class FragmentProfilesS extends Fragment {
 
     private void setFields(){
 
-        // Profile picture
-        if (MainPageS.student.getProfileImageBase64().equals("")) {
-            switch (MainPageS.student.getGender()) {
-                case "0":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_male);
-                    break;
-                case "1":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_female);
-                    break;
-                case "2":
-                    profilePictureIV.setImageResource(0);
-                    break;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                // Profile picture
+                final String profileImageBase64 = MainPageS.student.getProfileImageBase64();
+
+                // Name
+                final String firstName = MainPageS.student.getFirstName();
+                final String lastName = MainPageS.student.getLastName();
+
+                // University
+                final String university = MainPageS.student.getUniversity();
+
+                // Description
+                final String description = MainPageS.student.getProfileDescription();
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Profile picture
+                            if (profileImageBase64.equals("")) {
+                                switch (MainPageS.student.getGender()) {
+                                    case "0":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_male);
+                                        break;
+                                    case "1":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_female);
+                                        break;
+                                    case "2":
+                                        profilePictureIV.setImageResource(0);
+                                        break;
+                                }
+                            } else {
+                                profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(MainPageS.student.getProfileImageBase64()));
+                            }
+
+                            // Name
+                            if (firstName.equals("null") || lastName.equals("null")) {
+                                nameTV.setText(R.string.message_unknown_name);
+                            } else {
+                                String name = firstName + " " + lastName;
+                                nameTV.setText(name);
+                            }
+
+                            // University
+                            if (university.equals("null")) {
+                                universityTV.setText(R.string.message_unknown_university);
+                            } else {
+                                universityTV.setText(university);
+                            }
+
+                            // Description
+                            if (description.equals("null")) {
+                                descriptionTV.setText(R.string.message_no_description);
+                            } else {
+                                descriptionTV.setText(description);
+                            }
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
             }
-        } else {
-            profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(MainPageS.student.getProfileImageBase64()));
-        }
-
-
-        // Name
-        String firstName = MainPageS.student.getFirstName();
-        String lastName = MainPageS.student.getLastName();
-        if(firstName.equals("null") || lastName.equals("null")){
-            nameTV.setText(R.string.message_unknown_name);
-        } else{
-            String name = firstName + " " + lastName;
-            nameTV.setText(name);
-        }
-
-        // University
-        String university = MainPageS.student.getUniversity();
-        if(university.equals("null")){
-            universityTV.setText(R.string.message_unknown_university);
-        }else{
-            universityTV.setText(university);
-        }
-
-        // Description
-        String description = MainPageS.student.getProfileDescription();
-        if(description.equals("null")){
-            descriptionTV.setText(R.string.message_no_description);
-        }else{
-            descriptionTV.setText(description);
-        }
+        }).start();
     }
 
 

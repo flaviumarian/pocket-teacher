@@ -62,6 +62,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_centerHorizontal="true"
+        android:visibility="invisible"
         android:layout_marginTop="10dp"
         android:fontFamily="@font/open_sans_bold"
         android:textAlignment="center"

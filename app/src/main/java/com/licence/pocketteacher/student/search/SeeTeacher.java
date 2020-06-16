@@ -48,7 +48,6 @@ public class SeeTeacher extends AppCompatActivity {
 
         getUsernameFromIntent();
         initiateComponents();
-        setListeners();
 
     }
 
@@ -62,95 +61,122 @@ public class SeeTeacher extends AppCompatActivity {
 
     private void initiateComponents() {
 
-        // Back button
-        backIV = findViewById(R.id.backIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Report Button
-        reportIV = findViewById(R.id.reportIV);
+                // Back button
+                backIV = findViewById(R.id.backIV);
 
-        // Teacher
-        teacher = HelpingFunctions.getDisplayedTeacher(username, MainPageS.student.getUsername());
+                // Report Button
+                reportIV = findViewById(R.id.reportIV);
 
-        // Toolbar username
-        TextView toolbarUsernameTV = findViewById(R.id.toolbarUsernameTV);
-        toolbarUsernameTV.setText(username);
+                // Teacher
+                teacher = HelpingFunctions.getDisplayedTeacher(username, MainPageS.student.getUsername());
 
-        // Profile picture
-        ImageView profilePictureIV = findViewById(R.id.profilePictureIV);
-        if (teacher.getProfileImageBase64().equals("null")) {
-            switch (teacher.getGender()) {
-                case "0":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_male);
-                    break;
-                case "1":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_female);
-                    break;
-                case "2":
-                    profilePictureIV.setImageResource(0);
-                    break;
+                // Toolbar username
+                final TextView toolbarUsernameTV = findViewById(R.id.toolbarUsernameTV);
+
+                // Profile picture
+                final ImageView profilePictureIV = findViewById(R.id.profilePictureIV);
+
+                // Name
+                final TextView nameTV = findViewById(R.id.nameTV);
+
+                // University
+                final TextView universityTV = findViewById(R.id.universityTV);
+
+                // Follow/unfollow status
+                followC = findViewById(R.id.followC);
+                followIV = findViewById(R.id.followIV);
+
+                // Followers
+                followersTV = findViewById(R.id.followersTV);
+
+                // Description
+                final TextView descriptionTV = findViewById(R.id.descriptionTV);
+
+                // List View
+                subjectsLV = findViewById(R.id.subjectsLV);
+
+
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        // Toolbar username
+                        toolbarUsernameTV.setText(username);
+
+                        // Profile picture
+                        if (teacher.getProfileImageBase64().equals("null")) {
+                            switch (teacher.getGender()) {
+                                case "0":
+                                    profilePictureIV.setImageResource(R.drawable.profile_picture_male);
+                                    break;
+                                case "1":
+                                    profilePictureIV.setImageResource(R.drawable.profile_picture_female);
+                                    break;
+                                case "2":
+                                    profilePictureIV.setImageResource(0);
+                                    break;
+                            }
+                        } else {
+                            profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(teacher.getProfileImageBase64()));
+                        }
+
+                        // Name
+                        if(teacher.getFirstName().equals("null") || teacher.getLastName().equals("null")){
+                            nameTV.setText(R.string.message_unknown_name);
+                        }else{
+                            String name = teacher.getFirstName() + " " + teacher.getLastName();
+                            nameTV.setText(name);
+                        }
+
+                        // University
+                        if(!teacher.getUniversity().equals("null")){
+                            universityTV.setText(teacher.getUniversity());
+                        }
+
+                        // Follow/unfollow status
+                        if (teacher.getFollowingStatus().equals("1")) {
+                            // following
+                            followC.setCardBackgroundColor(getResources().getColor(R.color.red));
+                            followIV.setImageResource(R.drawable.logo_minus);
+                        } else if (teacher.getFollowingRequestStatus().equals("1")) {
+                            // requested
+                            followC.setCardBackgroundColor(getResources().getColor(R.color.yellow));
+                            followIV.setImageResource(R.drawable.logo_dots);
+                        } else {
+                            // not following
+                            followC.setCardBackgroundColor(getResources().getColor(R.color.green));
+                            followIV.setImageResource(R.drawable.logo_plus);
+                        }
+
+                        // Followers
+                        followersTV.setText(teacher.getFollowers());
+
+                        // Description
+                        if (teacher.getProfileDescription().equals("null")) {
+                            descriptionTV.setText(R.string.message_no_description); // No description.
+                        } else {
+                            descriptionTV.setText(teacher.getProfileDescription());
+                        }
+
+                        // Subjects
+                        if (teacher.getSubjectNames().size() == 0) {
+                            TextView info2TV = findViewById(R.id.info2TV);
+                            info2TV.setText(R.string.message_no_subjects);
+                        }
+
+                        setListeners();
+
+                    }
+                });
+
             }
-        } else {
-            profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(teacher.getProfileImageBase64()));
-        }
+        }).start();
 
-        // Name
-        TextView nameTV = findViewById(R.id.nameTV);
-        if(teacher.getFirstName().equals("null") || teacher.getLastName().equals("null")){
-            nameTV.setText(R.string.message_unknown_name);
-        }else{
-            String name = teacher.getFirstName() + " " + teacher.getLastName();
-            nameTV.setText(name);
-        }
-
-
-        // University
-        TextView universityTV = findViewById(R.id.universityTV);
-        if(!teacher.getUniversity().equals("null")){
-            universityTV.setText(teacher.getUniversity());
-        }
-
-        // Follow/unfollow status
-        followC = findViewById(R.id.followC);
-        followIV = findViewById(R.id.followIV);
-        if (teacher.getFollowingStatus().equals("1")) {
-            // following
-            followC.setCardBackgroundColor(getResources().getColor(R.color.red));
-            followIV.setImageResource(R.drawable.logo_minus);
-        } else if (teacher.getFollowingRequestStatus().equals("1")) {
-            // requested
-            followC.setCardBackgroundColor(getResources().getColor(R.color.yellow));
-            followIV.setImageResource(R.drawable.logo_dots);
-        } else {
-            // not following
-            followC.setCardBackgroundColor(getResources().getColor(R.color.green));
-            followIV.setImageResource(R.drawable.logo_plus);
-        }
-
-        // Followers
-        followersTV = findViewById(R.id.followersTV);
-        followersTV.setText(teacher.getFollowers());
-
-
-        // Description
-        TextView descriptionTV = findViewById(R.id.descriptionTV);
-        if (teacher.getProfileDescription().
-
-                equals("null")) {
-            descriptionTV.setText(R.string.message_no_description); // No description.
-        } else {
-            descriptionTV.setText(teacher.getProfileDescription());
-        }
-
-        // Subjects
-        if (teacher.getSubjectNames().
-
-                size() == 0) {
-            TextView info2TV = findViewById(R.id.info2TV);
-            info2TV.setText(R.string.message_no_subjects);
-        }
-
-        // List View
-        subjectsLV = findViewById(R.id.subjectsLV);
 
     }
 
@@ -345,8 +371,6 @@ public class SeeTeacher extends AppCompatActivity {
                     followIV.setImageResource(R.drawable.logo_plus);
                     Snackbar.make(v, "Request canceled.", Snackbar.LENGTH_SHORT).show();
                 }
-
-
             }
         });
     }

@@ -45,7 +45,7 @@ import com.licence.pocketteacher.teacher.profile.followers.SeeStudent;
 
 import java.util.ArrayList;
 
-public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCommentDialog.BottomDeleteCommentListener{
+public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCommentDialog.BottomDeleteCommentListener {
 
     private ImageView backIV, likesIV, sendCommentIV;
     private TextView infoTV, likesTV, commentsTV, downloadTV;
@@ -60,7 +60,6 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
 
     private String fileName, likedStatus, likesNumber, commentsNumber, subjectName, folderName, fileUrl;
     private boolean fromNotifications;
-
 
 
     @Override
@@ -86,7 +85,7 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
             folderName = bundle.getString("folderName");
             fromNotifications = bundle.getBoolean("fromNotifications");
 
-            if(subjectName == null){
+            if (subjectName == null) {
                 subjectName = SubjectPage.subjectName;
                 folderName = FilesPage.folderName;
             }
@@ -131,44 +130,48 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
 
                 final ArrayList<String> fileInformation = HelpingFunctions.getFileInformation(MainPageT.teacher.getUsername(), subjectName, folderName, fileName);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(MainPageT.teacher.getProfileImageBase64()));
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(MainPageT.teacher.getProfileImageBase64()));
 
-                        if(likedStatus.equals("1")){
-                            likesIV.setImageResource(R.drawable.ic_favorite_red_24dp);
-                            likesIV.setTag("1");
-                        } else{
-                            likesIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                            likesIV.setTag("0");
+                            if (likedStatus.equals("1")) {
+                                likesIV.setImageResource(R.drawable.ic_favorite_red_24dp);
+                                likesIV.setTag("1");
+                            } else {
+                                likesIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                                likesIV.setTag("0");
+                            }
+
+                            fileUrl = fileInformation.get(0);
+                            if (fileUrl.equals("null")) {
+                                downloadTV.setVisibility(View.INVISIBLE);
+                            }
+
+                            fileNameTV.setText(fileName);
+
+                            if (MainPageT.teacher.getFirstName().equals("") || MainPageT.teacher.getLastName().equals("") || MainPageT.teacher.getFirstName().equals("null") || MainPageT.teacher.getLastName().equals("null")) {
+                                teacherNameTV.setText(R.string.message_unknown_name);
+                            } else {
+                                String name = MainPageT.teacher.getFirstName() + " " + MainPageT.teacher.getLastName();
+                                teacherNameTV.setText(name);
+                            }
+
+                            teacherUsernameTV.setText(MainPageT.teacher.getUsername());
+
+                            likesTV.setText(likesNumber);
+                            commentsTV.setText(commentsNumber);
+                            titleTV.setText(fileInformation.get(1));
+                            subjectTV.setText(subjectName);
+                            folderTV.setText(folderName);
+                            descriptionTV.setText(fileInformation.get(2));
+                            timeTV.setText(fileInformation.get(3));
                         }
-
-                        fileUrl = fileInformation.get(0);
-                        if(fileUrl.equals("null")){
-                            downloadTV.setVisibility(View.INVISIBLE);
-                        }
-
-                        fileNameTV.setText(fileName);
-
-                        if(MainPageT.teacher.getFirstName().equals("") || MainPageT.teacher.getLastName().equals("") || MainPageT.teacher.getFirstName().equals("null") || MainPageT.teacher.getLastName().equals("null")){
-                            teacherNameTV.setText(R.string.message_unknown_name);
-                        } else{
-                            String name = MainPageT.teacher.getFirstName() + " " + MainPageT.teacher.getLastName();
-                            teacherNameTV.setText(name);
-                        }
-
-                        teacherUsernameTV.setText(MainPageT.teacher.getUsername());
-
-                        likesTV.setText(likesNumber);
-                        commentsTV.setText(commentsNumber);
-                        titleTV.setText(fileInformation.get(1));
-                        subjectTV.setText(subjectName);
-                        folderTV.setText(folderName);
-                        descriptionTV.setText(fileInformation.get(2));
-                        timeTV.setText(fileInformation.get(3));
-                    }
-                });
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
 
                 // Recycler View
@@ -183,19 +186,21 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
 
                 // Comments
                 comments = HelpingFunctions.getAllCommentsForPost(MainPageT.teacher.getUsername(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(comments.size() > 0){
-                            infoTV.setVisibility(View.INVISIBLE);
-                        }else{
-                            infoTV.setVisibility(View.VISIBLE);
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (comments.size() > 0) {
+                                infoTV.setVisibility(View.INVISIBLE);
+                            } else {
+                                infoTV.setVisibility(View.VISIBLE);
+                            }
+                            setListeners();
                         }
-                    }
-                });
-
-                setListeners();
-
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
         }).start();
@@ -220,7 +225,7 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                     Long reference = downloadManager.enqueue(request);
 
                     Toast.makeText(SeePostTeacher.this, "Downloading...", Toast.LENGTH_SHORT).show();
-                }catch(Exception e){
+                } catch (Exception e) {
                     Snackbar.make(getCurrentFocus(), "An error occurred. Please try again later.", Snackbar.LENGTH_SHORT);
                 }
             }
@@ -238,42 +243,42 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
         likesIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(likesIV.getTag().equals("1")){
+                if (likesIV.getTag().equals("1")) {
                     HelpingFunctions.unlikePost(MainPageT.teacher.getUsername(), subjectName, folderName, fileName, MainPageT.teacher.getUsername());
                     likesIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                     likesIV.setTag("0");
 
-                    int likeCount = Integer.parseInt(likesNumber)  - 1;
+                    int likeCount = Integer.parseInt(likesNumber) - 1;
                     likesNumber = likeCount + "";
                     likesTV.setText(likesNumber);
-                    if(!fromNotifications) {
+                    if (!fromNotifications) {
                         FilesPage.likes.set(FilesPage.fileNames.indexOf(fileName), likeCount);
                         FilesPage.likedStatuses.set(FilesPage.fileNames.indexOf(fileName), "");
                     }
 
-                }else{
+                } else {
                     HelpingFunctions.likePost(MainPageT.teacher.getUsername(), subjectName, folderName, fileName, MainPageT.teacher.getUsername());
                     likesIV.setImageResource(R.drawable.ic_favorite_red_24dp);
                     likesIV.setTag("1");
 
-                    int likeCount = Integer.parseInt(likesNumber)  + 1;
+                    int likeCount = Integer.parseInt(likesNumber) + 1;
                     likesNumber = likeCount + "";
                     likesTV.setText(likesNumber);
-                    if(!fromNotifications) {
+                    if (!fromNotifications) {
                         FilesPage.likes.set(FilesPage.fileNames.indexOf(fileName), likeCount);
                         FilesPage.likedStatuses.set(FilesPage.fileNames.indexOf(fileName), "1");
                     }
                 }
 
                 Intent returnIntent = new Intent();
-                setResult(Activity.RESULT_OK,  returnIntent);
+                setResult(Activity.RESULT_OK, returnIntent);
             }
         });
 
         sendCommentIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(HelpingFunctions.isEditTextEmpty(commentET)){
+                if (HelpingFunctions.isEditTextEmpty(commentET)) {
                     return;
                 }
 
@@ -288,15 +293,15 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                 commentsNumber = newNoComments;
                 commentsTV.setText(newNoComments);
                 infoTV.setVisibility(View.INVISIBLE);
-                if(!fromNotifications) {
+                if (!fromNotifications) {
                     FilesPage.comments.set(FilesPage.fileNames.indexOf(fileName), FilesPage.comments.get(FilesPage.fileNames.indexOf(fileName)) + 1);
                 }
                 Intent returnIntent = new Intent();
-                setResult(Activity.RESULT_OK,  returnIntent);
+                setResult(Activity.RESULT_OK, returnIntent);
 
                 // Hide keyboard
                 try {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -308,13 +313,14 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
         // Edit Text
         commentET.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(commentET.getText().length() > 0){
+                if (commentET.getText().length() > 0) {
                     sendCommentIV.setImageResource(R.drawable.logo_send);
-                }else{
+                } else {
                     sendCommentIV.setImageResource(R.drawable.logo_send_grey);
                 }
             }
@@ -356,23 +362,18 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
 
         // Recycler View
         commentsRecyclerAdapter = new CommentsRecyclerAdapter(comments, getApplicationContext());
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                commentsRV.setAdapter(commentsRecyclerAdapter);
-                commentsRV.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-            }
-        });
 
+        commentsRV.setAdapter(commentsRecyclerAdapter);
+        commentsRV.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
     }
 
     @Override
     public void onButtonClicked(String text, int position) {
-        if(text.equals("Delete comment.")) {
+        if (text.equals("Delete comment.")) {
             commentsRecyclerAdapter.deleteComment(position);
 
-            if(comments.size() == 0){
+            if (comments.size() == 0) {
                 infoTV.setVisibility(View.VISIBLE);
             }
         }
@@ -380,12 +381,12 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
 
 
     /*                                   *** A D A P T O R  ***                                   */
-    class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecyclerAdapter.ViewHolder>{
+    class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecyclerAdapter.ViewHolder> {
 
         private ArrayList<Comment> comments;
         private Context context;
 
-        public CommentsRecyclerAdapter(ArrayList<Comment> comments, Context context){
+        public CommentsRecyclerAdapter(ArrayList<Comment> comments, Context context) {
             this.comments = comments;
             this.context = context;
         }
@@ -405,8 +406,8 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
             final Comment comment = comments.get(position);
 
             // Profile image
-            if(comment.getImageBase64().equals("")){
-                switch(comment.getGender()){
+            if (comment.getImageBase64().equals("")) {
+                switch (comment.getGender()) {
                     case "0":
                         holder.profileImageIV.setImageResource(R.drawable.profile_picture_male);
                         break;
@@ -417,10 +418,9 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                         holder.profileImageIV.setImageResource(0);
                         break;
                 }
-            }else{
+            } else {
                 holder.profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(comment.getImageBase64()));
             }
-
 
 
             holder.timeTV.setText(comment.getTimeSince());
@@ -430,10 +430,10 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
             holder.likeTV.setText(likes);
 
             // Like/Unlike comment
-            if(comment.getLikedStatus().equals("1")){
+            if (comment.getLikedStatus().equals("1")) {
                 holder.likeIV.setImageResource(R.drawable.ic_favorite_red_24dp);
                 holder.likeIV.setTag("1");
-            }else{
+            } else {
                 holder.likeIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                 holder.likeIV.setTag("0");
             }
@@ -445,7 +445,7 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
             holder.profileImageIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(comment.getType().equals("0")){
+                    if (comment.getType().equals("0")) {
                         Intent intent = new Intent(context, SeeStudent.class);
                         intent.putExtra("username", comment.getUsername());
                         v.getContext().startActivity(intent);
@@ -458,7 +458,7 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
             holder.usernameTV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(comment.getType().equals("0")){
+                    if (comment.getType().equals("0")) {
                         Intent intent = new Intent(context, SeeStudent.class);
                         intent.putExtra("username", comment.getUsername());
                         v.getContext().startActivity(intent);
@@ -470,10 +470,10 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
             holder.likeIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(holder.likeIV.getTag().equals("0")){
+                    if (holder.likeIV.getTag().equals("0")) {
                         String result = HelpingFunctions.likeComment(comment.getComment(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName, comment.getTimestamp(), MainPageT.teacher.getUsername(), comment.getUsername());
-                        if(result.equals("Data inserted.")){
-                            if(!MainPageT.teacher.getUsername().equals(comment.getUsername())){
+                        if (result.equals("Data inserted.")) {
+                            if (!MainPageT.teacher.getUsername().equals(comment.getUsername())) {
                                 // send notification
                                 HelpingFunctions.sendNotification(comment.getUsername(), MainPageT.teacher.getUsername() + " liked your comment.");
                             }
@@ -485,7 +485,7 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                             comments.get(position).setLikes(numLikes);
                             comments.get(position).setLikedStatus("1");
                         }
-                    }else{
+                    } else {
                         HelpingFunctions.unlikeComment(comment.getComment(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName, comment.getTimestamp(), MainPageT.teacher.getUsername(), comment.getUsername());
                         holder.likeIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                         holder.likeIV.setTag("0");
@@ -503,7 +503,7 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                 @Override
                 public boolean onLongClick(View v) {
 
-                    if(comment.getUsername().equals(MainPageT.teacher.getUsername())){
+                    if (comment.getUsername().equals(MainPageT.teacher.getUsername())) {
                         // apare optiune sa sterg comentariul
                         BottomDeleteCommentDialog bottomDeleteCommentDialog = new BottomDeleteCommentDialog(position);
                         bottomDeleteCommentDialog.show(getSupportFragmentManager(), "DELETE_COMMENT");
@@ -522,20 +522,20 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
             return comments.size();
         }
 
-        public void deleteComment(int position){
+        public void deleteComment(int position) {
             Comment comment = comments.get(position);
             String result = HelpingFunctions.removeComment(comment.getComment(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName, comment.getTimestamp(), comment.getUsername());
-            if(result.equals("Success.")){
+            if (result.equals("Success.")) {
                 int newCommentsCount = Integer.parseInt(commentsNumber) - 1;
                 String newCommentsCountString = newCommentsCount + "";
                 commentsTV.setText(newCommentsCountString);
                 comments.remove(position);
                 notifyItemRemoved(position);
-                notifyItemRangeChanged(position,comments.size());
+                notifyItemRangeChanged(position, comments.size());
 
                 Intent returnIntent = new Intent();
-                setResult(Activity.RESULT_OK,  returnIntent);
-            }else{
+                setResult(Activity.RESULT_OK, returnIntent);
+            } else {
                 Toast.makeText(context, "An error occurred. Please try again later.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -564,8 +564,6 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
             }
         }
     }
-
-
 
 
     /*                      *** T O O L B A R    M E N U ***                         */
@@ -604,17 +602,17 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                     @Override
                     public void onClick(View v) {
                         // DELETE file
-                        if(!fileUrl.equals("null")){
+                        if (!fileUrl.equals("null")) {
                             fileUrl = "/home/pockette/public_html/uploads/" + fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
                         }
                         String result = HelpingFunctions.removeFile(MainPageT.teacher.getUsername(), subjectName, folderName, fileName, fileUrl);
 
-                        if(result.equals("Error occured.")){
+                        if (result.equals("Error occured.")) {
                             deletePopup.dismiss();
                             return;
                         }
 
-                        if(!fromNotifications) {
+                        if (!fromNotifications) {
                             int position = FilesPage.fileNames.indexOf(fileName);
                             FilesPage.fileNames.remove(position);
                             FilesPage.likes.remove(position);
@@ -623,7 +621,7 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
 
                         deletePopup.dismiss();
                         Intent returnIntent = new Intent();
-                        setResult(Activity.RESULT_OK,  returnIntent);
+                        setResult(Activity.RESULT_OK, returnIntent);
                         onBackPressed();
 
                     }

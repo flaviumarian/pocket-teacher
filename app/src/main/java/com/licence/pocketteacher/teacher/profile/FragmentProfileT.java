@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.AlignmentSpan;
@@ -70,7 +71,6 @@ public class FragmentProfileT extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
         setFields();
 
         return view;
@@ -83,28 +83,44 @@ public class FragmentProfileT extends Fragment {
         profileToolbar.setTitle("");
         ((AppCompatActivity) getActivity()).setSupportActionBar(profileToolbar);
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        //Image Views
-        profilePictureIV = view.findViewById(R.id.profilePictureIV);
+                //Image Views
+                profilePictureIV = view.findViewById(R.id.profilePictureIV);
 
-        // Text Views
-        nameTV = view.findViewById(R.id.nameTV);
-        universityTV = view.findViewById(R.id.universityTV);
-        descriptionTV = view.findViewById(R.id.descriptionTV);
-        followersTV = view.findViewById(R.id.followersTV);
-        followersTV.setText(HelpingFunctions.getFollowers(MainPageT.teacher.getUsername()));
+                // Text Views
+                nameTV = view.findViewById(R.id.nameTV);
+                universityTV = view.findViewById(R.id.universityTV);
+                descriptionTV = view.findViewById(R.id.descriptionTV);
+                followersTV = view.findViewById(R.id.followersTV);
 
-        // List View
-        subjectsLV = view.findViewById(R.id.subjectsLV);
+                // List View
+                subjectsLV = view.findViewById(R.id.subjectsLV);
 
-        // Card View
-        editProfileC = view.findViewById(R.id.editProfileC);
-        followersCard = view.findViewById(R.id.followersCard);
+                // Card View
+                editProfileC = view.findViewById(R.id.editProfileC);
+                followersCard = view.findViewById(R.id.followersCard);
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            followersTV.setText(HelpingFunctions.getFollowers(MainPageT.teacher.getUsername()));
+
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     private void setListeners(){
-
-
 
         // Card View
         editProfileC.setOnClickListener(new View.OnClickListener() {
@@ -139,57 +155,100 @@ public class FragmentProfileT extends Fragment {
             domainNames.add(subject.getDomainName());
         }
 
+        final SubjectsAdapter subjectsAdapter = new SubjectsAdapter(view.getContext(), subjectNames, domainNames);
 
-        SubjectsAdapter subjectsAdapter = new SubjectsAdapter(view.getContext(), subjectNames, domainNames);
-        subjectsLV.setAdapter(subjectsAdapter);
-        HelpingFunctions.setListViewHeightBasedOnChildren(subjectsLV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            subjectsLV.setAdapter(subjectsAdapter);
+                            HelpingFunctions.setListViewHeightBasedOnChildren(subjectsLV);
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     // set all fields
     private void setFields(){
 
-        // Profile picture
-        if (MainPageT.teacher.getProfileImageBase64().equals("")) {
-            switch (MainPageT.teacher.getGender()) {
-                case "0":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_male);
-                    break;
-                case "1":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_female);
-                    break;
-                case "2":
-                    profilePictureIV.setImageResource(0);
-                    break;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                // Profile picture
+                final String profileImageBase64 = MainPageT.teacher.getProfileImageBase64();
+
+                // Name
+                final String firstName = MainPageT.teacher.getFirstName();
+                final String lastName = MainPageT.teacher.getLastName();
+
+                // University
+                final String university = MainPageT.teacher.getUniversity();
+
+                // Description
+                final String description = MainPageT.teacher.getProfileDescription();
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Profile picture
+                            if (profileImageBase64.equals("")) {
+                                switch (MainPageT.teacher.getGender()) {
+                                    case "0":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_male);
+                                        break;
+                                    case "1":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_female);
+                                        break;
+                                    case "2":
+                                        profilePictureIV.setImageResource(0);
+                                        break;
+                                }
+                            } else {
+                                profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(MainPageT.teacher.getProfileImageBase64()));
+                            }
+
+
+                            // Name
+                            if (firstName.equals("null") || lastName.equals("null")) {
+                                nameTV.setText(R.string.message_unknown_name);
+                            } else {
+                                String name = firstName + " " + lastName;
+                                nameTV.setText(name);
+                            }
+
+                            // University
+                            if (university.equals("null")) {
+                                universityTV.setText(R.string.message_unknown_university);
+                            } else {
+                                universityTV.setText(university);
+                            }
+
+                            // Description
+                            if (description.equals("null")) {
+                                descriptionTV.setText(R.string.message_no_description);
+                            } else {
+                                descriptionTV.setText(description);
+                            }
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
             }
-        } else {
-            profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(MainPageT.teacher.getProfileImageBase64()));
-        }
-
-        // Name
-        String firstName = MainPageT.teacher.getFirstName();
-        String lastName = MainPageT.teacher.getLastName();
-        if(firstName.equals("null") || lastName.equals("null")){
-            nameTV.setText(R.string.message_unknown_name);
-        } else{
-            String name = firstName + " " + lastName;
-            nameTV.setText(name);
-        }
-
-        // University
-        String university = MainPageT.teacher.getUniversity();
-        if(university.equals("null")){
-            universityTV.setText(R.string.message_unknown_university);
-        }else{
-            universityTV.setText(university);
-        }
-
-        // Description
-        String description = MainPageT.teacher.getProfileDescription();
-        if(description.equals("null")){
-            descriptionTV.setText(R.string.message_no_description);
-        }else{
-            descriptionTV.setText(description);
-        }
+        }).start();
     }
 
 
@@ -374,6 +433,7 @@ public class FragmentProfileT extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
 
         // Notification Badge
         MainPageT.resetBadge();

@@ -73,16 +73,5 @@
                 android:textColor="@color/darkGrey" />
 
         </LinearLayout>
-
-        <!-- Arrow image -->
-        <ImageView
-            android:id="@+id/endIV"
-            android:layout_width="40sp"
-            android:layout_height="40sp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:contentDescription="@string/description_list_item_image_2"
-            android:src="@drawable/ic_navigate_next_black_24dp" />
-
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

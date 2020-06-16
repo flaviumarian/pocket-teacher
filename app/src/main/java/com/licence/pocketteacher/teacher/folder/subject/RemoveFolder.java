@@ -34,26 +34,45 @@ public class RemoveFolder extends AppCompatActivity {
         setContentView(R.layout.activity_remove_folder);
 
         initiateComponents();
-        setListeners();
 
     }
 
     private void initiateComponents() {
 
-        // Image Views
-        backIV = findViewById(R.id.backIV);
-        closeWarningIV = findViewById(R.id.closeWarningIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Array List
-        foldersToDelete = new ArrayList<>();
+                // Image Views
+                backIV = findViewById(R.id.backIV);
+                closeWarningIV = findViewById(R.id.closeWarningIV);
 
-        // List View
-        foldersLV = findViewById(R.id.foldersLV);
+                // Array List
+                foldersToDelete = new ArrayList<>();
 
+                // List View
+                foldersLV = findViewById(R.id.foldersLV);
 
-        FoldersAdapter foldersAdapter = new FoldersAdapter(getApplicationContext(), SubjectPage.folders);
-        foldersLV.setAdapter(foldersAdapter);
-        HelpingFunctions.setListViewHeightBasedOnChildren(foldersLV);
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            FoldersAdapter foldersAdapter = new FoldersAdapter(getApplicationContext(), SubjectPage.folders);
+                            foldersLV.setAdapter(foldersAdapter);
+                            HelpingFunctions.setListViewHeightBasedOnChildren(foldersLV);
+
+                            setListeners();
+
+                        }
+                    });
+
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     private void setListeners() {

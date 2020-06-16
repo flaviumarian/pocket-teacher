@@ -52,7 +52,6 @@ public class FragmentFollowersLandingPage extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
 
         return view;
     }
@@ -64,29 +63,51 @@ public class FragmentFollowersLandingPage extends Fragment {
         profileToolbar.setTitle("");
         ((AppCompatActivity) getActivity()).setSupportActionBar(profileToolbar);
 
-        // Image View
-        backIV = view.findViewById(R.id.backIV);
-        searchIV = view.findViewById(R.id.searchIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Recycle View
-        teachersRV = view.findViewById(R.id.teachersRV);
+                // Image View
+                backIV = view.findViewById(R.id.backIV);
+                searchIV = view.findViewById(R.id.searchIV);
 
-        // Array list
-        followers = HelpingFunctions.getAllFollowers(MainPageT.teacher.getUsername());
-        TextView infoTV = view.findViewById(R.id.infoTV);
-        LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
-        if(followers.size() > 0){
-            infoTV.setVisibility(View.INVISIBLE);
-            linearLayout.setVisibility(View.INVISIBLE);
-            searchIV.setVisibility(View.VISIBLE);
-        }else{
-            infoTV.setVisibility(View.VISIBLE);
-            linearLayout.setVisibility(View.VISIBLE);
-            searchIV.setVisibility(View.INVISIBLE);
-        }
+                // Recycle View
+                teachersRV = view.findViewById(R.id.teachersRV);
 
-        // Button
-        goPremiumBttn = view.findViewById(R.id.goPremiumBttn);
+                // Array list
+                followers = HelpingFunctions.getAllFollowers(MainPageT.teacher.getUsername());
+                final TextView infoTV = view.findViewById(R.id.infoTV);
+                final LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
+
+                // Button
+                goPremiumBttn = view.findViewById(R.id.goPremiumBttn);
+
+                try{
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Array list
+                            if(followers.size() > 0){
+                                infoTV.setVisibility(View.INVISIBLE);
+                                linearLayout.setVisibility(View.INVISIBLE);
+                                searchIV.setVisibility(View.VISIBLE);
+                            }else{
+                                infoTV.setVisibility(View.VISIBLE);
+                                linearLayout.setVisibility(View.VISIBLE);
+                                searchIV.setVisibility(View.INVISIBLE);
+                            }
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
 
     }
 

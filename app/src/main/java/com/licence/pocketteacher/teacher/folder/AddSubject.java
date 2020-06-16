@@ -46,7 +46,6 @@ public class AddSubject extends AppCompatActivity {
         setContentView(R.layout.activity_add_subject);
 
         initiateComponents();
-        setListeners();
 
     }
 
@@ -57,42 +56,57 @@ public class AddSubject extends AppCompatActivity {
         subjectToolbar.setTitle("");
         this.setSupportActionBar(subjectToolbar);
 
-        // Image View
-        backIV = findViewById(R.id.backIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Array Lists
-        // Subjects
-        ArrayList<ArrayList> completeSubjects = HelpingFunctions.getAllSubjects();
-        availableSubjects = completeSubjects.get(0);
-        availableSubjectDescriptions = completeSubjects.get(1);
-        availableSubjectImages = completeSubjects.get(2);
-        currentSubjects = new ArrayList<>();
-        currentSubjects.addAll(availableSubjects);
-        currentSubjects.add(0, "Subject");
-        removeExistingSubjects(currentSubjects);
+                // Image View
+                backIV = findViewById(R.id.backIV);
 
+                // Array Lists
+                // Subjects
+                ArrayList<ArrayList> completeSubjects = HelpingFunctions.getAllSubjects();
+                availableSubjects = completeSubjects.get(0);
+                availableSubjectDescriptions = completeSubjects.get(1);
+                availableSubjectImages = completeSubjects.get(2);
+                currentSubjects = new ArrayList<>();
+                currentSubjects.addAll(availableSubjects);
+                currentSubjects.add(0, "Subject");
+                removeExistingSubjects(currentSubjects);
 
-        // Domains
-        ArrayList<ArrayList> completeDomains = HelpingFunctions.getAllDomains();
-        availableDomains = completeDomains.get(0);
-        availableDomains.add(0, "Domain");
+                // Domains
+                ArrayList<ArrayList> completeDomains = HelpingFunctions.getAllDomains();
+                availableDomains = completeDomains.get(0);
+                availableDomains.add(0, "Domain");
 
+                // Spinners
+                subjectsSpinner = findViewById(R.id.subjectsSpinner);
+                domainsSpinner = findViewById(R.id.domainsSpinner);
 
+                // Button
+                requestBttn = findViewById(R.id.requestBttn);
 
-        // Spinners
-        subjectsSpinner = findViewById(R.id.subjectsSpinner);
-        ArrayAdapter<String> adapterSubjects = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, currentSubjects);
-        subjectsSpinner.setAdapter(adapterSubjects);
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
+                            // Spinners
+                            ArrayAdapter<String> adapterSubjects = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, currentSubjects);
+                            subjectsSpinner.setAdapter(adapterSubjects);
 
-        domainsSpinner = findViewById(R.id.domainsSpinner);
-        ArrayAdapter<String> adapterDomains = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, availableDomains);
-        domainsSpinner.setAdapter(adapterDomains);
+                            ArrayAdapter<String> adapterDomains = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, availableDomains);
+                            domainsSpinner.setAdapter(adapterDomains);
 
+                            setListeners();
 
-        // Button
-        requestBttn = findViewById(R.id.requestBttn);
-
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
     }
 

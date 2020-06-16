@@ -44,21 +44,48 @@ public class EditProfileT extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile_t);
 
         initiateComponents();
-        setListeners();
-
 
     }
 
     private void initiateComponents(){
 
-        // Image View
-        backIV = findViewById(R.id.backIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // List View
-        changeLV = findViewById(R.id.changeLV);
+                // Image View
+                backIV = findViewById(R.id.backIV);
 
-        // Button
-        logOutBttn = findViewById(R.id.logOutBttn);
+                // List View
+                changeLV = findViewById(R.id.changeLV);
+
+                // Button
+                logOutBttn = findViewById(R.id.logOutBttn);
+
+                // List View
+                final int[] changesImages = {R.drawable.ic_person_black_24dp, R.drawable.ic_wallpaper_black_24dp, R.drawable.logo_description, R.drawable.logo_university, R.drawable.logo_gender};
+                final String[] names = {"Name", "Profile Picture", "Description", "University", "Gender"};
+
+
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            EditProfileT.ChangeAdapter changeAdapter = new EditProfileT.ChangeAdapter(getApplicationContext(), changesImages, names);
+                            changeLV.setAdapter(changeAdapter);
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
 
     }
 
@@ -71,14 +98,6 @@ public class EditProfileT extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
-        // List View
-        int[] changesImages = {R.drawable.ic_person_black_24dp, R.drawable.ic_wallpaper_black_24dp, R.drawable.logo_description, R.drawable.logo_university, R.drawable.logo_gender};
-        String[] names = {"Name", "Profile Picture", "Description", "University", "Gender"};
-
-        EditProfileT.ChangeAdapter changeAdapter = new EditProfileT.ChangeAdapter(getApplicationContext(), changesImages, names);
-        changeLV.setAdapter(changeAdapter);
-
 
         // Button
         logOutBttn.setOnClickListener(new View.OnClickListener() {

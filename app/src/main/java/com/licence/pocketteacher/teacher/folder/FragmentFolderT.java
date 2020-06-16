@@ -42,25 +42,40 @@ public class FragmentFolderT extends Fragment {
         view = inflater.inflate(R.layout.fragment_folder_t, container, false);
 
         initiateComponents();
-        setListeners();
 
         return view;
     }
 
     private void initiateComponents() {
 
-        // Text View
-        infoTV = view.findViewById(R.id.infoTV);
-        subjectsTV = view.findViewById(R.id.subjectsTV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // List View
-        subjectsLV = view.findViewById(R.id.subjectsLV);
+                // Text View
+                infoTV = view.findViewById(R.id.infoTV);
+                subjectsTV = view.findViewById(R.id.subjectsTV);
 
-        // Card Views
-        addRemoveSubjectC = view.findViewById(R.id.addRemoveSubjectC);
-        removeSubjectC = view.findViewById(R.id.removeSubjectC);
-        addSubjectC = view.findViewById(R.id.addSubjectC);
+                // List View
+                subjectsLV = view.findViewById(R.id.subjectsLV);
 
+                // Card Views
+                addRemoveSubjectC = view.findViewById(R.id.addRemoveSubjectC);
+                removeSubjectC = view.findViewById(R.id.removeSubjectC);
+                addSubjectC = view.findViewById(R.id.addSubjectC);
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
     }
 

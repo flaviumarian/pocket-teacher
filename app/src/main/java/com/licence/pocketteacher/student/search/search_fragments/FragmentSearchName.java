@@ -50,7 +50,6 @@ public class FragmentSearchName extends Fragment {
         setHasOptionsMenu(true);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         initiateComponents();
-        setListeners();
 
         return view;
 
@@ -58,23 +57,42 @@ public class FragmentSearchName extends Fragment {
 
     private void initiateComponents() {
 
-        // Edit Text
-        searchET = view.findViewById(R.id.searchET);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Button
-        cancelBttn = view.findViewById(R.id.cancelBttn);
+                // Edit Text
+                searchET = view.findViewById(R.id.searchET);
 
-        // Text Views
-        subjectTV = view.findViewById(R.id.subjectTV);
-        domainTV = view.findViewById(R.id.domainTV);
-        universityTV = view.findViewById(R.id.universityTV);
+                // Button
+                cancelBttn = view.findViewById(R.id.cancelBttn);
 
-        // Recycler View
-        teachersRV = view.findViewById(R.id.teachersRV);
+                // Text Views
+                subjectTV = view.findViewById(R.id.subjectTV);
+                domainTV = view.findViewById(R.id.domainTV);
+                universityTV = view.findViewById(R.id.universityTV);
 
-        // Array list
-        teachers = HelpingFunctions.getAllTeachers(MainPageS.student.getUsername());
+                // Recycler View
+                teachersRV = view.findViewById(R.id.teachersRV);
 
+                // Array list
+                teachers = HelpingFunctions.getAllTeachers(MainPageS.student.getUsername());
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
     }
 
     private void setListeners() {

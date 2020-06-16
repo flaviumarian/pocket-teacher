@@ -42,7 +42,6 @@ public class FragmentSearchUniversity extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
 
         return view;
 
@@ -50,19 +49,40 @@ public class FragmentSearchUniversity extends Fragment {
 
     private void initiateComponents(){
 
-        // Edit Text
-        searchET = view.findViewById(R.id.searchET);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Button
-        cancelBttn = view.findViewById(R.id.cancelBttn);
+                // Edit Text
+                searchET = view.findViewById(R.id.searchET);
 
-        // Text Views
-        nameTV = view.findViewById(R.id.nameTV);
-        subjectTV = view.findViewById(R.id.subjectTV);
-        domainTV = view.findViewById(R.id.domainTV);
+                // Button
+                cancelBttn = view.findViewById(R.id.cancelBttn);
 
-        // Recycler View
-        teachersRV = view.findViewById(R.id.teachersRV);
+                // Text Views
+                nameTV = view.findViewById(R.id.nameTV);
+                subjectTV = view.findViewById(R.id.subjectTV);
+                domainTV = view.findViewById(R.id.domainTV);
+
+                // Recycler View
+                teachersRV = view.findViewById(R.id.teachersRV);
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
 
     }
 

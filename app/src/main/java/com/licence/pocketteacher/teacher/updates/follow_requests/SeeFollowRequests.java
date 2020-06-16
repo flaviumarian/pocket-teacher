@@ -32,18 +32,35 @@ public class SeeFollowRequests extends AppCompatActivity {
         setContentView(R.layout.activity_see_follow_requests);
 
         initiateComponents();
-        setListeners();
 
     }
 
     private void initiateComponents(){
 
-        // Image View
-        backIV = findViewById(R.id.backIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Recycler View
-        followRequestsRV= findViewById(R.id.followRequestsRV);
+                // Image View
+                backIV = findViewById(R.id.backIV);
 
+                // Recycler View
+                followRequestsRV= findViewById(R.id.followRequestsRV);
+                requestingStudents = HelpingFunctions.getAllFollowingRequestStudents(MainPageT.teacher.getUsername());
+
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setListeners();
+                        }
+                    });
+
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private void setListeners(){
@@ -55,17 +72,15 @@ public class SeeFollowRequests extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        requestingStudents = HelpingFunctions.getAllFollowingRequestStudents(MainPageT.teacher.getUsername());
+
 
         // Recycler View
-
         studentsRecyclerAdapter = new StudentsRecyclerAdapter(requestingStudents, SeeFollowRequests.this, getWindow().getDecorView().findViewById(android.R.id.content));
 
         followRequestsRV.setAdapter(studentsRecyclerAdapter);
         followRequestsRV.setLayoutManager(new LinearLayoutManager(SeeFollowRequests.this));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToApproveOrDenyRequest(studentsRecyclerAdapter));
         itemTouchHelper.attachToRecyclerView(followRequestsRV);
-
 
     }
 
@@ -82,10 +97,27 @@ public class SeeFollowRequests extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        requestingStudents = HelpingFunctions.getAllFollowingRequestStudents(MainPageT.teacher.getUsername());
-        studentsRecyclerAdapter.setStudents(requestingStudents);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        studentsRecyclerAdapter.notifyDataSetChanged();
+                requestingStudents = HelpingFunctions.getAllFollowingRequestStudents(MainPageT.teacher.getUsername());
+
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            studentsRecyclerAdapter.setStudents(requestingStudents);
+                            studentsRecyclerAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
 
     }
 }

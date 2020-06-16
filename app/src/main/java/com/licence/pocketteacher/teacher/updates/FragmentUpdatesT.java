@@ -53,7 +53,6 @@ public class FragmentUpdatesT extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
 
         // Delete all notifications
         NotificationManager manager = (NotificationManager) view.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -69,32 +68,52 @@ public class FragmentUpdatesT extends Fragment {
         profileToolbar.setTitle("");
         ((AppCompatActivity) getActivity()).setSupportActionBar(profileToolbar);
 
-        // Text View
-        infoTV = view.findViewById(R.id.infoTV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Follow Request
-        String numberFollowerRequests = HelpingFunctions.getNumberOfFollowRequests(MainPageT.teacher.getUsername());
+                // Text View
+                infoTV = view.findViewById(R.id.infoTV);
 
-        followRequestsC = view.findViewById(R.id.followRequestsC);
-        followRequestsTV = view.findViewById(R.id.followRequestsTV);
+                // Follow Request
+                final String numberFollowerRequests = HelpingFunctions.getNumberOfFollowRequests(MainPageT.teacher.getUsername());
+                followRequestsC = view.findViewById(R.id.followRequestsC);
+                followRequestsTV = view.findViewById(R.id.followRequestsTV);
 
-        if(numberFollowerRequests.equals("0") || numberFollowerRequests.equals("None")){
-            followRequestsC.setVisibility(View.INVISIBLE);
-        } else{
-            followRequestsTV.setText(numberFollowerRequests);
-        }
+                // Recycler View
+                notificationsRV = view.findViewById(R.id.notificationsRV);
 
-        // Recycler View
-        notificationsRV = view.findViewById(R.id.notificationsRV);
+                // Array List
+                notifications = HelpingFunctions.getAllNotifications(MainPageT.teacher.getUsername());
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            if (numberFollowerRequests.equals("0") || numberFollowerRequests.equals("None")) {
+                                followRequestsC.setVisibility(View.INVISIBLE);
+                            } else {
+                                followRequestsTV.setText(numberFollowerRequests);
+                            }
+
+                            if (notifications.size() == 0) {
+                                infoTV.setVisibility(View.VISIBLE);
+                            } else {
+                                infoTV.setVisibility(View.INVISIBLE);
+                            }
+
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
 
 
-        // Array List
-        notifications = HelpingFunctions.getAllNotifications(MainPageT.teacher.getUsername());
-        if(notifications.size() == 0){
-            infoTV.setVisibility(View.VISIBLE);
-        }else{
-            infoTV.setVisibility(View.INVISIBLE);
-        }
     }
 
     private void setListeners(){

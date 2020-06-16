@@ -43,26 +43,44 @@ public class FragmentSearchSubject extends Fragment {
         view = inflater.inflate(R.layout.fragment_search_teachers_subject, container, false);
 
         initiateComponents();
-        setListeners();
 
         return view;
     }
 
     private void initiateComponents(){
 
-        // Edit Text
-        searchET = view.findViewById(R.id.searchET);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Button
-        cancelBttn = view.findViewById(R.id.cancelBttn);
+                // Edit Text
+                searchET = view.findViewById(R.id.searchET);
 
-        // Text View
-        nameTV = view.findViewById(R.id.nameTV);
-        domainTV = view.findViewById(R.id.domainTV);
-        universityTV = view.findViewById(R.id.universityTV);
+                // Button
+                cancelBttn = view.findViewById(R.id.cancelBttn);
 
-        // Recycler View
-        teachersRV = view.findViewById(R.id.teachersRV);
+                // Text View
+                nameTV = view.findViewById(R.id.nameTV);
+                domainTV = view.findViewById(R.id.domainTV);
+                universityTV = view.findViewById(R.id.universityTV);
+
+                // Recycler View
+                teachersRV = view.findViewById(R.id.teachersRV);
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
     }
 

@@ -46,9 +46,8 @@ public class SeeNotifications extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_see_notifications);
 
-
         initiateComponents();
-        setListeners();
+
     }
 
 
@@ -59,23 +58,39 @@ public class SeeNotifications extends AppCompatActivity {
         subjectToolbar.setTitle("");
         this.setSupportActionBar(subjectToolbar);
 
-        // Image View
-        backIV = findViewById(R.id.backIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Image View
+                backIV = findViewById(R.id.backIV);
 
-        // Text View
-        infoTV = findViewById(R.id.infoTV);
+                // Text View
+                infoTV = findViewById(R.id.infoTV);
 
-        // Recycler View
-        notificationsRV = findViewById(R.id.notificationsRV);
+                // Recycler View
+                notificationsRV = findViewById(R.id.notificationsRV);
 
-        // Array List
-        notifications = HelpingFunctions.getAllNotifications(MainPageS.student.getUsername());
-        if(notifications.size() == 0){
-            infoTV.setVisibility(View.VISIBLE);
-        }else{
-            infoTV.setVisibility(View.INVISIBLE);
-        }
+                // Array List
+                notifications = HelpingFunctions.getAllNotifications(MainPageS.student.getUsername());
 
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(notifications.size() == 0){
+                                infoTV.setVisibility(View.VISIBLE);
+                            }else{
+                                infoTV.setVisibility(View.INVISIBLE);
+                            }
+
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private void setListeners(){
