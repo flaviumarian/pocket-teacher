@@ -30,6 +30,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.licence.pocketteacher.MessageConversations;
+import com.licence.pocketteacher.MessagingPage;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.profile.edit_profile.EditProfileS;
 import com.licence.pocketteacher.LoginPage;
@@ -54,7 +56,7 @@ public class FragmentProfilesS extends Fragment {
 
     private View view;
     private ImageView profilePictureIV;
-    private CardView editProfileC, followersCard;
+    private CardView editProfileC, followersCard, messagesC;
     private TextView nameTV, universityTV, descriptionTV, followingTV, notificationBadgeTV;
     private Dialog aboutPopup, logOutPopup;
     private Button notificationBttn;
@@ -106,6 +108,7 @@ public class FragmentProfilesS extends Fragment {
         // Card View
         editProfileC = view.findViewById(R.id.editProfileC);
         followersCard = view.findViewById(R.id.followersCard);
+        messagesC = view.findViewById(R.id.messagesC);
 
         // Button
         notificationBttn = view.findViewById(R.id.notificationBttn);
@@ -128,6 +131,16 @@ public class FragmentProfilesS extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(view.getContext(), SeeFollowing.class);
                 startActivityForResult(intent, 1);
+                getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
+            }
+        });
+
+        messagesC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(view.getContext(), MessageConversations.class);
+                intent.putExtra("type", 0);
+                startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });

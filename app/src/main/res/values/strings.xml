@@ -129,7 +129,6 @@
     <string name="message_profile_teacher">You currently don\'t have any subjects, \ngo to File Management tab and pick some!</string>
 
 
-
     <!-- Triggering messages -->
     <string name="trigger_login_page_1"><u>Sign up now!</u></string>
     <string name="trigger_login_page_2"><u>Reset it here!</u></string>
@@ -258,6 +257,7 @@
     <string name="toolbar_privacy_policy">Privacy Policy</string>
     <string name="toolbar_follow_requests">Follow Requests</string>
     <string name="toolbar_notifications">NOTIFICATIONS</string>
+    <string name="toolbar_converstions">CONVERSATIONS</string>
 
 
     <!-- Popups -->

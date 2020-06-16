@@ -25,7 +25,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-
+        <activity android:name=".MessageConversations"></activity>
+        <activity
+            android:name=".MessagingPage"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".student.home.SeeStudentStudent"
             android:screenOrientation="portrait"
@@ -282,8 +286,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/profile_image_path" />
         </provider>
-
-
     </application>
 
 </manifest>

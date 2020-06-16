@@ -38,18 +38,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:id="@+id/profileImageLayout"
+
+            <FrameLayout
+                android:id="@+id/frameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:paddingTop="10dp"
+                android:paddingBottom="20dp"
+                android:layout_marginTop="40dp">
 
                 <!-- Profile image -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="150dp"
                     android:layout_height="150dp"
+                    android:layout_gravity="center_horizontal"
                     app:cardBackgroundColor="@color/lightGrey"
                     app:cardCornerRadius="75dp"
                     app:cardElevation="10dp">
@@ -68,8 +70,9 @@
                     android:id="@+id/editProfileC"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_marginStart="-40dp"
-                    android:layout_marginTop="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="100dp"
+                    android:layout_marginStart="60dp"
                     app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="25dp"
                     app:cardElevation="10dp">
@@ -84,16 +87,37 @@
 
                 </androidx.cardview.widget.CardView>
 
-            </LinearLayout>
+                <!-- Messages -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/messagesC"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="100dp"
+                    android:layout_marginEnd="60dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="25dp"
+                    app:cardElevation="10dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/description_profile_edit_pencil"
+                        android:src="@drawable/logo_message" />
+
+                </androidx.cardview.widget.CardView>
+
+            </FrameLayout>
+
 
             <!-- Name -->
             <TextView
                 android:id="@+id/nameTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/profileImageLayout"
+                android:layout_below="@id/frameLayout"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
                 android:fontFamily="@font/open_sans_semibold"
                 android:textColor="@color/white"
                 android:textSize="22sp" />

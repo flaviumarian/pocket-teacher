@@ -17,5 +17,7 @@
     <color name="green">#69E371</color>
     <color name="listSeparatorGrey">#AAAFB1</color>
     <color name="yellow">#F1D003</color>
+    <color name="receiver_text_color">#1BB3C4</color>
+    <color name="sender_text_color">#A1AAB5</color>
 
 </resources>

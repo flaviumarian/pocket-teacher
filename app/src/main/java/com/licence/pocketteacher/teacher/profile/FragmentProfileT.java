@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Message;
 import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.AlignmentSpan;
@@ -31,6 +32,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.licence.pocketteacher.MessageConversations;
+import com.licence.pocketteacher.MessagingPage;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.aiding_classes.Subject;
 import com.licence.pocketteacher.teacher.profile.edit_profile.EditProfileT;
@@ -57,7 +60,7 @@ public class FragmentProfileT extends Fragment {
 
     private View view;
     private ImageView profilePictureIV;
-    private CardView editProfileC, followersCard;
+    private CardView editProfileC, followersCard, messagesC;
     private TextView nameTV, universityTV, descriptionTV, followersTV;
     private Dialog aboutPopup, logOutPopup;
     private ListView subjectsLV;
@@ -100,11 +103,10 @@ public class FragmentProfileT extends Fragment {
         // Card View
         editProfileC = view.findViewById(R.id.editProfileC);
         followersCard = view.findViewById(R.id.followersCard);
+        messagesC = view.findViewById(R.id.messagesC);
     }
 
     private void setListeners(){
-
-
 
         // Card View
         editProfileC.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +122,16 @@ public class FragmentProfileT extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(view.getContext(), SeeFollowers.class);
                 startActivityForResult(intent, 1);
+                getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
+            }
+        });
+
+        messagesC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(view.getContext(), MessageConversations.class);
+                intent.putExtra("type", 1);
+                startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });

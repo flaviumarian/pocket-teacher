@@ -11,13 +11,14 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.aiding_classes.Comment;
+import com.licence.pocketteacher.aiding_classes.Conversation;
 import com.licence.pocketteacher.aiding_classes.Post;
 import com.licence.pocketteacher.aiding_classes.Student;
 import com.licence.pocketteacher.aiding_classes.Subject;
 import com.licence.pocketteacher.aiding_classes.Teacher;
 import com.licence.pocketteacher.aiding_classes.Notification;
+import com.licence.pocketteacher.aiding_classes.TextMessage;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,6 +32,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -51,6 +53,8 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+
 
 
 public class HelpingFunctions {
@@ -113,11 +117,10 @@ public class HelpingFunctions {
 
         try {
             return result.equals("Email exists.");
-        }catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
-
 
 
     /*                                    *** T O O L S ***                                       */
@@ -257,7 +260,7 @@ public class HelpingFunctions {
         return frameForPHPscriptUsageWithSixParameters("http://pocketteacher.ro/register_user_facebook_google.php", username, "username", firstName, "first_name", lastName, "last_name", email, "email", password, "password", verificationCode, "verification_code");
     }
 
-    public static String requestVerificationCode(String email, String details){
+    public static String requestVerificationCode(String email, String details) {
         return frameForPHPscriptUsageWithTwoParameters("http://pocketteacher.ro/request_verification_code.php", email, "email", details, "details");
     }
 
@@ -332,7 +335,6 @@ public class HelpingFunctions {
         }
 
 
-
         return information;
     }
 
@@ -389,6 +391,214 @@ public class HelpingFunctions {
 
 
         return information;
+    }
+
+    public static ArrayList<Conversation> getAllConversations(String username){
+        String jsonResult = frameForPHPscriptUsageWithOneParameter("http://pocketteacher.ro/getters/get_all_active_conversations.php", username, "username");
+
+
+        if(jsonResult.equals("Error occurred.")){
+            return new ArrayList<>();
+        }
+
+
+        JSONArray jsonArray;
+        ArrayList<String> usernames = new ArrayList<>();
+        ArrayList<String> images = new ArrayList<>();
+        ArrayList<String> genders = new ArrayList<>();
+        ArrayList<String> lastMessages = new ArrayList<>();
+        ArrayList<String> dates = new ArrayList<>();
+
+        String user, image, gender;
+
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResult);
+            int count = 0;
+            jsonArray = jsonObject.getJSONArray("data");
+
+
+            while (count < jsonArray.length()) {
+                JSONObject jo = jsonArray.getJSONObject(count);
+
+
+                user = jo.getString("users");
+                usernames.add(user);
+                image = jo.getString("image");
+                images.add(image);
+                gender = jo.getString("gender");
+                genders.add(gender);
+
+                String newJson = frameForPHPscriptUsageWithTwoParameters("http://pocketteacher.ro/getters/get_last_message.php", username, "username_sender", user, "username_receiver");
+
+                if(newJson.equals("Error occurred.")){
+                    return new ArrayList<>();
+                }
+
+                JSONObject jsonObject1 = new JSONObject(newJson);
+                JSONArray jsonArray1 = jsonObject1.getJSONArray("data");
+                lastMessages.add(jsonArray1.getJSONObject(0).getString("message"));
+                dates.add(jsonArray1.getJSONObject(0).getString("created_at"));
+
+
+                count++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<Conversation> conversations = new ArrayList<>();
+
+        for(int i=0; i < usernames.size(); i++){
+            conversations.add(new Conversation(usernames.get(i), images.get(i), genders.get(i), lastMessages.get(i), dates.get(i)));
+
+        }
+
+        return conversations;
+    }
+
+    public static ArrayList<String> getLastMessage(String usernameSender, String usernameReceiver){
+        String newJson = frameForPHPscriptUsageWithTwoParameters("http://pocketteacher.ro/getters/get_last_message.php", usernameSender, "username_sender", usernameReceiver, "username_receiver");
+
+        if(newJson.equals("Error occurred.")){
+            return new ArrayList<>();
+        }
+
+        ArrayList<String> data = new ArrayList<>();
+
+        try{
+            JSONObject jsonObject = new JSONObject(newJson);
+            JSONArray jsonArray = jsonObject.getJSONArray("data");
+            data.add(jsonArray.getJSONObject(0).getString("message"));
+            data.add(jsonArray.getJSONObject(0).getString("created_at"));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return data;
+    }
+
+    public static ArrayList<TextMessage> getAllMessages(String usernameSender, String usernameReceiver){
+        String jsonResult = frameForPHPscriptUsageWithTwoParameters("http://pocketteacher.ro/getters/get_all_messages.php", usernameSender, "username_sender", usernameReceiver, "username_receiver");
+
+        if(jsonResult.equals("Error occurred.")){
+            return new ArrayList<>();
+        }
+
+
+        JSONArray jsonArray;
+        ArrayList<String> usernames = new ArrayList<>();
+        ArrayList<String> messages = new ArrayList<>();
+        ArrayList<String> dates = new ArrayList<>();
+        ArrayList<Integer> types = new ArrayList<>();
+        String username, message, date;
+        int senderType = Integer.parseInt(getAccountType(usernameSender));
+        int receiverType = Integer.parseInt(getAccountType(usernameReceiver));
+        int type;
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResult);
+            int count = 0;
+            jsonArray = jsonObject.getJSONArray("data");
+
+            while (count < jsonArray.length()) {
+                JSONObject jo = jsonArray.getJSONObject(count);
+
+                username = jo.getString("username");
+                usernames.add(username);
+                if(username.equals(usernameSender)){
+                    type = senderType;
+                }else{
+                    type = receiverType;
+                }
+                types.add(type);
+                message = jo.getString("message");
+                messages.add(message);
+                date = jo.getString("created_at");
+                dates.add(date);
+
+                count++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        ArrayList<TextMessage> completeMessages = new ArrayList<>();
+
+        for(int i= usernames.size() - 1; i >= 0 ; i--){
+            completeMessages.add(new TextMessage(usernames.get(i), messages.get(i), dates.get(i), types.get(i)));
+        }
+
+        return completeMessages;
+    }
+
+    public static ArrayList<TextMessage> getAllNewMessages(String usernameSender, String usernameReceiver, String limit){
+        String jsonResult = frameForPHPscriptUsageWithThreeParameters("http://pocketteacher.ro/getters/get_all_new_messages.php", usernameSender, "username_sender", usernameReceiver, "username_receiver", limit, "limit");
+
+
+        if(jsonResult.equals("Error occurred.")){
+            return new ArrayList<>();
+        }
+
+
+        JSONArray jsonArray;
+        ArrayList<String> usernames = new ArrayList<>();
+        ArrayList<String> messages = new ArrayList<>();
+        ArrayList<String> dates = new ArrayList<>();
+        ArrayList<Integer> types = new ArrayList<>();
+        String username, message, date;
+        int senderType = Integer.parseInt(getAccountType(usernameSender));
+        int receiverType = Integer.parseInt(getAccountType(usernameReceiver));
+        int type;
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResult);
+            int count = 0;
+            jsonArray = jsonObject.getJSONArray("data");
+
+            while (count < jsonArray.length()) {
+                JSONObject jo = jsonArray.getJSONObject(count);
+
+                username = jo.getString("username");
+                usernames.add(username);
+                if(username.equals(usernameSender)){
+                    type = senderType;
+                }else{
+                    type = receiverType;
+                }
+                types.add(type);
+                message = jo.getString("message");
+                messages.add(message);
+                date = jo.getString("created_at");
+                dates.add(date);
+
+                count++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        ArrayList<TextMessage> completeMessages = new ArrayList<>();
+
+        for(int i=usernames.size() -1; i >= 0; i--){
+            completeMessages.add(new TextMessage(usernames.get(i), messages.get(i), dates.get(i), types.get(i)));
+        }
+
+        return completeMessages;
+    }
+
+    public static int getNumberOfMessages (String usernameSender, String usernameReceiver){
+        String result  = frameForPHPscriptUsageWithTwoParameters("http://pocketteacher.ro/getters/get_number_of_messages.php", usernameSender, "username_sender", usernameReceiver, "username_receiver");
+        int number = -1;
+
+        try{
+          number = Integer.parseInt(result);
+          return number;
+        }catch(Exception e){
+            return number;
+        }
     }
 
     public static String postFile(String email, String subject, String folder, String title, String description, String filePath) {
@@ -455,32 +665,36 @@ public class HelpingFunctions {
         return frameForPHPscriptUsageWithTwoParameters("http://pocketteacher.ro/block_student_cancel.php", usernameTeacher, "username_teacher", usernameStudent, "username_student");
     }
 
-    public static String registerToken(String token, String username){
+    public static String registerToken(String token, String username) {
         return frameForPHPscriptUsageWithTwoParameters("http://pocketteacher.ro/register_token.php", token, "token", username, "username");
     }
 
-    public static String deleteToken(String token, String username){
+    public static String deleteToken(String token, String username) {
         return frameForPHPscriptUsageWithTwoParameters("http://pocketteacher.ro/delete_token.php", token, "token", username, "username");
     }
 
-    public static String sendNotification(String username, String message){
+    public static String sendNotification(String username, String message) {
         return frameForPHPscriptUsageWithTwoParameters("http://pocketteacher.ro/send_notification.php", username, "username", message, "message");
     }
 
-    public static String sendNotificationToAllStudentsApproved(String username, String message){
+    public static String sendNotificationToAllStudentsApproved(String username, String message) {
         return frameForPHPscriptUsageWithTwoParameters("http://pocketteacher.ro/send_notification_approve_all_requests.php", username, "username", message, "message");
     }
 
-    public static String sendNotificationTeacherCommented(String username, String subject, String folder, String title, String message){
+    public static String sendNotificationTeacherCommented(String username, String subject, String folder, String title, String message) {
         return frameForPHPscriptUsageWithFiveParameters("http://pocketteacher.ro/send_notification_teacher_comment.php", username, "username", subject, "subject", folder, "folder", title, "title", message, "message");
     }
 
-    public static String sendNotificationStudentCommented(String username, String usernamePoster, String subject, String folder, String title, String message){
+    public static String sendNotificationStudentCommented(String username, String usernamePoster, String subject, String folder, String title, String message) {
         return frameForPHPscriptUsageWithSixParameters("http://pocketteacher.ro/send_notification_student_comment.php", username, "username", usernamePoster, "username_poster", subject, "subject", folder, "folder", title, "title", message, "message");
     }
 
-    public static String deleteAccount(String username){
+    public static String deleteAccount(String username) {
         return frameForPHPscriptUsageWithOneParameter("http://pocketteacher.ro/delete_account.php", username, "username");
+    }
+
+    public static String sendMessage(String usernameSender, String usernameReceiver, String message){
+        return frameForPHPscriptUsageWithThreeParameters("http://pocketteacher.ro/send_message.php", usernameSender, "username_sender", usernameReceiver, "username_receiver", message, "message");
     }
 
 
@@ -538,13 +752,15 @@ public class HelpingFunctions {
         return frameForPHPscriptUsageWithOneParameter("http://pocketteacher.ro/deleters/remove_notifications.php", username, "username");
     }
 
-    public static String removeComment(String comment, String usernamePoster, String subject, String folder, String title, String timestamp, String usernameSender){
+    public static String removeComment(String comment, String usernamePoster, String subject, String folder, String title, String timestamp, String usernameSender) {
         return frameForPHPscriptUsageWithSevenParameters("http://pocketteacher.ro/deleters/remove_comment.php", comment, "comment", usernamePoster, "username_file_poster", subject, "subject", folder, "folder", title, "title", timestamp, "timestamp", usernameSender, "username_sender");
     }
 
     public static String deleteProfileImageBasedOnUsername(String username) {
         return frameForPHPscriptUsageWithOneParameter("http://pocketteacher.ro/deleters/using_username_delete_profile_picture.php", username, "username");
     }
+
+
 
 
     /*                                  *** Getter Scripts ***                                    */
@@ -1068,64 +1284,64 @@ public class HelpingFunctions {
     }
 
     public static ArrayList<Student> getAllFollowingRequestStudents(String usernameTeacher) {
-     String jsonResult = frameForPHPscriptUsageWithOneParameter("http://pocketteacher.ro/getters/get_all_follow_requesting_students.php", usernameTeacher, "username");
+        String jsonResult = frameForPHPscriptUsageWithOneParameter("http://pocketteacher.ro/getters/get_all_follow_requesting_students.php", usernameTeacher, "username");
 
-     ArrayList<String> usernames = new ArrayList<>();
-     ArrayList<String> firstNames = new ArrayList<>();
-     ArrayList<String> lastNames = new ArrayList<>();
-     ArrayList<String> genders = new ArrayList<>();
-     ArrayList<String> universities = new ArrayList<>();
-     ArrayList<String> images = new ArrayList<>();
-
-
-     JSONArray jsonArray;
-     String username, firstName, lastName, gender, university, image;
-
-     try {
-         JSONObject jsonObject = new JSONObject(jsonResult);
-         int count = 0;
-         jsonArray = jsonObject.getJSONArray("data");
+        ArrayList<String> usernames = new ArrayList<>();
+        ArrayList<String> firstNames = new ArrayList<>();
+        ArrayList<String> lastNames = new ArrayList<>();
+        ArrayList<String> genders = new ArrayList<>();
+        ArrayList<String> universities = new ArrayList<>();
+        ArrayList<String> images = new ArrayList<>();
 
 
-         while (count < jsonArray.length()) {
-             JSONObject jo = jsonArray.getJSONObject(count);
+        JSONArray jsonArray;
+        String username, firstName, lastName, gender, university, image;
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResult);
+            int count = 0;
+            jsonArray = jsonObject.getJSONArray("data");
 
 
-             username = jo.getString("username");
-             usernames.add(username);
-             firstName = jo.getString("first_name");
-             if (firstName.equals("null")) {
-                 firstName = "";
-             }
-             firstNames.add(firstName);
-             lastName = jo.getString("last_name");
-             if (lastName.equals("null")) {
-                 lastName = "";
-             }
-             lastNames.add(lastName);
-             gender = jo.getString("gender");
-             genders.add(gender);
-             university = jo.getString("university");
-             if (university.equals("null")) {
-                 university = "";
-             }
-             universities.add(university);
-             image = jo.getString("image");
-             images.add(image);
+            while (count < jsonArray.length()) {
+                JSONObject jo = jsonArray.getJSONObject(count);
 
-             count++;
-         }
-     } catch (Exception e) {
-         e.printStackTrace();
-     }
 
-     ArrayList<Student> students = new ArrayList<>();
-     for (int i = 0; i < usernames.size(); i++) {
-         students.add(new Student(usernames.get(i), firstNames.get(i), lastNames.get(i), genders.get(i), universities.get(i), images.get(i)));
-     }
+                username = jo.getString("username");
+                usernames.add(username);
+                firstName = jo.getString("first_name");
+                if (firstName.equals("null")) {
+                    firstName = "";
+                }
+                firstNames.add(firstName);
+                lastName = jo.getString("last_name");
+                if (lastName.equals("null")) {
+                    lastName = "";
+                }
+                lastNames.add(lastName);
+                gender = jo.getString("gender");
+                genders.add(gender);
+                university = jo.getString("university");
+                if (university.equals("null")) {
+                    university = "";
+                }
+                universities.add(university);
+                image = jo.getString("image");
+                images.add(image);
 
-     return students;
- }
+                count++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<Student> students = new ArrayList<>();
+        for (int i = 0; i < usernames.size(); i++) {
+            students.add(new Student(usernames.get(i), firstNames.get(i), lastNames.get(i), genders.get(i), universities.get(i), images.get(i)));
+        }
+
+        return students;
+    }
 
     public static ArrayList<Student> getAllBlockedStudents(String usernameTeacher) {
         String jsonResult = frameForPHPscriptUsageWithOneParameter("http://pocketteacher.ro/getters/get_all_blocked_students.php", usernameTeacher, "username");
@@ -1481,17 +1697,16 @@ public class HelpingFunctions {
         }
 
 
-
         ArrayList<Comment> comments = new ArrayList<>();
 
         for (int i = 0; i < usernames.size(); i++) {
-            comments.add(new Comment(types.get(i), usernames.get(i), imagesBase64s.get(i), genders.get(i), commentTexts.get(i), timeSinces.get(i), timestamps.get(i),numberLikes.get(i), likedStatuses.get(i)));
+            comments.add(new Comment(types.get(i), usernames.get(i), imagesBase64s.get(i), genders.get(i), commentTexts.get(i), timeSinces.get(i), timestamps.get(i), numberLikes.get(i), likedStatuses.get(i)));
         }
 
         return comments;
     }
 
-    public static ArrayList<Post> getAllPosts(String usernameStudent){
+    public static ArrayList<Post> getAllPosts(String usernameStudent) {
         String jsonResult = frameForPHPscriptUsageWithOneParameter("http://pocketteacher.ro/getters/get_all_posts_for_user.php", usernameStudent, "username");
 
 
@@ -1572,9 +1787,9 @@ public class HelpingFunctions {
 
         for (int i = 0; i < usernames.size(); i++) {
             String name;
-            if(firstNames.get(i).equals("null") || lastNames.get(i).equals("null")){
+            if (firstNames.get(i).equals("null") || lastNames.get(i).equals("null")) {
                 name = "Unknown Name";
-            } else{
+            } else {
                 name = firstNames.get(i) + " " + lastNames.get(i);
             }
             posts.add(new Post(usernames.get(i), images.get(i), genders.get(i), name, timestamps.get(i), titles.get(i), subjects.get(i), folders.get(i), descriptions.get(i), likes.get(i), comments.get(i), likedStatuses.get(i), fileUrls.get(i)));
@@ -1607,7 +1822,7 @@ public class HelpingFunctions {
             if (jsonResult.equals("")) {
                 return new ArrayList<>();
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1700,7 +1915,7 @@ public class HelpingFunctions {
         return notifications;
     }
 
-    public static String getNumberOfNotifications (String username){
+    public static String getNumberOfNotifications(String username) {
         return frameForPHPscriptUsageWithOneParameter("http://pocketteacher.ro/getters/get_number_of_notifications.php", username, "username");
     }
 
@@ -1708,7 +1923,7 @@ public class HelpingFunctions {
         return frameForPHPscriptUsageWithFiveParameters("http://pocketteacher.ro/getters/get_liked_status.php", usernameWatcher, "username_watcher", usernamePoster, "username_poster", subject, "subject", folder, "folder", title, "title");
     }
 
-    public static String getCommentTimestamp(String comment, String usernameFilePoster, String subject, String folder, String title, String usernameSender){
+    public static String getCommentTimestamp(String comment, String usernameFilePoster, String subject, String folder, String title, String usernameSender) {
         return frameForPHPscriptUsageWithSixParameters("http://pocketteacher.ro/getters/get_comment_timestamp.php", comment, "comment", usernameFilePoster, "username_file_poster", subject, "subject", folder, "folder", title, "title", usernameSender, "username_sender");
     }
 
@@ -1768,6 +1983,9 @@ public class HelpingFunctions {
         return frameForPHPscriptUsageWithOneParameter("http://pocketteacher.ro/getters/using_email_get_password.php", email, "email");
     }
 
+    public static String getAccountType(String username){
+        return frameForPHPscriptUsageWithOneParameter("http://pocketteacher.ro/getters/get_account_type.php", username, "username");
+    }
 
 
     /*                                  *** Setter Scripts ***                                    */
