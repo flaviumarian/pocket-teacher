@@ -155,6 +155,8 @@ public class FragmentFolderT extends Fragment {
             }
         });
 
+        view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+
     }
 
 

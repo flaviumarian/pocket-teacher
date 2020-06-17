@@ -152,6 +152,8 @@ public class FilesPage extends AppCompatActivity {
                             filesLV.setAdapter(filesAdapter);
                             HelpingFunctions.setListViewHeightBasedOnChildren(filesLV);
 
+                            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+
                         }
                     });
                 }catch(Exception e){

@@ -94,6 +94,7 @@ public class FragmentUpdatesT extends Fragment {
                             if (numberFollowerRequests.equals("0") || numberFollowerRequests.equals("None")) {
                                 followRequestsC.setVisibility(View.INVISIBLE);
                             } else {
+                                followRequestsC.setVisibility(View.VISIBLE);
                                 followRequestsTV.setText(numberFollowerRequests);
                             }
 
@@ -133,6 +134,8 @@ public class FragmentUpdatesT extends Fragment {
         notificationsRecyclerAdapter = new NotificationsRecyclerAdapter(notifications, view.getContext());
         notificationsRV.setAdapter(notificationsRecyclerAdapter);
         notificationsRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 
 

@@ -37,11 +37,24 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
+        android:visibility="invisible"
         android:fontFamily="@font/open_sans_bold"
         android:textAlignment="center"
         android:text="@string/message_folder_fragment_2"
         android:textColor="@color/white"
         android:textSize="18sp" />
+
+    <RelativeLayout
+        android:id="@+id/loadingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center" >
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+    </RelativeLayout>
 
     <!-- Main workspace area -->
     <androidx.core.widget.NestedScrollView

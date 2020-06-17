@@ -113,6 +113,8 @@ public class FragmentSearchS extends Fragment {
 
         teachersRV.setAdapter(teachersRecyclerAdapter);
         teachersRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 
     @Override
