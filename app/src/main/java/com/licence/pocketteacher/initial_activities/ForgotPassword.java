@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
@@ -73,6 +74,11 @@ public class ForgotPassword extends AppCompatActivity {
         sendBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 if (HelpingFunctions.isEditTextEmpty(emailET)) {
                     emailET.setError("Insert email.");

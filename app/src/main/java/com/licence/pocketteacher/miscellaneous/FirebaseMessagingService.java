@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -64,13 +65,15 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setColor(getResources().getColor(R.color.lightGrey))
                 .setContentTitle(sb)
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setGroup(GROUP_NOTIFICATIONS)
                 .setContentIntent(pendingIntent);
+
 
         notificationManager.notify(NOTIFICATION_ID , notificationBuilder.build());
     }

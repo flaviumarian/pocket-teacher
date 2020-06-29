@@ -81,45 +81,48 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
 
     private void initiateComponents(){
 
-        // Image View
-        backIV = findViewById(R.id.backIV);
-        sendCommentIV = findViewById(R.id.sendCommentIV);
-
-        // Edit Text
-        commentET = findViewById(R.id.commentET);
-
-        // File name toolbar
-        TextView fileNameTV = findViewById(R.id.fileNameTV);
-        fileNameTV.setText(fileName);
-
         new Thread(new Runnable() {
             @Override
             public void run() {
+
+                // Image View
+                backIV = findViewById(R.id.backIV);
+                sendCommentIV = findViewById(R.id.sendCommentIV);
+
+                // Edit Text
+                commentET = findViewById(R.id.commentET);
+
+                // File name toolbar
+                final TextView fileNameTV = findViewById(R.id.fileNameTV);
 
                 // teacher profile image
                 profileImageIV = findViewById(R.id.profileImageIV);
                 final String image = HelpingFunctions.getProfileImageBasedOnUsername(teacherUsername);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(image.equals("")){
-                            switch (HelpingFunctions.getGenderBasedOnUsername(teacherUsername)) {
-                                case "0":
-                                    profileImageIV.setImageResource(R.drawable.profile_picture_male);
-                                    break;
-                                case "1":
-                                    profileImageIV.setImageResource(R.drawable.profile_picture_female);
-                                    break;
-                                case "2":
-                                    profileImageIV.setImageResource(0);
-                                    break;
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (image.equals("")) {
+                                switch (HelpingFunctions.getGenderBasedOnUsername(teacherUsername)) {
+                                    case "0":
+                                        profileImageIV.setImageResource(R.drawable.profile_picture_male);
+                                        break;
+                                    case "1":
+                                        profileImageIV.setImageResource(R.drawable.profile_picture_female);
+                                        break;
+                                    case "2":
+                                        profileImageIV.setImageResource(0);
+                                        break;
+                                }
+                            } else {
+                                profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(image));
                             }
-                        }else{
-                            profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(image));
                         }
-                    }
-                });
+                    });
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
 
                 // teacher name
                 teacherNameTV = findViewById(R.id.teacherNameTV);
@@ -129,6 +132,8 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        fileNameTV.setText(fileName);
+
                         if(teacherFirstName.equals("") || teacherLastName.equals("")){
                             teacherNameTV.setText(R.string.message_unknown_name);
                         }else{
@@ -157,14 +162,18 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
                 downloadTV = findViewById(R.id.downloadTV);
                 fileUrl = fileInformation.get(0);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(fileUrl.equals("null")){
-                            downloadTV.setVisibility(View.INVISIBLE);
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (fileUrl.equals("null")) {
+                                downloadTV.setVisibility(View.INVISIBLE);
+                            }
                         }
-                    }
-                });
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
 
 
                 // Time
@@ -191,27 +200,31 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
                 // Comments number
                 commentsTV = findViewById(R.id.commentsTV);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        timeTV.setText(fileInformation.get(3));
-                        titleTV.setText(fileInformation.get(1));
-                        subjectTV.setText(subject);
-                        folderTV.setText(folder);
-                        descriptionTV.setText(fileInformation.get(2));
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            timeTV.setText(fileInformation.get(3));
+                            titleTV.setText(fileInformation.get(1));
+                            subjectTV.setText(subject);
+                            folderTV.setText(folder);
+                            descriptionTV.setText(fileInformation.get(2));
 
-                        if(likedStatus.equals("1")){
-                            likesIV.setImageResource(R.drawable.ic_favorite_red_24dp);
-                            likesIV.setTag("1");
-                        } else{
-                            likesIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                            likesIV.setTag("0");
+                            if (likedStatus.equals("1")) {
+                                likesIV.setImageResource(R.drawable.ic_favorite_red_24dp);
+                                likesIV.setTag("1");
+                            } else {
+                                likesIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                                likesIV.setTag("0");
+                            }
+
+                            likesTV.setText(likesNumber);
+                            commentsTV.setText(commentsNumber);
                         }
-
-                        likesTV.setText(likesNumber);
-                        commentsTV.setText(commentsNumber);
-                    }
-                });
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
 
                 // Recycler View
                 commentsRV = findViewById(R.id.commentsRV);
@@ -228,19 +241,25 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
                 infoTV = findViewById(R.id.infoTV);
                 comments = HelpingFunctions.getAllCommentsForPost(teacherUsername, MainPageS.student.getUsername(), subject, folder, fileName);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(comments.size() > 0){
-                            infoTV.setVisibility(View.INVISIBLE);
-                        }else{
-                            infoTV.setVisibility(View.VISIBLE);
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (comments.size() > 0) {
+                                infoTV.setVisibility(View.INVISIBLE);
+                            } else {
+                                infoTV.setVisibility(View.VISIBLE);
+                            }
+
+                            setListeners();
+
                         }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
 
-                    }
-                });
 
-                setListeners();
             }
         }).start();
 
@@ -255,6 +274,11 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
         downloadTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 try {
                     DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
@@ -276,6 +300,12 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
         teacherNameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(getApplicationContext(), SeeTeacher.class);
                 intent.putExtra("username", teacherUsername);
                 v.getContext().startActivity(intent);
@@ -286,6 +316,12 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
         teacherUsernameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(getApplicationContext(), SeeTeacher.class);
                 intent.putExtra("username", teacherUsername);
                 v.getContext().startActivity(intent);
@@ -305,6 +341,12 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
         profileImageIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(getApplicationContext(), SeeTeacher.class);
                 intent.putExtra("username", teacherUsername);
                 v.getContext().startActivity(intent);
@@ -315,6 +357,12 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
         likesIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if(likesIV.getTag().equals("1")){
                     HelpingFunctions.unlikePost(teacherUsername, subject, folder, fileName, MainPageS.student.getUsername());
                     likesIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
@@ -347,6 +395,12 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
         sendCommentIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if(HelpingFunctions.isEditTextEmpty(commentET)){
                     return;
                 }
@@ -430,18 +484,21 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
 
         // Recycler View
         commentsRecyclerAdapter = new CommentsRecyclerAdapter(comments, getApplicationContext());
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                commentsRV.setAdapter(commentsRecyclerAdapter);
-                commentsRV.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-            }
-        });
+
+        commentsRV.setAdapter(commentsRecyclerAdapter);
+        commentsRV.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
 
     }
 
     @Override
     public void onButtonClicked(String text, int position) {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if(text.equals("Delete comment.")) {
             commentsRecyclerAdapter.deleteComment(position);
 
@@ -517,6 +574,12 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
             holder.profileImageIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if(comment.getType().equals("0")){
                         if(comment.getUsername().equals(MainPageS.student.getUsername())){
                             return;
@@ -538,6 +601,12 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
             holder.usernameTV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if(comment.getType().equals("0")){
                         if(comment.getUsername().equals(MainPageS.student.getUsername())){
                             return;
@@ -559,6 +628,12 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
             holder.likeIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if(holder.likeIV.getTag().equals("0")){
                         String result = HelpingFunctions.likeComment(comment.getComment(), teacherUsername, subject, folder, fileName, comment.getTimestamp(), MainPageS.student.getUsername(), comment.getUsername());
                         if(result.equals("Data inserted.")){
@@ -596,6 +671,11 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
             holder.relativeLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+
+                    if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
 
                     if(comment.getUsername().equals(MainPageS.student.getUsername())){
                         // apare optiune sa sterg comentariul
@@ -659,6 +739,11 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         finish();
         overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);

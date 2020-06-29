@@ -19,12 +19,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.messaging.MessagingPage;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.MainPageS;
 import com.licence.pocketteacher.aiding_classes.Teacher;
+import com.licence.pocketteacher.teacher.MainPageT;
 
 import java.util.ArrayList;
 
@@ -34,7 +37,7 @@ public class SeeTeacher extends AppCompatActivity {
     private TextView followersTV;
     private ListView subjectsLV;
     private SubjectsAdapter subjectsAdapter;
-    private CardView followC;
+    private CardView followC, messagesC;
     private Dialog reportPopup, reportSentPopup, unfollowDialog;
 
     private String username;
@@ -48,7 +51,6 @@ public class SeeTeacher extends AppCompatActivity {
 
         getUsernameFromIntent();
         initiateComponents();
-        setListeners();
 
     }
 
@@ -62,95 +64,126 @@ public class SeeTeacher extends AppCompatActivity {
 
     private void initiateComponents() {
 
-        // Back button
-        backIV = findViewById(R.id.backIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Report Button
-        reportIV = findViewById(R.id.reportIV);
+                // Back button
+                backIV = findViewById(R.id.backIV);
 
-        // Teacher
-        teacher = HelpingFunctions.getDisplayedTeacher(username, MainPageS.student.getUsername());
+                // Report Button
+                reportIV = findViewById(R.id.reportIV);
 
-        // Toolbar username
-        TextView toolbarUsernameTV = findViewById(R.id.toolbarUsernameTV);
-        toolbarUsernameTV.setText(username);
+                // Teacher
+                teacher = HelpingFunctions.getDisplayedTeacher(username, MainPageS.student.getUsername());
 
-        // Profile picture
-        ImageView profilePictureIV = findViewById(R.id.profilePictureIV);
-        if (teacher.getProfileImageBase64().equals("null")) {
-            switch (teacher.getGender()) {
-                case "0":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_male);
-                    break;
-                case "1":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_female);
-                    break;
-                case "2":
-                    profilePictureIV.setImageResource(0);
-                    break;
+                // Toolbar username
+                final TextView toolbarUsernameTV = findViewById(R.id.toolbarUsernameTV);
+
+                // Profile picture
+                final ImageView profilePictureIV = findViewById(R.id.profilePictureIV);
+
+                // Name
+                final TextView nameTV = findViewById(R.id.nameTV);
+
+                // University
+                final TextView universityTV = findViewById(R.id.universityTV);
+
+                // Follow/unfollow status
+                followC = findViewById(R.id.followC);
+                followIV = findViewById(R.id.followIV);
+
+                // Followers
+                followersTV = findViewById(R.id.followersTV);
+
+                // Description
+                final TextView descriptionTV = findViewById(R.id.descriptionTV);
+
+                // List View
+                subjectsLV = findViewById(R.id.subjectsLV);
+
+                // Message
+                messagesC = findViewById(R.id.messagesC);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        // Toolbar username
+                        toolbarUsernameTV.setText(username);
+
+                        // Profile picture
+                        if (teacher.getProfileImageBase64().equals("null")) {
+                            switch (teacher.getGender()) {
+                                case "0":
+                                    profilePictureIV.setImageResource(R.drawable.profile_picture_male);
+                                    break;
+                                case "1":
+                                    profilePictureIV.setImageResource(R.drawable.profile_picture_female);
+                                    break;
+                                case "2":
+                                    profilePictureIV.setImageResource(0);
+                                    break;
+                            }
+                        } else {
+                            profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(teacher.getProfileImageBase64()));
+                        }
+
+                        // Name
+                        if(teacher.getFirstName().equals("null") || teacher.getLastName().equals("null")){
+                            nameTV.setText(R.string.message_unknown_name);
+                        }else{
+                            String name = teacher.getFirstName() + " " + teacher.getLastName();
+                            nameTV.setText(name);
+                        }
+
+                        // University
+                        if(!teacher.getUniversity().equals("null")){
+                            universityTV.setText(teacher.getUniversity());
+                        }
+
+                        // Follow/unfollow status
+                        if (teacher.getFollowingStatus().equals("1")) {
+                            // following
+                            followC.setCardBackgroundColor(getResources().getColor(R.color.red));
+                            followIV.setImageResource(R.drawable.logo_minus);
+                        } else if (teacher.getFollowingRequestStatus().equals("1")) {
+                            // requested
+                            followC.setCardBackgroundColor(getResources().getColor(R.color.yellow));
+                            followIV.setImageResource(R.drawable.logo_dots);
+                        } else {
+                            // not following
+                            followC.setCardBackgroundColor(getResources().getColor(R.color.green));
+                            followIV.setImageResource(R.drawable.logo_plus);
+                            if(teacher.getPrivacy().equals("0")){
+                                messagesC.setVisibility(View.VISIBLE);
+                            }
+                        }
+
+                        // Followers
+                        followersTV.setText(teacher.getFollowers());
+
+                        // Description
+                        if (teacher.getProfileDescription().equals("null")) {
+                            descriptionTV.setText(R.string.message_no_description); // No description.
+                        } else {
+                            descriptionTV.setText(teacher.getProfileDescription());
+                        }
+
+                        // Subjects
+                        if (teacher.getSubjectNames().size() == 0) {
+                            TextView info2TV = findViewById(R.id.info2TV);
+                            info2TV.setText(R.string.message_no_subjects);
+                        }
+
+                        setListeners();
+
+                    }
+                });
+
             }
-        } else {
-            profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(teacher.getProfileImageBase64()));
-        }
+        }).start();
 
-        // Name
-        TextView nameTV = findViewById(R.id.nameTV);
-        if(teacher.getFirstName().equals("null") || teacher.getLastName().equals("null")){
-            nameTV.setText(R.string.message_unknown_name);
-        }else{
-            String name = teacher.getFirstName() + " " + teacher.getLastName();
-            nameTV.setText(name);
-        }
-
-
-        // University
-        TextView universityTV = findViewById(R.id.universityTV);
-        if(!teacher.getUniversity().equals("null")){
-            universityTV.setText(teacher.getUniversity());
-        }
-
-        // Follow/unfollow status
-        followC = findViewById(R.id.followC);
-        followIV = findViewById(R.id.followIV);
-        if (teacher.getFollowingStatus().equals("1")) {
-            // following
-            followC.setCardBackgroundColor(getResources().getColor(R.color.red));
-            followIV.setImageResource(R.drawable.logo_minus);
-        } else if (teacher.getFollowingRequestStatus().equals("1")) {
-            // requested
-            followC.setCardBackgroundColor(getResources().getColor(R.color.yellow));
-            followIV.setImageResource(R.drawable.logo_dots);
-        } else {
-            // not following
-            followC.setCardBackgroundColor(getResources().getColor(R.color.green));
-            followIV.setImageResource(R.drawable.logo_plus);
-        }
-
-        // Followers
-        followersTV = findViewById(R.id.followersTV);
-        followersTV.setText(teacher.getFollowers());
-
-
-        // Description
-        TextView descriptionTV = findViewById(R.id.descriptionTV);
-        if (teacher.getProfileDescription().
-
-                equals("null")) {
-            descriptionTV.setText(R.string.message_no_description); // No description.
-        } else {
-            descriptionTV.setText(teacher.getProfileDescription());
-        }
-
-        // Subjects
-        if (teacher.getSubjectNames().
-
-                size() == 0) {
-            TextView info2TV = findViewById(R.id.info2TV);
-            info2TV.setText(R.string.message_no_subjects);
-        }
-
-        // List View
-        subjectsLV = findViewById(R.id.subjectsLV);
 
     }
 
@@ -167,6 +200,11 @@ public class SeeTeacher extends AppCompatActivity {
         reportIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 reportPopup = new Dialog(SeeTeacher.this);
                 reportPopup.setContentView(R.layout.popup_report);
 
@@ -235,9 +273,35 @@ public class SeeTeacher extends AppCompatActivity {
         HelpingFunctions.setListViewHeightBasedOnChildren(subjectsLV);
 
         // Card View
+        messagesC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(getApplicationContext(), MessagingPage.class);
+                intent.putExtra("username_sender", MainPageS.student.getUsername());
+                intent.putExtra("type", 0);
+                intent.putExtra("username_receiver", teacher.getUsername());
+                intent.putExtra("blocked", 0);
+                intent.putExtra("image", teacher.getProfileImageBase64());
+                startActivityForResult(intent, 0);
+                overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
+            }
+        });
+
         followC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 final View currentView = v;
 
                 MainPageS.needsRefresh = true;
@@ -345,8 +409,6 @@ public class SeeTeacher extends AppCompatActivity {
                     followIV.setImageResource(R.drawable.logo_plus);
                     Snackbar.make(v, "Request canceled.", Snackbar.LENGTH_SHORT).show();
                 }
-
-
             }
         });
     }
@@ -415,6 +477,12 @@ public class SeeTeacher extends AppCompatActivity {
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         if(endIV.getTag().equals("1")){
 
                             Intent intent = new Intent(SeeTeacher.this, SeeSubject.class);
@@ -439,6 +507,10 @@ public class SeeTeacher extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         finish();
         SeeTeacher.this.overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);

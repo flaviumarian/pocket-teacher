@@ -10,10 +10,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.search.FragmentSearchS;
-import com.licence.pocketteacher.student.search.TeachersRecyclerAdapter;
+import com.licence.pocketteacher.adapters.TeachersRecyclerAdapter;
 import com.licence.pocketteacher.aiding_classes.Teacher;
 
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public class FragmentSearchUniversity extends Fragment {
     private View view;
     private EditText searchET;
     private Button cancelBttn;
-    private TextView nameTV, subjectTV, domainTV;
+    private TextView nameTV, subjectTV, domainTV, infoTV;
     private RecyclerView teachersRV;
     private TeachersRecyclerAdapter teachersRecyclerAdapter;
 
@@ -42,7 +44,6 @@ public class FragmentSearchUniversity extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
 
         return view;
 
@@ -50,19 +51,41 @@ public class FragmentSearchUniversity extends Fragment {
 
     private void initiateComponents(){
 
-        // Edit Text
-        searchET = view.findViewById(R.id.searchET);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Button
-        cancelBttn = view.findViewById(R.id.cancelBttn);
+                // Edit Text
+                searchET = view.findViewById(R.id.searchET);
 
-        // Text Views
-        nameTV = view.findViewById(R.id.nameTV);
-        subjectTV = view.findViewById(R.id.subjectTV);
-        domainTV = view.findViewById(R.id.domainTV);
+                // Button
+                cancelBttn = view.findViewById(R.id.cancelBttn);
 
-        // Recycler View
-        teachersRV = view.findViewById(R.id.teachersRV);
+                // Text Views
+                nameTV = view.findViewById(R.id.nameTV);
+                subjectTV = view.findViewById(R.id.subjectTV);
+                domainTV = view.findViewById(R.id.domainTV);
+                infoTV = view.findViewById(R.id.infoTV);
+
+                // Recycler View
+                teachersRV = view.findViewById(R.id.teachersRV);
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
 
     }
 
@@ -80,6 +103,13 @@ public class FragmentSearchUniversity extends Fragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
                 // Create new fragment and transaction
                 Fragment newFragment = new FragmentSearchS();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -109,8 +139,11 @@ public class FragmentSearchUniversity extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 if (!s.toString().equals("")) {
+                    infoTV.setVisibility(View.INVISIBLE);
                     filter(s.toString());
                 } else {
+                    infoTV.setVisibility(View.VISIBLE);
+                    infoTV.setText(R.string.message_search_3);
                     filter("No text");
                 }
             }
@@ -120,6 +153,12 @@ public class FragmentSearchUniversity extends Fragment {
         nameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Fragment newFragment = new FragmentSearchName();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
@@ -166,6 +205,12 @@ public class FragmentSearchUniversity extends Fragment {
                 if (teacher.getUniversity().toLowerCase().contains(text.toLowerCase())) {
                     filteredTeachers.add(teacher);
                 }
+            }
+
+            if(filteredTeachers.size() == 0){
+
+                infoTV.setVisibility(View.VISIBLE);
+                infoTV.setText(R.string.message_search_2);
             }
         }
 

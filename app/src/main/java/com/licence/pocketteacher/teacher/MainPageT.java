@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -92,22 +93,43 @@ public class MainPageT extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
+                boolean notConnected = false;
 
                 switch(item.getItemId()){
                     case R.id.folder:
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            notConnected = true;
+                            break;
+                        }
                         selectedFragment = new FragmentFolderT();
                         resetBadge();
                         break;
                     case R.id.updates:
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            notConnected = true;
+                            break;
+                        }
                         selectedFragment = new FragmentUpdatesT();
                         break;
                     case R.id.profile:
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            notConnected = true;
+                            break;
+                        }
                         selectedFragment = new FragmentProfileT();
                         resetBadge();
                         break;
                 }
 
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, selectedFragment).commit();
+                if(!notConnected){
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, selectedFragment).commit();
+                }else{
+                    return false;
+                }
+
 
                 return true; // select the item - false would mean not selecting it
             }
@@ -133,6 +155,11 @@ public class MainPageT extends AppCompatActivity {
     // When trying to go back
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         logOutPopup = new Dialog(this);
         logOutPopup.setContentView(R.layout.popup_log_out);

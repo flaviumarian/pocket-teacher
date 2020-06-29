@@ -158,6 +158,12 @@ public class RegistrationFbGoogle extends AppCompatActivity {
                     Snackbar.make(view, "Don't have one? Request it here: ", Snackbar.LENGTH_LONG).setAction("REQUEST", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+
+                            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             verificationRequestPopup = new Dialog(RegistrationFbGoogle.this);
                             verificationRequestPopup.setContentView(R.layout.popup_request_verification_code);
 
@@ -236,6 +242,11 @@ public class RegistrationFbGoogle extends AppCompatActivity {
         getStartedBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 if(studentIV.getTag().equals(0) && teacherIV.getTag().equals(0)){
                     Snackbar.make(view, "You need to choose a type.", Snackbar.LENGTH_LONG).show();

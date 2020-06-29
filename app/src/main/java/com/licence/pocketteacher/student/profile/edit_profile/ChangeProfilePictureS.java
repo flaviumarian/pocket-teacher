@@ -403,6 +403,11 @@ public class ChangeProfilePictureS extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
 
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if(!newBase64Image.equals(currentBase64Image)){
 
             MainPageS.student.setProfileImageBase64(newBase64Image); // in case the user gets to the profile before the thread is finished

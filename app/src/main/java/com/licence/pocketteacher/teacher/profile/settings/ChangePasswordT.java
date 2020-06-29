@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.licence.pocketteacher.R;
@@ -289,6 +290,11 @@ public class ChangePasswordT extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (HelpingFunctions.isEditTextEmpty(passwordET) && HelpingFunctions.isEditTextEmpty(confirmPasswordET)) {
             finish();

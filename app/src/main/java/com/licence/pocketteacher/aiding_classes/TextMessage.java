@@ -1,10 +1,7 @@
 package com.licence.pocketteacher.aiding_classes;
 
-import android.util.Log;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 
 public class TextMessage {
 
@@ -13,14 +10,12 @@ public class TextMessage {
     private String date;
     private int type; // 0 - student, 1 - teacher
 
-    public TextMessage(String username, String message, int type) {
+    public TextMessage(String username, String message, int type, String usernameReceiver) {
         this.username = username;
         this.message = message;
         this.type = type;
-        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+        date = HelpingFunctions.getLastSenderMessageDate(username, usernameReceiver).getFullDate();
 
-        date = currentDate + " " + currentTime;
     }
 
     public TextMessage(String username, String message, String date, int type) {
@@ -28,6 +23,17 @@ public class TextMessage {
         this.message = message;
         this.date = date;
         this.type = type;
+    }
+
+    public TextMessage(){
+        this.username = null;
+        this.message = null;
+        this.date = null;
+        this.type = -1;
+    }
+
+    public TextMessage(String date){
+        this.date = date;
     }
 
     public String getUsername() {
@@ -48,6 +54,14 @@ public class TextMessage {
 
     public String getDate() {
         return date.substring(11, 16);
+    }
+
+    public String getExactHour(){
+        return date.substring(11, 19);
+    }
+
+    public String getFullDate(){
+        return date;
     }
 
     public void setDate(String date) {

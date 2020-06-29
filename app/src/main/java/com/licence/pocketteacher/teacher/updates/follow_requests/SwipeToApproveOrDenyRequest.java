@@ -7,12 +7,15 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import com.licence.pocketteacher.R;
-import com.licence.pocketteacher.teacher.profile.followers.StudentsRecyclerAdapter;
+import com.licence.pocketteacher.adapters.StudentsRecyclerAdapter;
+
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+
 
 public class SwipeToApproveOrDenyRequest extends ItemTouchHelper.SimpleCallback {
 

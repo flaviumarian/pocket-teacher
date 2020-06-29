@@ -13,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
@@ -42,25 +43,40 @@ public class FragmentFolderT extends Fragment {
         view = inflater.inflate(R.layout.fragment_folder_t, container, false);
 
         initiateComponents();
-        setListeners();
 
         return view;
     }
 
     private void initiateComponents() {
 
-        // Text View
-        infoTV = view.findViewById(R.id.infoTV);
-        subjectsTV = view.findViewById(R.id.subjectsTV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // List View
-        subjectsLV = view.findViewById(R.id.subjectsLV);
+                // Text View
+                infoTV = view.findViewById(R.id.infoTV);
+                subjectsTV = view.findViewById(R.id.subjectsTV);
 
-        // Card Views
-        addRemoveSubjectC = view.findViewById(R.id.addRemoveSubjectC);
-        removeSubjectC = view.findViewById(R.id.removeSubjectC);
-        addSubjectC = view.findViewById(R.id.addSubjectC);
+                // List View
+                subjectsLV = view.findViewById(R.id.subjectsLV);
 
+                // Card Views
+                addRemoveSubjectC = view.findViewById(R.id.addRemoveSubjectC);
+                removeSubjectC = view.findViewById(R.id.removeSubjectC);
+                addSubjectC = view.findViewById(R.id.addSubjectC);
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
     }
 
@@ -125,6 +141,12 @@ public class FragmentFolderT extends Fragment {
         removeSubjectC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), RemoveSubject.class);
                 startActivityForResult(intent, 1);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
@@ -134,11 +156,19 @@ public class FragmentFolderT extends Fragment {
         addSubjectC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), AddSubject.class);
                 startActivityForResult(intent, 0);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
+
+        view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
 
     }
 
@@ -148,9 +178,11 @@ public class FragmentFolderT extends Fragment {
 
         private ArrayList<String> subjectNames, domainNames;
         private LayoutInflater inflater;
+        private Context context;
 
 
         SubjectsAdapter(Context context, ArrayList<String> subjectNames, ArrayList<String> domainNames) {
+            this.context = context;
             inflater = LayoutInflater.from(context);
             this.subjectNames = subjectNames;
             this.domainNames = domainNames;
@@ -189,6 +221,13 @@ public class FragmentFolderT extends Fragment {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if(!HelpingFunctions.isConnected(context)){
+                        Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+
                     Intent intent = new Intent(view.getContext(), SubjectPage.class);
                     intent.putExtra("subjectName", MainPageT.teacher.getSubjects().get(position).getSubjectName());
                     startActivityForResult(intent, 2);
@@ -206,6 +245,12 @@ public class FragmentFolderT extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 0) {
+
+            if(!HelpingFunctions.isConnected(view.getContext())){
+                Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             addRemoveSubjectC.performClick();
 
             if (resultCode == Activity.RESULT_OK) {
@@ -230,6 +275,11 @@ public class FragmentFolderT extends Fragment {
         }
 
         if (requestCode == 1) {
+
+            if(!HelpingFunctions.isConnected(view.getContext())){
+                Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             addRemoveSubjectC.performClick();
 
@@ -262,6 +312,7 @@ public class FragmentFolderT extends Fragment {
         }
 
         if (requestCode == 2) {
+
             if (addSubjectC.getAlpha() > 0) {
                 addRemoveSubjectC.performClick();
             }
@@ -273,6 +324,11 @@ public class FragmentFolderT extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        if(!HelpingFunctions.isConnected(view.getContext())){
+            Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Notification Badge
         MainPageT.resetBadge();

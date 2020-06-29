@@ -81,8 +81,8 @@ public class LoginPage extends AppCompatActivity {
         initiateComponents();
         setOnClickListeners();
 
-        facebookLogIn();
-        GoogleLogIn();
+        facebookLogInSetup();
+        GoogleLogInSetup();
 
     }
 
@@ -138,6 +138,11 @@ public class LoginPage extends AppCompatActivity {
         facebookBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 facebookLoginBttn.performClick();
             }
         });
@@ -145,6 +150,11 @@ public class LoginPage extends AppCompatActivity {
         googleBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = googleSignInClient.getSignInIntent();
                 startActivityForResult(intent, GOOGLE_SIGN_IN);
             }
@@ -153,6 +163,11 @@ public class LoginPage extends AppCompatActivity {
     }
 
     private void regularLogIn(){
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(this, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         logInBttn.setEnabled(false);
         boolean canLogIn = true;
@@ -179,6 +194,7 @@ public class LoginPage extends AppCompatActivity {
                 logInBttn.setEnabled(true);
                 return;
             }
+
 
 
 
@@ -297,7 +313,9 @@ public class LoginPage extends AppCompatActivity {
         }
     }
 
-    private void facebookLogIn(){
+    private void facebookLogInSetup(){
+
+
         callbackManager = CallbackManager.Factory.create();
         facebookLoginBttn.setPermissions(Arrays.asList("email", "public_profile"));
         facebookLoginBttn.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -432,7 +450,7 @@ public class LoginPage extends AppCompatActivity {
         request.executeAsync();
     }
 
-    private void GoogleLogIn(){
+    private void GoogleLogInSetup(){
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
     }
@@ -541,7 +559,6 @@ public class LoginPage extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 
     private void registerCurrentToken(final String username){
 

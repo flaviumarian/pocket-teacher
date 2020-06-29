@@ -22,9 +22,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.messaging.MessagingPage;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.teacher.MainPageT;
 
@@ -32,8 +34,9 @@ public class SeeStudent extends AppCompatActivity {
 
     private ImageView backIV;
     private Dialog blockPopup, blockedPopup, reportPopup, reportSentPopup;
+    private CardView messagesC;
 
-    private String username;
+    private String username, image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +45,6 @@ public class SeeStudent extends AppCompatActivity {
 
         getUsernameFromIntent();
         initiateComponents();
-        setListeners();
     }
 
     private void getUsernameFromIntent(){
@@ -60,88 +62,119 @@ public class SeeStudent extends AppCompatActivity {
         subjectToolbar.setTitle("");
         this.setSupportActionBar(subjectToolbar);
 
-        // Image View
-        backIV = findViewById(R.id.backIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Toolbar username
-        TextView toolbarUsernameTV = findViewById(R.id.toolbarUsernameTV);
-        toolbarUsernameTV.setText(username);
+                // Image View
+                backIV = findViewById(R.id.backIV);
 
-        // Profile picture
-        ImageView profilePictureIV = findViewById(R.id.profilePictureIV);
-        String image = HelpingFunctions.getProfileImageBasedOnUsername(username);
-        if(image.equals("")){
-            switch (HelpingFunctions.getGenderBasedOnUsername(username)) {
-                case "0":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_male);
-                    break;
-                case "1":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_female);
-                    break;
-                case "2":
-                    profilePictureIV.setImageResource(0);
-                    break;
+                // Toolbar username
+                final TextView toolbarUsernameTV = findViewById(R.id.toolbarUsernameTV);
+
+                // Profile picture
+                final ImageView profilePictureIV = findViewById(R.id.profilePictureIV);
+                image = HelpingFunctions.getProfileImageBasedOnUsername(username);
+
+                // Name
+                final TextView nameTV = findViewById(R.id.nameTV);
+                final String firstName = HelpingFunctions.getFirstNameBasedOnUsername(username);
+                final String lastName = HelpingFunctions.getLastNameBasedOnUsername(username);
+
+                // Privacy
+                final String privacy = HelpingFunctions.getPrivacyBasedOnUsername(username);
+
+                // Messages
+                messagesC = findViewById(R.id.messagesC);
+
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Toolbar username
+                            toolbarUsernameTV.setText(username);
+
+                            // Profile picture
+                            if(image.equals("")){
+                                switch (HelpingFunctions.getGenderBasedOnUsername(username)) {
+                                    case "0":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_male);
+                                        break;
+                                    case "1":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_female);
+                                        break;
+                                    case "2":
+                                        profilePictureIV.setImageResource(0);
+                                        break;
+                                }
+                            }else{
+                                profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(image));
+                            }
+
+                            // Name
+                            if(firstName.equals("") || lastName.equals("")){
+                                nameTV.setText(R.string.message_unknown_name);
+                            }else{
+                                String name = firstName + " " + lastName;
+                                nameTV.setText(name);
+                            }
+
+                            // Privacy
+                            if(privacy.equals("1")){
+                                // PRIVATE
+                                TextView privateTV = findViewById(R.id.privateTV);
+                                privateTV.setVisibility(View.VISIBLE);
+
+                                TextView universityTV = findViewById(R.id.universityTV);
+                                universityTV.setVisibility(View.INVISIBLE);
+
+                                CardView followersCard = findViewById(R.id.followersCard);
+                                followersCard.setVisibility(View.INVISIBLE);
+
+                                TextView infoTV = findViewById(R.id.infoTV);
+                                infoTV.setVisibility(View.INVISIBLE);
+
+                                CardView descriptionCard = findViewById(R.id.descriptionCard);
+                                descriptionCard.setVisibility(View.INVISIBLE);
+
+
+                            }else if (privacy.equals("0")){
+                                // PUBLIC
+
+                                // University
+                                TextView universityTV = findViewById(R.id.universityTV);
+                                String university = HelpingFunctions.getUniversityBasedOnUsername(username);
+                                if(university.equals("")){
+                                    universityTV.setText("");
+                                }else {
+                                    universityTV.setText(university);
+                                }
+
+                                // Followers number
+                                TextView followingTV = findViewById(R.id.followingTV);
+                                followingTV.setText(HelpingFunctions.getFollowingNumber(username));
+
+                                // Description
+                                TextView descriptionTV = findViewById(R.id.descriptionTV);
+                                String description = HelpingFunctions.getProfileDescriptionBasedOnUsername(username);
+                                if(description.equals("")){
+                                    descriptionTV.setText(R.string.message_no_description);
+                                }else {
+                                    descriptionTV.setText(description);
+                                }
+                            }
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
             }
-        }else{
-            profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(image));
-        }
+        }).start();
 
-        // Name
-        TextView nameTV = findViewById(R.id.nameTV);
-        String firstName = HelpingFunctions.getFirstNameBasedOnUsername(username);
-        String lastName = HelpingFunctions.getLastNameBasedOnUsername(username);
-        if(firstName.equals("") || lastName.equals("")){
-            nameTV.setText(R.string.message_unknown_name);
-        }else{
-            String name = firstName + " " + lastName;
-            nameTV.setText(name);
-        }
-
-
-        String privacy = HelpingFunctions.getPrivacyBasedOnUsername(username);
-        if(privacy.equals("1")){
-            // PRIVATE
-            TextView privateTV = findViewById(R.id.privateTV);
-            privateTV.setVisibility(View.VISIBLE);
-
-            TextView universityTV = findViewById(R.id.universityTV);
-            universityTV.setVisibility(View.INVISIBLE);
-
-            CardView followersCard = findViewById(R.id.followersCard);
-            followersCard.setVisibility(View.INVISIBLE);
-
-            TextView infoTV = findViewById(R.id.infoTV);
-            infoTV.setVisibility(View.INVISIBLE);
-
-            CardView descriptionCard = findViewById(R.id.descriptionCard);
-            descriptionCard.setVisibility(View.INVISIBLE);
-
-
-        }else if (privacy.equals("0")){
-            // PUBLIC
-
-            // University
-            TextView universityTV = findViewById(R.id.universityTV);
-            String university = HelpingFunctions.getUniversityBasedOnUsername(username);
-            if(university.equals("")){
-                universityTV.setText("");
-            }else {
-                universityTV.setText(university);
-            }
-
-            // Followers number
-            TextView followingTV = findViewById(R.id.followingTV);
-            followingTV.setText(HelpingFunctions.getFollowing(username));
-
-            // Description
-            TextView descriptionTV = findViewById(R.id.descriptionTV);
-            String description = HelpingFunctions.getProfileDescriptionBasedOnUsername(username);
-            if(description.equals("")){
-                descriptionTV.setText(R.string.message_no_description);
-            }else {
-                descriptionTV.setText(description);
-            }
-        }
     }
 
     private void setListeners(){
@@ -151,6 +184,27 @@ public class SeeStudent extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+
+        messagesC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+                Intent intent = new Intent(getApplicationContext(), MessagingPage.class);
+                intent.putExtra("username_sender", MainPageT.teacher.getUsername());
+                intent.putExtra("type", 0);
+                intent.putExtra("username_receiver", username);
+                intent.putExtra("blocked", 0);
+                intent.putExtra("image", image);
+                startActivityForResult(intent, 0);
+                overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
     }
@@ -184,6 +238,12 @@ public class SeeStudent extends AppCompatActivity {
 
         switch (id) {
             case R.id.blockUser:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 blockPopup = new Dialog(SeeStudent.this);
                 blockPopup.setContentView(R.layout.popup_block_student);
 
@@ -203,6 +263,12 @@ public class SeeStudent extends AppCompatActivity {
                 yesBttn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         // Block user
                         String result = HelpingFunctions.blockUser(MainPageT.teacher.getUsername(), username);
                         blockPopup.dismiss();
@@ -234,6 +300,12 @@ public class SeeStudent extends AppCompatActivity {
 
                 break;
             case R.id.report:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 reportPopup = new Dialog(SeeStudent.this);
                 reportPopup.setContentView(R.layout.popup_report);
 
@@ -257,6 +329,12 @@ public class SeeStudent extends AppCompatActivity {
                 sendBttn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         boolean canSend = true;
 
                         if (HelpingFunctions.isEditTextEmpty(titleET)) {
@@ -300,6 +378,11 @@ public class SeeStudent extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         finish();
         SeeStudent.this.overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);

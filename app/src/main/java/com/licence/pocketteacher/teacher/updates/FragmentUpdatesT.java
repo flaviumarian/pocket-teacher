@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.aiding_classes.Notification;
@@ -53,7 +54,6 @@ public class FragmentUpdatesT extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
 
         // Delete all notifications
         NotificationManager manager = (NotificationManager) view.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -69,32 +69,53 @@ public class FragmentUpdatesT extends Fragment {
         profileToolbar.setTitle("");
         ((AppCompatActivity) getActivity()).setSupportActionBar(profileToolbar);
 
-        // Text View
-        infoTV = view.findViewById(R.id.infoTV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Follow Request
-        String numberFollowerRequests = HelpingFunctions.getNumberOfFollowRequests(MainPageT.teacher.getUsername());
+                // Text View
+                infoTV = view.findViewById(R.id.infoTV);
 
-        followRequestsC = view.findViewById(R.id.followRequestsC);
-        followRequestsTV = view.findViewById(R.id.followRequestsTV);
+                // Follow Request
+                final String numberFollowerRequests = HelpingFunctions.getNumberOfFollowRequests(MainPageT.teacher.getUsername());
+                followRequestsC = view.findViewById(R.id.followRequestsC);
+                followRequestsTV = view.findViewById(R.id.followRequestsTV);
 
-        if(numberFollowerRequests.equals("0") || numberFollowerRequests.equals("None")){
-            followRequestsC.setVisibility(View.INVISIBLE);
-        } else{
-            followRequestsTV.setText(numberFollowerRequests);
-        }
+                // Recycler View
+                notificationsRV = view.findViewById(R.id.notificationsRV);
 
-        // Recycler View
-        notificationsRV = view.findViewById(R.id.notificationsRV);
+                // Array List
+                notifications = HelpingFunctions.getAllNotifications(MainPageT.teacher.getUsername());
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            if (numberFollowerRequests.equals("0") || numberFollowerRequests.equals("None")) {
+                                followRequestsC.setVisibility(View.INVISIBLE);
+                            } else {
+                                followRequestsC.setVisibility(View.VISIBLE);
+                                followRequestsTV.setText(numberFollowerRequests);
+                            }
+
+                            if (notifications.size() == 0) {
+                                infoTV.setVisibility(View.VISIBLE);
+                            } else {
+                                infoTV.setVisibility(View.INVISIBLE);
+                            }
+
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
 
 
-        // Array List
-        notifications = HelpingFunctions.getAllNotifications(MainPageT.teacher.getUsername());
-        if(notifications.size() == 0){
-            infoTV.setVisibility(View.VISIBLE);
-        }else{
-            infoTV.setVisibility(View.INVISIBLE);
-        }
     }
 
     private void setListeners(){
@@ -103,6 +124,11 @@ public class FragmentUpdatesT extends Fragment {
         followRequestsC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), SeeFollowRequests.class);
                 startActivityForResult(intent, 0);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
@@ -114,6 +140,8 @@ public class FragmentUpdatesT extends Fragment {
         notificationsRecyclerAdapter = new NotificationsRecyclerAdapter(notifications, view.getContext());
         notificationsRV.setAdapter(notificationsRecyclerAdapter);
         notificationsRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 
 
@@ -167,6 +195,11 @@ public class FragmentUpdatesT extends Fragment {
             holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if(!HelpingFunctions.isConnected(context)){
+                        Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
                     final ProgressDialog loading = ProgressDialog.show(context, "Please wait", "Loading...", true);
                     new Thread() {
@@ -265,6 +298,12 @@ public class FragmentUpdatesT extends Fragment {
 
         switch (id) {
             case R.id.clearNotifications:
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 notifications.clear();
                 notificationsRecyclerAdapter.notifyDataSetChanged();
                 infoTV.setVisibility(View.VISIBLE);
@@ -273,6 +312,7 @@ public class FragmentUpdatesT extends Fragment {
                 HelpingFunctions.deleteAllNotifications(MainPageT.teacher.getUsername());
                 break;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -296,6 +336,11 @@ public class FragmentUpdatesT extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        if(!HelpingFunctions.isConnected(view.getContext())){
+            Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Notification Badge
         MainPageT.resetBadge();

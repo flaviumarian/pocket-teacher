@@ -43,21 +43,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Animated Gif -->
-            <pl.droidsonroids.gif.GifImageView
-                android:id="@+id/gifImageView"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottieAnimation"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
-                android:src="@drawable/gif_check_circle" />
+                app:lottie_fileName="email_confirmation_animation.json"
+                app:lottie_loop="false"
+                app:lottie_autoPlay="true"
+                app:lottie_speed="0.5"/>
+
 
             <!-- Information -->
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/gifImageView"
+                android:layout_below="@id/lottieAnimation"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/open_sans_semibold"

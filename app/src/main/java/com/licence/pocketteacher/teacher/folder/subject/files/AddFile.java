@@ -137,6 +137,12 @@ public class AddFile extends AppCompatActivity {
         postBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 boolean canPost = true;
 
                 if(HelpingFunctions.isEditTextEmpty(titleET)){
@@ -540,6 +546,11 @@ public class AddFile extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if(!HelpingFunctions.isEditTextEmpty(titleET) || !HelpingFunctions.isEditTextEmpty(descriptionET) || fileGood){
             goBackPopup = new Dialog(AddFile.this);

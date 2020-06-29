@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -54,25 +55,69 @@ public class SettingsT extends AppCompatActivity {
 
 
         initiateComponents();
-        setListeners();
 
     }
 
     private void initiateComponents() {
 
-        //Image View
-        backIV = findViewById(R.id.backIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // List Views
-        change1LV = findViewById(R.id.change1LV);
-        change2LV = findViewById(R.id.change2LV);
-        viewLV = findViewById(R.id.viewLV);
+                //Image View
+                backIV = findViewById(R.id.backIV);
 
-        // Button
-        logOutBttn = findViewById(R.id.logOutBttn);
+                // List Views
+                change1LV = findViewById(R.id.change1LV);
+                change2LV = findViewById(R.id.change2LV);
+                viewLV = findViewById(R.id.viewLV);
 
-        // Card View
-        deleteAccountC = findViewById(R.id.deleteAccountC);
+                // Button
+                logOutBttn = findViewById(R.id.logOutBttn);
+
+                // Card View
+                deleteAccountC = findViewById(R.id.deleteAccountC);
+
+                // set first List View
+                final int[] changesImages = {R.drawable.ic_person_black_24dp, R.drawable.logo_lock};
+                final String[] names = {"Username", "Account Privacy"};
+
+                // set second List View
+                final int[] changesImages1 = {R.drawable.logo_key_black, R.drawable.ic_email_black_24dp, R.drawable.logo_keyhole};
+                final String[] names1 = {"Password", "Email address", "Quick login"};
+
+                // set view settings List View
+                final int[] viewImages = {R.drawable.logo_terms_and_conditions, R.drawable.logo_privacy_policy};
+                final String[] names3 = {"Terms and Conditions", "Privacy Policy"};
+
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // set first List View
+                            SettingsT.FirstChangeAdapter firstChangeAdapter = new SettingsT.FirstChangeAdapter(getApplicationContext(), changesImages, names);
+                            change1LV.setAdapter(firstChangeAdapter);
+
+                            // set second List View
+                            SettingsT.SecondChangeAdapter secondChangeAdapter = new SettingsT.SecondChangeAdapter(getApplicationContext(), changesImages1, names1);
+                            change2LV.setAdapter(secondChangeAdapter);
+
+                            // set view settings List View
+                            SettingsT.ViewSettingsAdapter viewSettingsAdapter = new SettingsT.ViewSettingsAdapter(getApplicationContext(), viewImages, names3);
+                            viewLV.setAdapter(viewSettingsAdapter);
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
     }
 
     private void setListeners() {
@@ -85,33 +130,16 @@ public class SettingsT extends AppCompatActivity {
             }
         });
 
-        // set first List View
-        int[] changesImages = {R.drawable.ic_person_black_24dp, R.drawable.logo_lock};
-        String[] names = {"Username", "Account Privacy"};
-
-        SettingsT.FirstChangeAdapter firstChangeAdapter = new SettingsT.FirstChangeAdapter(getApplicationContext(), changesImages, names);
-        change1LV.setAdapter(firstChangeAdapter);
-
-
-        // set second List View
-        int[] changesImages1 = {R.drawable.logo_key_black, R.drawable.ic_email_black_24dp, R.drawable.logo_keyhole};
-        String[] names1 = {"Password", "Email address", "Quick login"};
-
-        SettingsT.SecondChangeAdapter secondChangeAdapter = new SettingsT.SecondChangeAdapter(getApplicationContext(), changesImages1, names1);
-        change2LV.setAdapter(secondChangeAdapter);
-
-
-        // set view settings List View
-        int[] viewImages = {R.drawable.logo_terms_and_conditions, R.drawable.logo_privacy_policy};
-        String[] names3 = {"Terms and Conditions", "Privacy Policy"};
-
-        SettingsT.ViewSettingsAdapter viewSettingsAdapter = new SettingsT.ViewSettingsAdapter(getApplicationContext(), viewImages, names3);
-        viewLV.setAdapter(viewSettingsAdapter);
-
         // Button
         logOutBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 logOutPopup = new Dialog(SettingsT.this);
                 logOutPopup.setContentView(R.layout.popup_log_out);
 
@@ -131,6 +159,11 @@ public class SettingsT extends AppCompatActivity {
                 yesButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
                         logOutPopup.dismiss();
 
@@ -171,6 +204,12 @@ public class SettingsT extends AppCompatActivity {
         deleteAccountC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 deleteAccountPopup = new Dialog(SettingsT.this);
                 deleteAccountPopup.setContentView(R.layout.popup_delete_account);
 
@@ -191,6 +230,12 @@ public class SettingsT extends AppCompatActivity {
                 yesButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         deleteAccountPopup.dismiss();
 
                         // Delete token for this device
@@ -220,6 +265,12 @@ public class SettingsT extends AppCompatActivity {
                                     deletedAccountPopup.setOnDismissListener(new DialogInterface.OnDismissListener() {
                                         @Override
                                         public void onDismiss(DialogInterface dialog) {
+
+                                            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                                                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
+
                                             deleteAccountPopup.dismiss();
 
                                             if (MainPageT.flag == 0) {
@@ -318,6 +369,12 @@ public class SettingsT extends AppCompatActivity {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if (position == 0) {
                         Intent intent = new Intent(getApplicationContext(), ChangeUsernameT.class);
                         startActivity(intent);
@@ -383,6 +440,12 @@ public class SettingsT extends AppCompatActivity {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if (position == 0) {
                         Intent intent = new Intent(getApplicationContext(), ChangePasswordT.class);
                         startActivity(intent);
@@ -484,6 +547,12 @@ public class SettingsT extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         super.onBackPressed();
         finish();
         SettingsT.this.overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);

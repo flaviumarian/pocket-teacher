@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
@@ -47,6 +48,11 @@ public class SeeStudentStudent extends AppCompatActivity {
     }
 
     private void initiateComponents(){
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Image View
         backIV = findViewById(R.id.backIV);
@@ -98,7 +104,7 @@ public class SeeStudentStudent extends AppCompatActivity {
 
         // Followers number
         TextView followingTV = findViewById(R.id.followingTV);
-        followingTV.setText(HelpingFunctions.getFollowing(username));
+        followingTV.setText(HelpingFunctions.getFollowingNumber(username));
 
         // Description
         TextView descriptionTV = findViewById(R.id.descriptionTV);
@@ -123,6 +129,12 @@ public class SeeStudentStudent extends AppCompatActivity {
         reportIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 reportPopup = new Dialog(SeeStudentStudent.this);
                 reportPopup.setContentView(R.layout.popup_report);
 

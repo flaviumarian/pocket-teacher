@@ -31,20 +31,24 @@
                 android:scaleType="centerCrop" />
         </androidx.cardview.widget.CardView>
 
+
         <!-- Message and time ago -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="5dp"
+            android:layout_marginEnd="40dp"
             android:layout_toEndOf="@id/profileImageC"
             android:orientation="vertical">
+
 
             <!-- Message -->
             <LinearLayout
                 android:id="@+id/textLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/usernameTV"
@@ -58,31 +62,25 @@
                     android:id="@+id/messageTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
                     android:fontFamily="@font/open_sans"
                     android:textColor="@color/black" />
 
             </LinearLayout>
 
-            <!-- Time -->
-            <TextView
-                android:id="@+id/timeTV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto"
-                android:textColor="@color/darkGrey" />
-
         </LinearLayout>
 
-        <!-- Arrow image -->
-        <ImageView
-            android:id="@+id/endIV"
-            android:layout_width="40sp"
-            android:layout_height="40sp"
+        <!-- Time -->
+        <TextView
+            android:id="@+id/timeTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:contentDescription="@string/description_list_item_image_2"
-            android:src="@drawable/ic_navigate_next_black_24dp" />
+            android:layout_marginEnd="10dp"
+            android:fontFamily="@font/roboto"
+            android:text="20d"
+            android:textColor="@color/darkGrey" />
+
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

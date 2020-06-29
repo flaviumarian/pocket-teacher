@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <supports-screens
         android:largeScreens="true"
@@ -25,9 +26,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".MessageConversations"></activity>
+        <activity android:name=".messaging.new_conversation_teacher_account.StartConversationListTeacher"></activity>
+        <activity android:name=".messaging.new_conversation_student_account.StartConversationListStudent" />
+        <activity android:name=".messaging.MessageConversations" />
         <activity
-            android:name=".MessagingPage"
+            android:name=".messaging.MessagingPage"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity

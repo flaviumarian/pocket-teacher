@@ -13,6 +13,7 @@ import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.AlignmentSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -30,8 +32,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.licence.pocketteacher.MessageConversations;
-import com.licence.pocketteacher.MessagingPage;
+import com.licence.pocketteacher.messaging.MessageConversations;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.profile.edit_profile.EditProfileS;
 import com.licence.pocketteacher.LoginPage;
@@ -56,7 +57,7 @@ public class FragmentProfilesS extends Fragment {
 
     private View view;
     private ImageView profilePictureIV;
-    private CardView editProfileC, followersCard, messagesC;
+    private CardView editProfileC, messagesC, followersCard;
     private TextView nameTV, universityTV, descriptionTV, followingTV, notificationBadgeTV;
     private Dialog aboutPopup, logOutPopup;
     private Button notificationBttn;
@@ -69,8 +70,8 @@ public class FragmentProfilesS extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
         setFields();
+
 
         // Clear all notifications
         NotificationManager manager = (NotificationManager) view.getContext()
@@ -87,31 +88,55 @@ public class FragmentProfilesS extends Fragment {
         profileToolbar.setTitle("");
         ((AppCompatActivity) getActivity()).setSupportActionBar(profileToolbar);
 
-        //Image Views
-        profilePictureIV = view.findViewById(R.id.profilePictureIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Text Views
-        nameTV = view.findViewById(R.id.nameTV);
-        universityTV = view.findViewById(R.id.universityTV);
-        descriptionTV = view.findViewById(R.id.descriptionTV);
-        followingTV = view.findViewById(R.id.followingTV);
-        followingTV.setText(HelpingFunctions.getFollowing(MainPageS.student.getUsername()));
-        notificationBadgeTV = view.findViewById(R.id.notificationBadgeTV);
-        String notificationNumber = HelpingFunctions.getNumberOfNotifications(MainPageS.student.getUsername());
-        if(notificationNumber.equals("0")){
-            notificationBadgeTV.setVisibility(View.INVISIBLE);
-        }else {
-            notificationBadgeTV.setVisibility(View.VISIBLE);
-            notificationBadgeTV.setText(notificationNumber);
-        }
+                //Image Views
+                profilePictureIV = view.findViewById(R.id.profilePictureIV);
 
-        // Card View
-        editProfileC = view.findViewById(R.id.editProfileC);
-        followersCard = view.findViewById(R.id.followersCard);
-        messagesC = view.findViewById(R.id.messagesC);
+                // Text Views
+                nameTV = view.findViewById(R.id.nameTV);
+                universityTV = view.findViewById(R.id.universityTV);
+                descriptionTV = view.findViewById(R.id.descriptionTV);
+                followingTV = view.findViewById(R.id.followingTV);
 
-        // Button
-        notificationBttn = view.findViewById(R.id.notificationBttn);
+                notificationBadgeTV = view.findViewById(R.id.notificationBadgeTV);
+                final String notificationNumber = HelpingFunctions.getNumberOfNotifications(MainPageS.student.getUsername());
+
+                // Card View
+                editProfileC = view.findViewById(R.id.editProfileC);
+                followersCard = view.findViewById(R.id.followersCard);
+                messagesC = view.findViewById(R.id.messagesC);
+
+                // Button
+                notificationBttn = view.findViewById(R.id.notificationBttn);
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            followingTV.setText(HelpingFunctions.getFollowingNumber(MainPageS.student.getUsername()));
+                            if (notificationNumber.equals("0")) {
+                                notificationBadgeTV.setVisibility(View.INVISIBLE);
+                            } else {
+                                notificationBadgeTV.setVisibility(View.VISIBLE);
+                                notificationBadgeTV.setText(notificationNumber);
+                            }
+
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start();
+
+
 
     }
 
@@ -120,6 +145,12 @@ public class FragmentProfilesS extends Fragment {
         editProfileC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), EditProfileS.class);
                 startActivityForResult(intent, 0);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
@@ -129,6 +160,12 @@ public class FragmentProfilesS extends Fragment {
         followersCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), SeeFollowing.class);
                 startActivityForResult(intent, 1);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
@@ -138,6 +175,12 @@ public class FragmentProfilesS extends Fragment {
         messagesC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), MessageConversations.class);
                 intent.putExtra("type", 0);
                 startActivity(intent);
@@ -149,6 +192,12 @@ public class FragmentProfilesS extends Fragment {
         notificationBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), SeeNotifications.class);
                 startActivityForResult(intent, 2);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
@@ -158,49 +207,75 @@ public class FragmentProfilesS extends Fragment {
 
     private void setFields(){
 
-        // Profile picture
-        if (MainPageS.student.getProfileImageBase64().equals("")) {
-            switch (MainPageS.student.getGender()) {
-                case "0":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_male);
-                    break;
-                case "1":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_female);
-                    break;
-                case "2":
-                    profilePictureIV.setImageResource(0);
-                    break;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                // Profile picture
+                final String profileImageBase64 = MainPageS.student.getProfileImageBase64();
+
+                // Name
+                final String firstName = MainPageS.student.getFirstName();
+                final String lastName = MainPageS.student.getLastName();
+
+                // University
+                final String university = MainPageS.student.getUniversity();
+
+                // Description
+                final String description = MainPageS.student.getProfileDescription();
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Profile picture
+                            if (profileImageBase64.equals("")) {
+                                switch (MainPageS.student.getGender()) {
+                                    case "0":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_male);
+                                        break;
+                                    case "1":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_female);
+                                        break;
+                                    case "2":
+                                        profilePictureIV.setImageResource(0);
+                                        break;
+                                }
+                            } else {
+                                profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(MainPageS.student.getProfileImageBase64()));
+                            }
+
+                            // Name
+                            if (firstName.equals("null") || lastName.equals("null")) {
+                                nameTV.setText(R.string.message_unknown_name);
+                            } else {
+                                String name = firstName + " " + lastName;
+                                nameTV.setText(name);
+                            }
+
+                            // University
+                            if (university.equals("null")) {
+                                universityTV.setText(R.string.message_unknown_university);
+                            } else {
+                                universityTV.setText(university);
+                            }
+
+                            // Description
+                            if (description.equals("null")) {
+                                descriptionTV.setText(R.string.message_no_description);
+                            } else {
+                                descriptionTV.setText(description);
+                            }
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
             }
-        } else {
-            profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(MainPageS.student.getProfileImageBase64()));
-        }
-
-
-        // Name
-        String firstName = MainPageS.student.getFirstName();
-        String lastName = MainPageS.student.getLastName();
-        if(firstName.equals("null") || lastName.equals("null")){
-            nameTV.setText(R.string.message_unknown_name);
-        } else{
-            String name = firstName + " " + lastName;
-            nameTV.setText(name);
-        }
-
-        // University
-        String university = MainPageS.student.getUniversity();
-        if(university.equals("null")){
-            universityTV.setText(R.string.message_unknown_university);
-        }else{
-            universityTV.setText(university);
-        }
-
-        // Description
-        String description = MainPageS.student.getProfileDescription();
-        if(description.equals("null")){
-            descriptionTV.setText(R.string.message_no_description);
-        }else{
-            descriptionTV.setText(description);
-        }
+        }).start();
     }
 
 
@@ -238,6 +313,12 @@ public class FragmentProfilesS extends Fragment {
 
         switch (id) {
             case R.id.settings:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 Intent intent = new Intent(view.getContext(), SettingsS.class);
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
@@ -259,6 +340,12 @@ public class FragmentProfilesS extends Fragment {
                 aboutPopup.show();
                 break;
             case R.id.logOut:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 logOutPopup = new Dialog(view.getContext());
                 logOutPopup.setContentView(R.layout.popup_log_out);
 
@@ -316,12 +403,24 @@ public class FragmentProfilesS extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == 0){
+
+            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // from Edit profile
             setFields();
         }
 
         if(requestCode == 1){
-            followingTV.setText(HelpingFunctions.getFollowing(MainPageS.student.getUsername()));
+
+            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            followingTV.setText(HelpingFunctions.getFollowingNumber(MainPageS.student.getUsername()));
             String notificationNumber = HelpingFunctions.getNumberOfNotifications(MainPageS.student.getUsername());
             if(notificationNumber.equals("0")){
                 notificationBadgeTV.setVisibility(View.INVISIBLE);
@@ -334,6 +433,12 @@ public class FragmentProfilesS extends Fragment {
         }
 
         if(requestCode == 2 && resultCode == Activity.RESULT_OK){
+
+            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             String notificationNumber = HelpingFunctions.getNumberOfNotifications(MainPageS.student.getUsername());
             if(notificationNumber.equals("0")){
                 notificationBadgeTV.setVisibility(View.INVISIBLE);
@@ -361,6 +466,11 @@ public class FragmentProfilesS extends Fragment {
     public void onResume() {
         super.onResume();
 
+
+        if(!HelpingFunctions.isConnected(view.getContext())){
+            Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         // Notification Badge
         MainPageS.resetBadge();
     }

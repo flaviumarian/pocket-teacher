@@ -174,6 +174,11 @@ public class OnboardingS extends AppCompatActivity {
 
     private void exitOnboarding(){
 
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String result = HelpingFunctions.setOnboardingBasedOnUsername(student.getUsername(), "1");
         if(result.equals("Not changed.")){
             Toast.makeText(this, "An error occurred. Please try again later.", Toast.LENGTH_SHORT).show();

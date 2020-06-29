@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.adapters.BlockedStudentsRecyclerAdapter;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.aiding_classes.Student;
 import com.licence.pocketteacher.teacher.MainPageT;
@@ -38,7 +40,6 @@ public class FragmentBlockedLandingPage extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
 
         return view;
     }
@@ -46,24 +47,43 @@ public class FragmentBlockedLandingPage extends Fragment {
 
     private void initiateComponents(){
 
-        // Image View
-        backIV = view.findViewById(R.id.backIV);
-        searchIV = view.findViewById(R.id.searchIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Recycle View
-        studentsRV = view.findViewById(R.id.studentsRV);
+                // Image View
+                backIV = view.findViewById(R.id.backIV);
+                searchIV = view.findViewById(R.id.searchIV);
 
-        // Array list
-        blockedStudents = HelpingFunctions.getAllBlockedStudents(MainPageT.teacher.getUsername());
-        TextView infoTV = view.findViewById(R.id.infoTV);
-        if(blockedStudents.size() > 0){
-            infoTV.setVisibility(View.INVISIBLE);
-            searchIV.setVisibility(View.VISIBLE);
-        }else{
-            infoTV.setVisibility(View.VISIBLE);
-            searchIV.setVisibility(View.INVISIBLE);
+                // Recycle View
+                studentsRV = view.findViewById(R.id.studentsRV);
 
-        }
+                // Array list
+                blockedStudents = HelpingFunctions.getAllBlockedStudents(MainPageT.teacher.getUsername());
+                final TextView infoTV = view.findViewById(R.id.infoTV);
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Array list
+                            if(blockedStudents.size() > 0){
+                                infoTV.setVisibility(View.INVISIBLE);
+                                searchIV.setVisibility(View.VISIBLE);
+                            }else{
+                                infoTV.setVisibility(View.VISIBLE);
+                                searchIV.setVisibility(View.INVISIBLE);
+                            }
+
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private void setListeners(){
@@ -79,6 +99,12 @@ public class FragmentBlockedLandingPage extends Fragment {
         searchIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // Create new fragment and transaction
                 Fragment newFragment = new FragmentBlockedNamePage();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -96,6 +122,8 @@ public class FragmentBlockedLandingPage extends Fragment {
             studentsRV.setAdapter(blockedStudentsRecyclerAdapter);
             studentsRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
         }
+
+        view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 
 }

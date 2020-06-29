@@ -6,16 +6,19 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -37,6 +40,8 @@ import com.licence.pocketteacher.student.profile.FragmentProfilesS;
 import com.licence.pocketteacher.student.search.FragmentSearchS;
 
 import java.util.ArrayList;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class MainPageS extends AppCompatActivity {
 
@@ -61,7 +66,10 @@ public class MainPageS extends AppCompatActivity {
         initiateComponents();
         setListeners();
 
+
     }
+
+
 
     private void getLoginIntent() {
 
@@ -97,23 +105,43 @@ public class MainPageS extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
+                boolean notConnected = false;
 
                 switch (item.getItemId()) {
                     case R.id.search:
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            notConnected = true;
+                            break;
+                        }
                         selectedFragment = new FragmentSearchS();
                         resetBadge();
                         break;
                     case R.id.home:
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            notConnected = true;
+                            break;
+                        }
                         selectedFragment = new FragmentHomeS();
                         resetBadge();
                         break;
                     case R.id.profile:
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            notConnected = true;
+                            break;
+                        }
                         selectedFragment = new FragmentProfilesS();
                         resetBadge();
                         break;
                 }
 
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, selectedFragment).commit();
+                if(!notConnected) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, selectedFragment).commit();
+                }else{
+                    return false;
+                }
 
                 return true; // select the item - false would mean not selecting it
             }
@@ -121,6 +149,7 @@ public class MainPageS extends AppCompatActivity {
     }
 
     public static void generateAllPosts(){
+
         allPosts = HelpingFunctions.getAllPosts(student.getUsername());
 
     }
@@ -138,6 +167,11 @@ public class MainPageS extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         if (fragment instanceof FragmentSearchS || fragment instanceof FragmentProfilesS || fragment instanceof FragmentHomeS) {

@@ -10,14 +10,18 @@ public class Conversation  implements Comparable<Conversation>{
     private String gender;
     private String lastMessage;
     private String time;
+    private int numberOfMessages;
+    private int blocked;
 
 
-    public Conversation(String username, String imageBase64, String gender, String lastMessage, String time) {
+    public Conversation(String username, String imageBase64, String gender, String lastMessage, String time, int numberOfMessages, int blocked) {
         this.username = username;
         this.imageBase64 = imageBase64;
         this.gender = gender;
         setLastMessage(lastMessage);
         setTime(time);
+        this.numberOfMessages = numberOfMessages;
+        this.blocked = blocked;
 
 
     }
@@ -53,8 +57,8 @@ public class Conversation  implements Comparable<Conversation>{
     public void setLastMessage(String lastMessage) {
         String displayedMessage;
 
-        if(lastMessage.length() > 45){
-            displayedMessage = lastMessage.substring(0, 45);
+        if(lastMessage.length() > 40){
+            displayedMessage = lastMessage.substring(0, 40);
             displayedMessage += "...";
 
             this.lastMessage = displayedMessage;
@@ -86,7 +90,21 @@ public class Conversation  implements Comparable<Conversation>{
         this.time = time;
     }
 
+    public int getNumberOfMessages() {
+        return numberOfMessages;
+    }
 
+    public void setNumberOfMessages(int numberOfMessages) {
+        this.numberOfMessages = numberOfMessages;
+    }
+
+    public int getBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(int blocked) {
+        this.blocked = blocked;
+    }
 
     @Override
     public int compareTo(Conversation o) {

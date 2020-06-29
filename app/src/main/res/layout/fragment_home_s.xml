@@ -32,16 +32,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/homeToolbar"
-        android:visibility="invisible"
-        android:fontFamily="@font/open_sans_bold"
-        android:textStyle="bold"
-        android:textColor="@color/white"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:fontFamily="@font/open_sans_bold"
+        android:text="@string/message_home_1"
         android:textAlignment="center"
-        android:text="@string/message_home_1" />
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:visibility="invisible" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
@@ -56,7 +56,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/postsRV"
@@ -68,26 +68,20 @@
         </androidx.core.widget.NestedScrollView>
 
 
-
-
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
-
-
     <!-- Arrow pointing at Search tab -->
-    <ImageView
-        android:id="@+id/arrowIV"
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieAnimationView"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:visibility="invisible"
         android:layout_alignParentBottom="true"
+        android:layout_marginStart="80dp"
         android:layout_marginBottom="5dp"
-        android:layout_marginStart="20dp"
-        android:src="@drawable/logo_down_arrow"
-        android:contentDescription="@string/description_arrow"/>
-
-
+        app:lottie_fileName="arrow_animation.json"
+        app:lottie_loop="true"
+        />
 
 
 </RelativeLayout>

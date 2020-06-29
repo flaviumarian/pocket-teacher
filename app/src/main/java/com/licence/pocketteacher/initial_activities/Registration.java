@@ -188,6 +188,12 @@ public class Registration extends AppCompatActivity {
                     Snackbar.make(view, "Don't have one? Request it here: ", Snackbar.LENGTH_LONG).setAction("REQUEST", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+
+                            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             verificationRequestPopup = new Dialog(Registration.this);
                             verificationRequestPopup.setContentView(R.layout.popup_request_verification_code);
 
@@ -210,6 +216,12 @@ public class Registration extends AppCompatActivity {
                             sendBttn.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+
+                                    if(!HelpingFunctions.isConnected(getApplicationContext())){
+                                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+
                                     if(HelpingFunctions.isEditTextEmpty(emailET)){
                                         emailET.setError("Insert email.");
                                         return;
@@ -305,6 +317,12 @@ public class Registration extends AppCompatActivity {
     }
 
     private void signUp(){
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         boolean canRegister = true;
 
         // Check if fields are empty and/or valid
@@ -338,7 +356,7 @@ public class Registration extends AppCompatActivity {
 
         // Check if the username/email exists
         if(canRegister) {
-            String result = HelpingFunctions.verifyIfUsernameOrEmailExists(usernameET.getText().toString(), emailET.getText().toString());
+            String result = HelpingFunctions.verifyIfUsernameOrEmailExists(usernameET.getText().toString().toLowerCase(), emailET.getText().toString().toLowerCase());
             if (result.equals("User found.")) {
                 usernameET.setError("Username already used.");
                 canRegister = false;
@@ -364,13 +382,13 @@ public class Registration extends AppCompatActivity {
                 String confirmationCode = HelpingFunctions.generateRandomString(10);
                 // Registering the user
                 if(teacherIV.getTag().equals(1)){
-                    String result = HelpingFunctions.registerUser(usernameET.getText().toString(), emailET.getText().toString(), passwordToSendToDB, verificationET.getText().toString(), confirmationCode);
+                    String result = HelpingFunctions.registerUser(usernameET.getText().toString().toLowerCase(), emailET.getText().toString().toLowerCase(), passwordToSendToDB, verificationET.getText().toString(), confirmationCode);
                     if(result.equals("Error occurred.")){
                         Toast.makeText(this, "An error occurred. Please try again later.", Toast.LENGTH_SHORT).show();
                         return;
                     }
                 } else{
-                    String result = HelpingFunctions.registerUser(usernameET.getText().toString(), emailET.getText().toString(), passwordToSendToDB, "no_code", confirmationCode);
+                    String result = HelpingFunctions.registerUser(usernameET.getText().toString().toLowerCase(), emailET.getText().toString().toLowerCase(), passwordToSendToDB, "no_code", confirmationCode);
                     if(result.equals("Error occurred.")){
                         Toast.makeText(this, "An error occurred. Please try again later.", Toast.LENGTH_SHORT).show();
                         return;
@@ -381,7 +399,7 @@ public class Registration extends AppCompatActivity {
                 String subject = "Welcome to Pocket Teacher - NO-REPLY";
                 String text = "Dear Pocket Teacher user,\n\n\tThank you for creating your account. You will need your username/email & password to access your account, change your profile preferences and actually reap all the benefits this application provides.\nIn order to validate you account, you must use the following code when you first sign in: \n\n\t\t\t" + confirmationCode + "\n\n\n\tBest regards,\n\t\t\tPocket Teacher team";
 
-                HelpingFunctions.sendEmail(emailET.getText().toString(), subject, text);
+                HelpingFunctions.sendEmail(emailET.getText().toString().toLowerCase(), subject, text);
                 Intent intent = new Intent(this, ConfirmationSent.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
@@ -583,6 +601,12 @@ public class Registration extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
         if(!HelpingFunctions.isEditTextEmpty(usernameET) || !HelpingFunctions.isEditTextEmpty(emailET) || !HelpingFunctions.isEditTextEmpty(passwordET) || !HelpingFunctions.isEditTextEmpty(confirmPasswordET) || !HelpingFunctions.isEditTextEmpty(verificationET)){
             goBackPopup = new Dialog(Registration.this);
             goBackPopup.setContentView(R.layout.popup_go_back);
@@ -606,6 +630,11 @@ public class Registration extends AppCompatActivity {
             yesButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     goBackPopup.dismiss();
 
                     // Hide keyboard

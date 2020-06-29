@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -44,21 +45,48 @@ public class EditProfileT extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile_t);
 
         initiateComponents();
-        setListeners();
-
 
     }
 
     private void initiateComponents(){
 
-        // Image View
-        backIV = findViewById(R.id.backIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // List View
-        changeLV = findViewById(R.id.changeLV);
+                // Image View
+                backIV = findViewById(R.id.backIV);
 
-        // Button
-        logOutBttn = findViewById(R.id.logOutBttn);
+                // List View
+                changeLV = findViewById(R.id.changeLV);
+
+                // Button
+                logOutBttn = findViewById(R.id.logOutBttn);
+
+                // List View
+                final int[] changesImages = {R.drawable.ic_person_black_24dp, R.drawable.ic_wallpaper_black_24dp, R.drawable.logo_description, R.drawable.logo_university, R.drawable.logo_gender};
+                final String[] names = {"Name", "Profile Picture", "Description", "University", "Gender"};
+
+
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            EditProfileT.ChangeAdapter changeAdapter = new EditProfileT.ChangeAdapter(getApplicationContext(), changesImages, names);
+                            changeLV.setAdapter(changeAdapter);
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
 
     }
 
@@ -72,18 +100,16 @@ public class EditProfileT extends AppCompatActivity {
             }
         });
 
-        // List View
-        int[] changesImages = {R.drawable.ic_person_black_24dp, R.drawable.ic_wallpaper_black_24dp, R.drawable.logo_description, R.drawable.logo_university, R.drawable.logo_gender};
-        String[] names = {"Name", "Profile Picture", "Description", "University", "Gender"};
-
-        EditProfileT.ChangeAdapter changeAdapter = new EditProfileT.ChangeAdapter(getApplicationContext(), changesImages, names);
-        changeLV.setAdapter(changeAdapter);
-
-
         // Button
         logOutBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 logOutPopup = new Dialog(EditProfileT.this);
                 logOutPopup.setContentView(R.layout.popup_log_out);
 
@@ -187,6 +213,12 @@ public class EditProfileT extends AppCompatActivity {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if(position == 0){
                         Intent intent = new Intent(getApplicationContext(), ChangeNameT.class);
                         startActivity(intent);
@@ -232,6 +264,12 @@ public class EditProfileT extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         super.onBackPressed();
         finish();
         overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);

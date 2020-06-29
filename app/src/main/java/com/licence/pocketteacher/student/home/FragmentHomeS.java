@@ -5,9 +5,11 @@ import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.aiding_classes.Post;
@@ -41,6 +44,8 @@ public class FragmentHomeS extends Fragment {
     private PostAdapter postAdapter;
     private ArrayList<Post> posts;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private LottieAnimationView lottieAnimationView;
+    private TextView infoTV;
 
     private int lastPos = 0;
     private int positionPostOpened;
@@ -52,7 +57,6 @@ public class FragmentHomeS extends Fragment {
         view = inflater.inflate(R.layout.fragment_home_s, container, false);
 
         initiateComponents();
-        setListeners();
         positionPostOpened = -1; // for when returning to the activity
 
         return view;
@@ -60,81 +64,109 @@ public class FragmentHomeS extends Fragment {
 
 
     private void initiateComponents() {
-        // Text View
-        TextView infoTV = view.findViewById(R.id.infoTV);
-
-        // Image View
-        ImageView arrowIV = view.findViewById(R.id.arrowIV);
-
-        // Swipe Refresh Layout
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
-
-        // ArrayList
-        posts = new ArrayList<>();
-        getNextPosts();
-
-        if (MainPageS.allPosts.size() == 0) {
-            if (Integer.parseInt(HelpingFunctions.getFollowing(MainPageS.student.getUsername())) > 0) {
-                infoTV.setText(R.string.message_home_2);
-            }
-            infoTV.setVisibility(View.VISIBLE);
-            arrowIV.setVisibility(View.VISIBLE);
-
-            swipeRefreshLayout.setRefreshing(false);
-            swipeRefreshLayout.setEnabled(false);
-
-        }else{
-            infoTV.setVisibility(View.INVISIBLE);
-            arrowIV.setVisibility(View.INVISIBLE);
-            swipeRefreshLayout.setEnabled(true);
-        }
 
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Recycler View
-        postsRV = view.findViewById(R.id.postsRV);
-        postsRV.setVisibility(View.VISIBLE);
-        postsRV.setHasFixedSize(true); // improves performance
-        postsRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
+                // Text View
+                infoTV = view.findViewById(R.id.infoTV);
 
+                // Lottie animator
+                lottieAnimationView = view.findViewById(R.id.lottieAnimationView);
 
-        // Adapter
-        postAdapter = new PostAdapter(postsRV, getActivity(), posts);
-        postsRV.setAdapter(postAdapter);
+                // Swipe Refresh Layout
+                swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
+                // ArrayList
+                posts = new ArrayList<>();
 
-        if(!MainPageS.needsRefresh) {
-            // Load more
-            postAdapter.setLoadMore(new LoadMore() {
-                @Override
-                public void onLoadMore() {
+                getNextPosts();
 
-                    if (posts.size() < MainPageS.allPosts.size()) {
-                        posts.add(null);
-                        postAdapter.notifyItemInserted(posts.size() - 1);
+                // Recycler View
+                postsRV = view.findViewById(R.id.postsRV);
 
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                posts.remove(posts.size() - 1);
-                                postAdapter.notifyItemRemoved(posts.size());
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
-                                // load 5 more posts
-                                getNextPosts();
-
-                                postAdapter.notifyDataSetChanged();
-                                postAdapter.setLoaded();
+                            if(!HelpingFunctions.isConnected(view.getContext())){
+                                Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                                return;
                             }
-                        }, 1000);
-                    } else {
-                        posts.add(new Post(true));
-                        postAdapter.notifyItemInserted(posts.size() - 1);
-                    }
-                }
-            });
-        }
 
-        MainPageS.resetBadge();
+                            if (MainPageS.allPosts.size() == 0) {
+                                if (Integer.parseInt(HelpingFunctions.getFollowingNumber(MainPageS.student.getUsername())) > 0) {
+                                    infoTV.setText(R.string.message_home_2);
+                                }
+                                infoTV.setVisibility(View.VISIBLE);
+                                lottieAnimationView.setVisibility(View.VISIBLE);
+                                lottieAnimationView.playAnimation();
+
+                                swipeRefreshLayout.setRefreshing(false);
+                                swipeRefreshLayout.setEnabled(false);
+
+                            } else {
+                                infoTV.setVisibility(View.INVISIBLE);
+                                lottieAnimationView.setVisibility(View.INVISIBLE);
+                                lottieAnimationView.pauseAnimation();
+
+                                swipeRefreshLayout.setEnabled(true);
+                            }
+
+                            // Recycler View
+                            postsRV.setVisibility(View.VISIBLE);
+                            postsRV.setHasFixedSize(true); // improves performance
+                            postsRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+                            // Adapter
+                            postAdapter = new PostAdapter(postsRV, getActivity(), posts);
+                            postsRV.setAdapter(postAdapter);
+
+                            if (!MainPageS.needsRefresh) {
+                                // Load more
+                                postAdapter.setLoadMore(new LoadMore() {
+                                    @Override
+                                    public void onLoadMore() {
+
+                                        if (posts.size() < MainPageS.allPosts.size()) {
+                                            posts.add(null);
+                                            postAdapter.notifyItemInserted(posts.size() - 1);
+
+                                            new Handler().postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    posts.remove(posts.size() - 1);
+                                                    postAdapter.notifyItemRemoved(posts.size());
+
+                                                    // load 5 more posts
+                                                    getNextPosts();
+
+                                                    postAdapter.notifyDataSetChanged();
+                                                    postAdapter.setLoaded();
+                                                }
+                                            }, 1000);
+                                        } else {
+                                            posts.add(new Post(true));
+                                            postAdapter.notifyItemInserted(posts.size() - 1);
+                                        }
+                                    }
+                                });
+                            }
+
+                            MainPageS.resetBadge();
+
+                            setListeners();
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     private void setListeners() {
@@ -143,8 +175,16 @@ public class FragmentHomeS extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    swipeRefreshLayout.setRefreshing(false);
+                    return;
+                }
+
                 swipeRefreshLayout.setRefreshing(true);
                 postsRV.setVisibility(View.INVISIBLE);
+
+
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -244,9 +284,13 @@ public class FragmentHomeS extends Fragment {
 
 
         PostAdapter(RecyclerView recyclerView, Activity activity, ArrayList<Post> posts) {
-            this.activity = activity;
-            this.context = activity.getApplicationContext();
-            this.posts = posts;
+            try {
+                this.activity = activity;
+                this.context = activity.getApplicationContext();
+                this.posts = posts;
+            }catch(Exception e){
+                return;
+            }
 
 
             final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
@@ -283,6 +327,7 @@ public class FragmentHomeS extends Fragment {
 
             return posts.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
         }
+
 
         @NonNull
         @Override
@@ -377,6 +422,11 @@ public class FragmentHomeS extends Fragment {
                 viewHolder.profileImageIV.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if(!HelpingFunctions.isConnected(context)){
+                            Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         Intent intent = new Intent(context, SeeTeacher.class);
                         intent.putExtra("username", post.getUsername());
                         v.getContext().startActivity(intent);
@@ -388,6 +438,11 @@ public class FragmentHomeS extends Fragment {
                 viewHolder.teacherNameTV.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if(!HelpingFunctions.isConnected(context)){
+                            Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         Intent intent = new Intent(context, SeeTeacher.class);
                         intent.putExtra("username", post.getUsername());
                         v.getContext().startActivity(intent);
@@ -399,6 +454,11 @@ public class FragmentHomeS extends Fragment {
                 viewHolder.teacherUsernameTV.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if(!HelpingFunctions.isConnected(context)){
+                            Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         Intent intent = new Intent(context, SeeTeacher.class);
                         intent.putExtra("username", post.getUsername());
                         v.getContext().startActivity(intent);
@@ -411,9 +471,16 @@ public class FragmentHomeS extends Fragment {
                 viewHolder.likesIV.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(context)){
+                            Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         if (viewHolder.likesIV.getTag().equals("0")) {
 
                             String result = HelpingFunctions.likePost(viewHolder.teacherUsernameTV.getText().toString(), viewHolder.subjectTV.getText().toString(), viewHolder.folderTV.getText().toString(), viewHolder.titleTV.getText().toString(), MainPageS.student.getUsername());
+                            Log.i("array1", result + " e rezultatul la like");
                             if (result.equals("Data inserted.")) {
 
                                 new Thread() {
@@ -454,10 +521,18 @@ public class FragmentHomeS extends Fragment {
                 viewHolder.relativeLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(context)){
+                            Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         final ProgressDialog loading = ProgressDialog.show(view.getContext(), "Please wait", "Loading...", true);
                         new Thread() {
                             @Override
                             public void run() {
+
+
 
                                 positionPostOpened = position;
 
@@ -492,6 +567,12 @@ public class FragmentHomeS extends Fragment {
                     viewHolder.downloadTV.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+
+                            if(!HelpingFunctions.isConnected(context)){
+                                Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             try {
                                 DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
                                 Uri uri = Uri.parse(post.getFileUrl());
@@ -529,44 +610,67 @@ public class FragmentHomeS extends Fragment {
     public void onResume() {
         super.onResume();
 
-        if(MainPageS.needsRefresh){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (MainPageS.needsRefresh) {
 
-            swipeRefreshLayout.setRefreshing(true);
-            swipeRefreshLayout.setEnabled(true);
-            postsRV = view.findViewById(R.id.postsRV);
-            postsRV.setVisibility(View.INVISIBLE);
+                                if(!HelpingFunctions.isConnected(view.getContext())){
+                                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    MainPageS.allPosts.clear();
-                    MainPageS.generateAllPosts();
-                    lastPos = 0;
-                    initiateComponents();
-                    postAdapter.notifyDataSetChanged();
-                    swipeRefreshLayout.setRefreshing(false);
+                                swipeRefreshLayout.setRefreshing(true);
+                                swipeRefreshLayout.setEnabled(true);
+                                postsRV = view.findViewById(R.id.postsRV);
+                                postsRV.setVisibility(View.INVISIBLE);
+                                infoTV.setVisibility(View.INVISIBLE);
+                                lottieAnimationView.setVisibility(View.INVISIBLE);
 
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        MainPageS.allPosts.clear();
+                                        MainPageS.generateAllPosts();
+                                        lastPos = 0;
+                                        initiateComponents();
+                                        postAdapter.notifyDataSetChanged();
+                                        swipeRefreshLayout.setRefreshing(false);
+
+                                    }
+                                }, 2000);
+
+
+                                MainPageS.needsRefresh = false;
+
+                            } else {
+                                if (positionPostOpened != -1) {
+                                    Post post = posts.get(positionPostOpened);
+                                    posts.get(positionPostOpened).setLikedStatus(HelpingFunctions.getLikedStatus(MainPageS.student.getUsername(), post.getUsername(), post.getSubject(), post.getFolder(), post.getTitle()));
+                                    posts.get(positionPostOpened).setLikes(HelpingFunctions.getLikesForPost(post.getUsername(), post.getSubject(), post.getFolder(), post.getTitle()));
+                                    posts.get(positionPostOpened).setComments(HelpingFunctions.getCommentsForPost(post.getUsername(), post.getSubject(), post.getFolder(), post.getTitle()));
+                                    postAdapter.notifyItemChanged(positionPostOpened);
+
+                                    positionPostOpened = -1;
+                                }
+                            }
+
+
+                            // Notification Badge
+                            MainPageS.resetBadge();
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }, 2000);
-
-
-            MainPageS.needsRefresh = false;
-
-        }else {
-            if (positionPostOpened != -1) {
-                Post post = posts.get(positionPostOpened);
-                posts.get(positionPostOpened).setLikedStatus(HelpingFunctions.getLikedStatus(MainPageS.student.getUsername(), post.getUsername(), post.getSubject(), post.getFolder(), post.getTitle()));
-                posts.get(positionPostOpened).setLikes(HelpingFunctions.getLikesForPost(post.getUsername(), post.getSubject(), post.getFolder(), post.getTitle()));
-                posts.get(positionPostOpened).setComments(HelpingFunctions.getCommentsForPost(post.getUsername(), post.getSubject(), post.getFolder(), post.getTitle()));
-                postAdapter.notifyItemChanged(positionPostOpened);
-
-                positionPostOpened = -1;
             }
-        }
+        }).start();
 
-
-        // Notification Badge
-        MainPageS.resetBadge();
 
     }
 }

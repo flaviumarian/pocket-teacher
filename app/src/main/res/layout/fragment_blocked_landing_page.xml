@@ -45,6 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:layout_marginEnd="10dp"
                 android:src="@drawable/ic_search_black_24dp"
                 android:contentDescription="@string/description_search_image"/>
 
@@ -59,11 +60,24 @@
         android:layout_below="@id/searchToolbar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
+        android:visibility="invisible"
         android:fontFamily="@font/open_sans_bold"
         android:textStyle="bold"
         android:text="@string/message_blocked_users_1"
         android:textColor="@color/white"
         android:textSize="16sp" />
+
+    <RelativeLayout
+        android:id="@+id/loadingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center" >
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+    </RelativeLayout>
 
     <!-- Recycler View for blocked users -->
     <androidx.recyclerview.widget.RecyclerView

@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.adapters.TeachersRecyclerAdapter;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.MainPageS;
 import com.licence.pocketteacher.student.search.search_fragments.FragmentSearchName;
@@ -40,7 +42,6 @@ public class FragmentSearchS extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
 
         return view;
     }
@@ -52,17 +53,39 @@ public class FragmentSearchS extends Fragment {
         profileToolbar.setTitle("");
         ((AppCompatActivity) getActivity()).setSupportActionBar(profileToolbar);
 
-        // Image View
-        searchIV = view.findViewById(R.id.searchIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Text View
-        recommendedTV = view.findViewById(R.id.recommendedTV);
+                // Image View
+                searchIV = view.findViewById(R.id.searchIV);
 
-        // Recycle View
-        teachersRV = view.findViewById(R.id.teachersRV);
+                // Text View
+                recommendedTV = view.findViewById(R.id.recommendedTV);
 
-        // Array list
-        premiumTeachers = HelpingFunctions.getAllPremiumTeachers(MainPageS.student.getUsername());
+                // Recycle View
+                teachersRV = view.findViewById(R.id.teachersRV);
+
+                // Array list
+                premiumTeachers = HelpingFunctions.getAllPremiumTeachers(MainPageS.student.getUsername());
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            setListeners();
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+
+
 
     }
 
@@ -72,6 +95,11 @@ public class FragmentSearchS extends Fragment {
         searchIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // Create new fragment and transaction
                 Fragment newFragment = new FragmentSearchName();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -92,6 +120,8 @@ public class FragmentSearchS extends Fragment {
 
         teachersRV.setAdapter(teachersRecyclerAdapter);
         teachersRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 
     @Override

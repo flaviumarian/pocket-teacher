@@ -14,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
@@ -34,33 +35,51 @@ public class RemoveSubject extends AppCompatActivity {
         setContentView(R.layout.activity_remove_subject);
 
         initiateComponents();
-        setListeners();
 
     }
 
     private void initiateComponents(){
 
-        // Image Views
-        backIV = findViewById(R.id.backIV);
-        closeWarningIV = findViewById(R.id.closeWarningIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Array List
-        subjectsToDelete = new ArrayList<>();
+                // Image Views
+                backIV = findViewById(R.id.backIV);
+                closeWarningIV = findViewById(R.id.closeWarningIV);
 
-        // List View
-        ListView subjectsLV = findViewById(R.id.subjectsLV);
-        ArrayList<String> subjectNames = new ArrayList<>();
-        ArrayList<String> domainNames = new ArrayList<>();
+                // Array List
+                subjectsToDelete = new ArrayList<>();
 
-        for(Subject subject : MainPageT.teacher.getSubjects()){
-            subjectNames.add(subject.getSubjectName());
-            domainNames.add(subject.getDomainName());
-        }
+                // List View
+                final ListView subjectsLV = findViewById(R.id.subjectsLV);
+                final ArrayList<String> subjectNames = new ArrayList<>();
+                final ArrayList<String> domainNames = new ArrayList<>();
 
-        SubjectsAdapter subjectsAdapter = new SubjectsAdapter(getApplicationContext(), subjectNames, domainNames);
-        subjectsLV.setAdapter(subjectsAdapter);
-        HelpingFunctions.setListViewHeightBasedOnChildren(subjectsLV);
+                for(Subject subject : MainPageT.teacher.getSubjects()){
+                    subjectNames.add(subject.getSubjectName());
+                    domainNames.add(subject.getDomainName());
+                }
 
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            SubjectsAdapter subjectsAdapter = new SubjectsAdapter(getApplicationContext(), subjectNames, domainNames);
+                            subjectsLV.setAdapter(subjectsAdapter);
+                            HelpingFunctions.setListViewHeightBasedOnChildren(subjectsLV);
+
+                            setListeners();
+
+                        }
+                    });
+
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
     }
 
@@ -131,6 +150,7 @@ public class RemoveSubject extends AppCompatActivity {
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
                         if(endIV.getTag().equals("0")){
                             endIV.setImageResource(R.drawable.ic_delete_forever_red_24dp);
                             endIV.setTag("1");
@@ -150,6 +170,12 @@ public class RemoveSubject extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
 
         if(subjectsToDelete.size() > 0){
             String email = MainPageT.teacher.getEmail();

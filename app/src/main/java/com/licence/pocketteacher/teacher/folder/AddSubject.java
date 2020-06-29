@@ -46,7 +46,6 @@ public class AddSubject extends AppCompatActivity {
         setContentView(R.layout.activity_add_subject);
 
         initiateComponents();
-        setListeners();
 
     }
 
@@ -57,42 +56,57 @@ public class AddSubject extends AppCompatActivity {
         subjectToolbar.setTitle("");
         this.setSupportActionBar(subjectToolbar);
 
-        // Image View
-        backIV = findViewById(R.id.backIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Array Lists
-        // Subjects
-        ArrayList<ArrayList> completeSubjects = HelpingFunctions.getAllSubjects();
-        availableSubjects = completeSubjects.get(0);
-        availableSubjectDescriptions = completeSubjects.get(1);
-        availableSubjectImages = completeSubjects.get(2);
-        currentSubjects = new ArrayList<>();
-        currentSubjects.addAll(availableSubjects);
-        currentSubjects.add(0, "Subject");
-        removeExistingSubjects(currentSubjects);
+                // Image View
+                backIV = findViewById(R.id.backIV);
 
+                // Array Lists
+                // Subjects
+                ArrayList<ArrayList> completeSubjects = HelpingFunctions.getAllSubjects();
+                availableSubjects = completeSubjects.get(0);
+                availableSubjectDescriptions = completeSubjects.get(1);
+                availableSubjectImages = completeSubjects.get(2);
+                currentSubjects = new ArrayList<>();
+                currentSubjects.addAll(availableSubjects);
+                currentSubjects.add(0, "Subject");
+                removeExistingSubjects(currentSubjects);
 
-        // Domains
-        ArrayList<ArrayList> completeDomains = HelpingFunctions.getAllDomains();
-        availableDomains = completeDomains.get(0);
-        availableDomains.add(0, "Domain");
+                // Domains
+                ArrayList<ArrayList> completeDomains = HelpingFunctions.getAllDomains();
+                availableDomains = completeDomains.get(0);
+                availableDomains.add(0, "Domain");
 
+                // Spinners
+                subjectsSpinner = findViewById(R.id.subjectsSpinner);
+                domainsSpinner = findViewById(R.id.domainsSpinner);
 
+                // Button
+                requestBttn = findViewById(R.id.requestBttn);
 
-        // Spinners
-        subjectsSpinner = findViewById(R.id.subjectsSpinner);
-        ArrayAdapter<String> adapterSubjects = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, currentSubjects);
-        subjectsSpinner.setAdapter(adapterSubjects);
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
+                            // Spinners
+                            ArrayAdapter<String> adapterSubjects = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, currentSubjects);
+                            subjectsSpinner.setAdapter(adapterSubjects);
 
-        domainsSpinner = findViewById(R.id.domainsSpinner);
-        ArrayAdapter<String> adapterDomains = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, availableDomains);
-        domainsSpinner.setAdapter(adapterDomains);
+                            ArrayAdapter<String> adapterDomains = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, availableDomains);
+                            domainsSpinner.setAdapter(adapterDomains);
 
+                            setListeners();
 
-        // Button
-        requestBttn = findViewById(R.id.requestBttn);
-
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
     }
 
@@ -111,6 +125,11 @@ public class AddSubject extends AppCompatActivity {
         domainsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
 
@@ -144,6 +163,12 @@ public class AddSubject extends AppCompatActivity {
         subjectsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
             }
 
@@ -155,6 +180,12 @@ public class AddSubject extends AppCompatActivity {
         requestBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 requestPopup = new Dialog(AddSubject.this);
                 requestPopup.setContentView(R.layout.popup_request_subject);
 
@@ -180,6 +211,12 @@ public class AddSubject extends AppCompatActivity {
                 sendBttn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         boolean canSend = true;
                         if(HelpingFunctions.isEditTextEmpty(subjectET)){
                             subjectET.setError("Insert subject title");
@@ -249,6 +286,12 @@ public class AddSubject extends AppCompatActivity {
 
         switch (id) {
             case R.id.refresh:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 currentSubjects.clear();
                 currentSubjects.addAll(availableSubjects);
                 currentSubjects.add(0, "Subject");
@@ -264,6 +307,11 @@ public class AddSubject extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         int position = (int)subjectsSpinner.getSelectedItemId();
 

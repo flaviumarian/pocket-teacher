@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 public class OpeningPage extends AppCompatActivity {
 
     public static final String AUTO_LOGIN = "AutoLogin";
+    private boolean isDisplayed = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,7 @@ public class OpeningPage extends AppCompatActivity {
                     ArrayList<String> loginData = HelpingFunctions.logInUserData(email);
 
                     // NO EXISTING ACCOUNT
-                    if(loginData == null){
+                    if (loginData == null) {
 
                         String firstName, lastName, imageUrl;
                         firstName = object.getString("first_name");
@@ -92,7 +94,7 @@ public class OpeningPage extends AppCompatActivity {
                             overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
                             finish();
 
-                        }catch(Exception e){
+                        } catch (Exception e) {
                             return;
                         }
                         return;
@@ -101,7 +103,7 @@ public class OpeningPage extends AppCompatActivity {
                     Intent intent;
 
                     // NO AUTO LOGIN
-                    if(loginData.get(10).equals("0")){
+                    if (loginData.get(10).equals("0")) {
                         intent = new Intent(getApplicationContext(), LoginPage.class);
                         startActivity(intent);
                         finish();
@@ -109,21 +111,20 @@ public class OpeningPage extends AppCompatActivity {
                     }
 
                     // DEACTIVATED ACCOUNT
-                    if(loginData.get(3).equals("2")){
+                    if (loginData.get(3).equals("2")) {
                         Snackbar.make(getCurrentFocus(), "Account not available.", Snackbar.LENGTH_SHORT).show();
                         return;
                     }
 
 
-
                     // STUDENT login
-                    if(loginData.get(11).equals("yes")){
+                    if (loginData.get(11).equals("yes")) {
 
                         Student student = new Student(loginData.get(0), loginData.get(1), loginData.get(2), email, loginData.get(5), loginData.get(6), loginData.get(7), loginData.get(8), loginData.get(9));
 
 
                         // ONBOARDING
-                        if(loginData.get(4).equals("0")){
+                        if (loginData.get(4).equals("0")) {
 
                             intent = new Intent(getApplicationContext(), OnboardingS.class);
                             intent.putExtra("student", student);
@@ -144,13 +145,13 @@ public class OpeningPage extends AppCompatActivity {
                     }
 
                     // TEACHER login
-                    if(loginData.get(11).equals("no")){
+                    if (loginData.get(11).equals("no")) {
 
                         Teacher teacher = new Teacher(loginData.get(0), loginData.get(1), loginData.get(2), email, loginData.get(5), loginData.get(6), loginData.get(7), loginData.get(8), loginData.get(9), HelpingFunctions.getAllSubjectsForTeacher(email));
 
 
                         // ONBOARDING
-                        if(loginData.get(4).equals("0")){
+                        if (loginData.get(4).equals("0")) {
 
                             intent = new Intent(getApplicationContext(), OnboardingT.class);
                             intent.putExtra("teacher", teacher);
@@ -182,23 +183,23 @@ public class OpeningPage extends AppCompatActivity {
         request.executeAsync();
     }
 
-    private void googleSignIn(GoogleSignInAccount account){
-        try{
+    private void googleSignIn(GoogleSignInAccount account) {
+        try {
             String email = account.getEmail();
             ArrayList<String> loginData = HelpingFunctions.logInUserData(email);
             Intent intent;
 
             // NO EXISTING ACCOUNT
-            if(loginData == null){
+            if (loginData == null) {
 
                 String firstName, lastName;
                 firstName = account.getGivenName();
                 lastName = account.getFamilyName();
                 String base64Image;
-                if(account.getPhotoUrl() != null){
+                if (account.getPhotoUrl() != null) {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), account.getPhotoUrl());
                     base64Image = HelpingFunctions.convertImageToBase64(bitmap);
-                } else{
+                } else {
                     base64Image = "null";
                 }
 
@@ -218,7 +219,7 @@ public class OpeningPage extends AppCompatActivity {
             }
 
             // NO AUTO LOGIN
-            if(loginData.get(10).equals("0")){
+            if (loginData.get(10).equals("0")) {
                 intent = new Intent(this, LoginPage.class);
                 startActivity(intent);
                 finish();
@@ -226,18 +227,18 @@ public class OpeningPage extends AppCompatActivity {
             }
 
             // DEACTIVATED ACCOUNT
-            if(loginData.get(3).equals("2")){
+            if (loginData.get(3).equals("2")) {
                 Snackbar.make(getCurrentFocus(), "Account not available.", Snackbar.LENGTH_SHORT).show();
                 return;
             }
 
             // STUDENT login
-            if(loginData.get(11).equals("yes")){
+            if (loginData.get(11).equals("yes")) {
 
                 Student student = new Student(loginData.get(0), loginData.get(1), loginData.get(2), email, loginData.get(5), loginData.get(6), loginData.get(7), loginData.get(8), loginData.get(9));
 
                 // ONBOARDING
-                if(loginData.get(4).equals("0")){
+                if (loginData.get(4).equals("0")) {
 
                     intent = new Intent(getApplicationContext(), OnboardingS.class);
                     intent.putExtra("student", student);
@@ -258,7 +259,7 @@ public class OpeningPage extends AppCompatActivity {
             }
 
             // TEACHER login
-            if(loginData.get(11).equals("no")) {
+            if (loginData.get(11).equals("no")) {
                 Teacher teacher = new Teacher(loginData.get(0), loginData.get(1), loginData.get(2), email, loginData.get(5), loginData.get(6), loginData.get(7), loginData.get(8), loginData.get(9), HelpingFunctions.getAllSubjectsForTeacher(email));
 
                 // ONBOARDING
@@ -281,19 +282,19 @@ public class OpeningPage extends AppCompatActivity {
                 finish();
             }
 
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void regularSignIn(SharedPreferences sharedPreferences){
+    private void regularSignIn(SharedPreferences sharedPreferences) {
 
         String email = sharedPreferences.getString("email", "");
         ArrayList<String> loginData = HelpingFunctions.logInUserData(email);
         Intent intent;
 
 
-        if(loginData == null){
+        if (loginData == null) {
             intent = new Intent(this, LoginPage.class);
             startActivity(intent);
             finish();
@@ -302,7 +303,7 @@ public class OpeningPage extends AppCompatActivity {
 
 
         // NO AUTO LOGIN
-        if(loginData.get(10).equals("0")){
+        if (loginData.get(10).equals("0")) {
             intent = new Intent(this, LoginPage.class);
             startActivity(intent);
             finish();
@@ -310,19 +311,19 @@ public class OpeningPage extends AppCompatActivity {
         }
 
         // DEACTIVATED ACCOUNT
-        if(loginData.get(3).equals("2")){
+        if (loginData.get(3).equals("2")) {
             Snackbar.make(getCurrentFocus(), "Account not available.", Snackbar.LENGTH_SHORT).show();
             return;
         }
 
         // STUDENT login
-        if(loginData.get(11).equals("yes")){
+        if (loginData.get(11).equals("yes")) {
 
 
             Student student = new Student(loginData.get(0), loginData.get(1), loginData.get(2), email, loginData.get(5), loginData.get(6), loginData.get(7), loginData.get(8), loginData.get(9));
 
             // EMAIL CONFIRMATION
-            if(loginData.get(3).equals("0")){
+            if (loginData.get(3).equals("0")) {
 
                 intent = new Intent(getApplicationContext(), EmailConf1.class);
                 intent.putExtra("student", student);
@@ -334,7 +335,7 @@ public class OpeningPage extends AppCompatActivity {
             }
 
             // ONBOARDING
-            if(loginData.get(4).equals("0")){
+            if (loginData.get(4).equals("0")) {
 
                 intent = new Intent(getApplicationContext(), OnboardingS.class);
                 intent.putExtra("student", student);
@@ -344,7 +345,6 @@ public class OpeningPage extends AppCompatActivity {
                 overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_left);
                 return;
             }
-
 
 
             // MAIN APPLICATION
@@ -357,13 +357,13 @@ public class OpeningPage extends AppCompatActivity {
         }
 
         // TEACHER login
-        if(loginData.get(11).equals("no")) {
+        if (loginData.get(11).equals("no")) {
 
             Teacher teacher = new Teacher(loginData.get(0), loginData.get(1), loginData.get(2), email, loginData.get(5), loginData.get(6), loginData.get(7), loginData.get(8), loginData.get(9), HelpingFunctions.getAllSubjectsForTeacher(email));
 
 
             // EMAIL CONFIRMATION
-            if(loginData.get(3).equals("0")){
+            if (loginData.get(3).equals("0")) {
 
                 intent = new Intent(getApplicationContext(), EmailConf1.class);
                 intent.putExtra("teacher", teacher);
@@ -401,26 +401,111 @@ public class OpeningPage extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        // Facebook
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        if(accessToken != null){
-            facebookSignIn(accessToken);
+        if(!isDisplayed){
             return;
         }
 
+        // - 1 - not logged in
+        // 0   - regular
+        // 1   - facebook
+        // 2   - google
+        int flag = -1;
+
+
+        // Facebook
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        if (accessToken != null)
+            flag = 1;
+
+
         // Google
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if(account != null){
-            googleSignIn(account);
-            return;
-        }
+        if (account != null)
+            flag = 2;
 
 
         // Regular login
         SharedPreferences sharedPreferences = getSharedPreferences(OpeningPage.AUTO_LOGIN, 0);
-        if(sharedPreferences.getBoolean("loggedIn", false)){
-            regularSignIn(sharedPreferences);
-            return;
+        if (sharedPreferences.getBoolean("loggedIn", false))
+            flag = 0;
+
+
+
+        if(flag != -1){
+
+            // Check for internet connection
+            if (!HelpingFunctions.isConnected(getApplicationContext())) {
+                final Context context = getApplicationContext();
+                Toast.makeText(this, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int count = 0;
+
+                        while (isDisplayed) {
+
+                            try {
+                                Thread.sleep(1500);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            if (HelpingFunctions.isConnected(context)) {
+                                break;
+                            }
+
+                            count++;
+                            if (count == 5) {
+
+                                // Display the message every 7.5 seconds, but check every second and a half
+                                try {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                count = 0;
+                            }
+
+                        }
+
+                        try {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    onStart();
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                }).start();
+
+                return;
+            }else{
+
+                switch(flag){
+                    case 0:
+                        regularSignIn(sharedPreferences);
+                        return;
+                    case 1:
+                        facebookSignIn(accessToken);
+                        return;
+                    case 2:
+                        googleSignIn(account);
+                        return;
+
+                }
+
+            }
+
         }
 
 
@@ -430,4 +515,21 @@ public class OpeningPage extends AppCompatActivity {
         finish();
     }
 
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // When minimizing the app - to stop the thread for looking for internet connection
+        isDisplayed = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // When maximizing the app - to start the thread for looking for internet connection
+        isDisplayed = true;
+        onStart();
+    }
 }

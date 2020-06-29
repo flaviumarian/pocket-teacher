@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.MainPageS;
-import com.licence.pocketteacher.student.search.TeachersRecyclerAdapter;
+import com.licence.pocketteacher.adapters.TeachersRecyclerAdapter;
 import com.licence.pocketteacher.aiding_classes.Teacher;
 
 import java.util.ArrayList;
@@ -42,7 +42,6 @@ public class FragmentFollowingLandingPage extends Fragment {
 
         setHasOptionsMenu(true);
         initiateComponents();
-        setListeners();
 
         return view;
     }
@@ -54,23 +53,45 @@ public class FragmentFollowingLandingPage extends Fragment {
         profileToolbar.setTitle("");
         ((AppCompatActivity) getActivity()).setSupportActionBar(profileToolbar);
 
-        // Image View
-        backIV = view.findViewById(R.id.backIV);
-        searchIV = view.findViewById(R.id.searchIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Recycle View
-        teachersRV = view.findViewById(R.id.teachersRV);
+                // Image View
+                backIV = view.findViewById(R.id.backIV);
+                searchIV = view.findViewById(R.id.searchIV);
 
-        // Array list
-        followingTeachers = HelpingFunctions.getAllFollowingTeachers(MainPageS.student.getUsername());
-        TextView infoTV = view.findViewById(R.id.infoTV);
-        if(followingTeachers.size() > 0){
-            infoTV.setVisibility(View.INVISIBLE);
-            searchIV.setVisibility(View.VISIBLE);
-        }else{
-            infoTV.setVisibility(View.VISIBLE);
-            searchIV.setVisibility(View.INVISIBLE);
-        }
+                // Recycle View
+                teachersRV = view.findViewById(R.id.teachersRV);
+
+                // Array List
+                followingTeachers = HelpingFunctions.getAllFollowingTeachers(MainPageS.student.getUsername());
+                final TextView infoTV = view.findViewById(R.id.infoTV);
+
+
+                try{
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Array List
+                            if(followingTeachers.size() > 0){
+                                infoTV.setVisibility(View.INVISIBLE);
+                                searchIV.setVisibility(View.VISIBLE);
+                            }else{
+                                infoTV.setVisibility(View.VISIBLE);
+                                searchIV.setVisibility(View.INVISIBLE);
+                            }
+
+                            setListeners();
+                        }
+                    });
+
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
     }
 
@@ -104,5 +125,7 @@ public class FragmentFollowingLandingPage extends Fragment {
             teachersRV.setAdapter(teachersRecyclerAdapter);
             teachersRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
         }
+
+        view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 }

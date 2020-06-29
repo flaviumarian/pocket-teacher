@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
@@ -46,9 +47,8 @@ public class SeeNotifications extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_see_notifications);
 
-
         initiateComponents();
-        setListeners();
+
     }
 
 
@@ -59,23 +59,39 @@ public class SeeNotifications extends AppCompatActivity {
         subjectToolbar.setTitle("");
         this.setSupportActionBar(subjectToolbar);
 
-        // Image View
-        backIV = findViewById(R.id.backIV);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Image View
+                backIV = findViewById(R.id.backIV);
 
-        // Text View
-        infoTV = findViewById(R.id.infoTV);
+                // Text View
+                infoTV = findViewById(R.id.infoTV);
 
-        // Recycler View
-        notificationsRV = findViewById(R.id.notificationsRV);
+                // Recycler View
+                notificationsRV = findViewById(R.id.notificationsRV);
 
-        // Array List
-        notifications = HelpingFunctions.getAllNotifications(MainPageS.student.getUsername());
-        if(notifications.size() == 0){
-            infoTV.setVisibility(View.VISIBLE);
-        }else{
-            infoTV.setVisibility(View.INVISIBLE);
-        }
+                // Array List
+                notifications = HelpingFunctions.getAllNotifications(MainPageS.student.getUsername());
 
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(notifications.size() == 0){
+                                infoTV.setVisibility(View.VISIBLE);
+                            }else{
+                                infoTV.setVisibility(View.INVISIBLE);
+                            }
+
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private void setListeners(){
@@ -148,6 +164,11 @@ public class SeeNotifications extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
+                    if(!HelpingFunctions.isConnected(context)){
+                        Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if(holder.messageTV.getText().toString().equals("approved your follow request.")){
                         Intent intent = new Intent(context, SeeTeacher.class);
                         intent.putExtra("username", notification.getUsername());
@@ -213,10 +234,6 @@ public class SeeNotifications extends AppCompatActivity {
             }
         }
 
-
-
-
-
         public class ViewHolder extends RecyclerView.ViewHolder {
 
             ImageView profileImageIV;
@@ -261,6 +278,12 @@ public class SeeNotifications extends AppCompatActivity {
 
         switch (id) {
             case R.id.clearNotifications:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 notifications.clear();
                 notificationsRecyclerAdapter.notifyDataSetChanged();
                 infoTV.setVisibility(View.VISIBLE);
@@ -272,6 +295,7 @@ public class SeeNotifications extends AppCompatActivity {
                 break;
 
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -279,6 +303,11 @@ public class SeeNotifications extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         finish();
         overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);
