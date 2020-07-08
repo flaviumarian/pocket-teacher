@@ -14,6 +14,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -34,10 +35,14 @@ import com.licence.pocketteacher.OpeningPage;
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.aiding_classes.Post;
 import com.licence.pocketteacher.aiding_classes.Student;
+import com.licence.pocketteacher.messaging.MessagingPage;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.home.FragmentHomeS;
 import com.licence.pocketteacher.student.profile.FragmentProfilesS;
 import com.licence.pocketteacher.student.search.FragmentSearchS;
+import com.licence.pocketteacher.student.search.SeePostStudent;
+import com.licence.pocketteacher.student.search.SeeTeacher;
+import com.licence.pocketteacher.teacher.MainPageT;
 
 import java.util.ArrayList;
 
@@ -55,7 +60,7 @@ public class MainPageS extends AppCompatActivity {
 
     public static Student student;
     public static int flag; // 0 - normal, 1 - facebook, 2 - google
-
+    private String notificationsFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +70,7 @@ public class MainPageS extends AppCompatActivity {
         getLoginIntent();
         initiateComponents();
         setListeners();
-
+        goFromNotification();
 
     }
 
@@ -78,6 +83,10 @@ public class MainPageS extends AppCompatActivity {
         if (bundle != null) {
             student = bundle.getParcelable("student");
             flag = bundle.getInt("flag");
+            notificationsFlag = bundle.getString("notifications_flag");
+            if(notificationsFlag == null){
+                notificationsFlag = "-1";
+            }
         }
     }
 
@@ -154,13 +163,55 @@ public class MainPageS extends AppCompatActivity {
 
     }
 
+    public void goFromNotification(){
+
+        // Messaging notification
+        if(notificationsFlag.equals("0")){
+            String usernameToMessage = getIntent().getExtras().getString("messaging_username");
+
+            Intent intent = new Intent(getApplicationContext(), MessagingPage.class);
+            intent.putExtra("flag", "0");
+            intent.putExtra("messaging_id", getIntent().getExtras().getString("messaging_id"));
+            intent.putExtra("username_sender", student.getUsername());
+            intent.putExtra("type", 0);
+            intent.putExtra("username_receiver", usernameToMessage);
+            intent.putExtra("blocked", 0);
+            intent.putExtra("image", HelpingFunctions.getProfileImageBasedOnUsername(usernameToMessage));
+            startActivity(intent);
+        }
+
+        // Open post student
+        if(notificationsFlag.equals("1")){
+
+            Intent intent = new Intent(getApplicationContext(), SeePostStudent.class);
+            intent.putExtra("usernameTeacher", getIntent().getExtras().getString("usernameTeacher"));
+            intent.putExtra("folderName", getIntent().getExtras().getString("folderName"));
+            intent.putExtra("subject", getIntent().getExtras().getString("subject"));
+            intent.putExtra("fileName", getIntent().getExtras().getString("fileName"));
+            startActivity(intent);
+        }
+
+        // Open Teacher profile
+        if(notificationsFlag.equals("2")){
+            Intent intent = new Intent(getApplicationContext(), SeeTeacher.class);
+            intent.putExtra("username", getIntent().getExtras().getString("username"));
+            startActivity(intent);
+        }
+
+
+    }
+
+
     public static void resetBadge(){
 
         String numberNotifications = HelpingFunctions.getNumberOfNotifications(student.getUsername());
-        if(numberNotifications.equals("0")){
+        String numberOfUnreadMessages = HelpingFunctions.getNumberOfUnreadMessages(student.getUsername());
+
+        int notifications = Integer.parseInt(numberNotifications) + Integer.parseInt(numberOfUnreadMessages);
+        if(notifications == 0 ){
             badgeDrawable.setVisible(false);
         }else{
-            badgeDrawable.setNumber(Integer.parseInt(numberNotifications));
+            badgeDrawable.setNumber(notifications);
             badgeDrawable.setVisible(true);
         }
     }

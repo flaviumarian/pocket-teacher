@@ -42,7 +42,8 @@ import java.util.ArrayList;
 public class OpeningPage extends AppCompatActivity {
 
     public static final String AUTO_LOGIN = "AutoLogin";
-    private boolean isDisplayed = true;
+    private boolean isDisplayed = true, stopOnResume = false;
+    private String notificationsFlag = "-1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,14 @@ public class OpeningPage extends AppCompatActivity {
         NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancelAll();
 
+    }
+
+    private void getIntentValue(){
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            notificationsFlag = bundle.getString("flag");
+        }
     }
 
     private void facebookSignIn(AccessToken accessToken) {
@@ -139,6 +148,27 @@ public class OpeningPage extends AppCompatActivity {
                         intent = new Intent(getApplicationContext(), MainPageS.class);
                         intent.putExtra("student", student);
                         intent.putExtra("flag", 1);
+                        intent.putExtra("notifications_flag", notificationsFlag);
+                        switch(notificationsFlag){
+                            case "-1":
+                                // not from notification
+                                break;
+                            case "0":
+                                // open message
+                                intent.putExtra("messaging_id", getIntent().getExtras().getString("messaging_id"));
+                                intent.putExtra("messaging_username", getIntent().getExtras().getString("messaging_username"));
+                                break;
+                            case "1":
+                                // open post student
+                                intent.putExtra("usernameTeacher", getIntent().getExtras().getString("usernameTeacher"));
+                                intent.putExtra("subject", getIntent().getExtras().getString("subject"));
+                                intent.putExtra("folderName", getIntent().getExtras().getString("folderName"));
+                                intent.putExtra("fileName", getIntent().getExtras().getString("fileName"));
+                                break;
+                            case "2":
+                                // open teacher profile
+                                intent.putExtra("username", getIntent().getExtras().getString("username"));
+                        }
                         startActivity(intent);
                         finish();
                         return;
@@ -166,6 +196,23 @@ public class OpeningPage extends AppCompatActivity {
                         intent = new Intent(getApplicationContext(), MainPageT.class);
                         intent.putExtra("teacher", teacher);
                         intent.putExtra("flag", 1);
+                        intent.putExtra("notifications_flag", notificationsFlag);
+                        switch(notificationsFlag){
+                            case "0":
+                                // open message
+                                intent.putExtra("messaging_id", getIntent().getExtras().getString("messaging_id"));
+                                intent.putExtra("messaging_username", getIntent().getExtras().getString("messaging_username"));
+                                break;
+                            case "3":
+                                intent.putExtra("fileName", getIntent().getExtras().getString("fileName"));
+                                intent.putExtra("fromNotifications", getIntent().getExtras().getBoolean("fromNotifications"));
+                                intent.putExtra("subjectName", getIntent().getExtras().getString("subjectName"));
+                                intent.putExtra("folderName", getIntent().getExtras().getString("folderName"));
+                                break;
+                            case "5":
+                                intent.putExtra("username", getIntent().getExtras().getString("username"));
+                                break;
+                        }
                         startActivity(intent);
                         finish();
                     }
@@ -253,6 +300,27 @@ public class OpeningPage extends AppCompatActivity {
                 intent = new Intent(getApplicationContext(), MainPageS.class);
                 intent.putExtra("student", student);
                 intent.putExtra("flag", 2);
+                intent.putExtra("notifications_flag", notificationsFlag);
+                switch(notificationsFlag){
+                    case "-1":
+                        // not from notification
+                        break;
+                    case "0":
+                        // open message
+                        intent.putExtra("messaging_id", getIntent().getExtras().getString("messaging_id"));
+                        intent.putExtra("messaging_username", getIntent().getExtras().getString("messaging_username"));
+                        break;
+                    case "1":
+                        // open post student
+                        intent.putExtra("usernameTeacher", getIntent().getExtras().getString("usernameTeacher"));
+                        intent.putExtra("subject", getIntent().getExtras().getString("subject"));
+                        intent.putExtra("folderName", getIntent().getExtras().getString("folderName"));
+                        intent.putExtra("fileName", getIntent().getExtras().getString("fileName"));
+                        break;
+                    case "2":
+                        // open teacher profile
+                        intent.putExtra("username", getIntent().getExtras().getString("username"));
+                }
                 startActivity(intent);
                 finish();
                 return;
@@ -278,6 +346,23 @@ public class OpeningPage extends AppCompatActivity {
                 intent = new Intent(getApplicationContext(), MainPageT.class);
                 intent.putExtra("teacher", teacher);
                 intent.putExtra("flag", 2);
+                intent.putExtra("notifications_flag", notificationsFlag);
+                switch(notificationsFlag){
+                    case "0":
+                        // open message
+                        intent.putExtra("messaging_id", getIntent().getExtras().getString("messaging_id"));
+                        intent.putExtra("messaging_username", getIntent().getExtras().getString("messaging_username"));
+                        break;
+                    case "3":
+                        intent.putExtra("fileName", getIntent().getExtras().getString("fileName"));
+                        intent.putExtra("fromNotifications", getIntent().getExtras().getBoolean("fromNotifications"));
+                        intent.putExtra("subjectName", getIntent().getExtras().getString("subjectName"));
+                        intent.putExtra("folderName", getIntent().getExtras().getString("folderName"));
+                        break;
+                    case "5":
+                        intent.putExtra("username", getIntent().getExtras().getString("username"));
+                        break;
+                }
                 startActivity(intent);
                 finish();
             }
@@ -319,7 +404,6 @@ public class OpeningPage extends AppCompatActivity {
         // STUDENT login
         if (loginData.get(11).equals("yes")) {
 
-
             Student student = new Student(loginData.get(0), loginData.get(1), loginData.get(2), email, loginData.get(5), loginData.get(6), loginData.get(7), loginData.get(8), loginData.get(9));
 
             // EMAIL CONFIRMATION
@@ -346,11 +430,32 @@ public class OpeningPage extends AppCompatActivity {
                 return;
             }
 
-
             // MAIN APPLICATION
             intent = new Intent(getApplicationContext(), MainPageS.class);
             intent.putExtra("student", student);
-            intent.putExtra("flag", 0);
+            intent.putExtra("flag",0);
+            intent.putExtra("notifications_flag", notificationsFlag);
+            switch(notificationsFlag){
+                case "-1":
+                    // not from notification
+                    break;
+                case "0":
+                    // open message
+                    intent.putExtra("messaging_id", getIntent().getExtras().getString("messaging_id"));
+                    intent.putExtra("messaging_username", getIntent().getExtras().getString("messaging_username"));
+                    break;
+                case "1":
+                    // open post student
+                    intent.putExtra("usernameTeacher", getIntent().getExtras().getString("usernameTeacher"));
+                    intent.putExtra("subject", getIntent().getExtras().getString("subject"));
+                    intent.putExtra("folderName", getIntent().getExtras().getString("folderName"));
+                    intent.putExtra("fileName", getIntent().getExtras().getString("fileName"));
+                    break;
+                case "2":
+                    // open teacher profile
+                    intent.putExtra("username", getIntent().getExtras().getString("username"));
+            }
+
             startActivity(intent);
             finish();
             return;
@@ -390,6 +495,23 @@ public class OpeningPage extends AppCompatActivity {
             intent = new Intent(getApplicationContext(), MainPageT.class);
             intent.putExtra("teacher", teacher);
             intent.putExtra("flag", 0);
+            intent.putExtra("notifications_flag", notificationsFlag);
+            switch(notificationsFlag){
+                case "0":
+                    // open message
+                    intent.putExtra("messaging_id", getIntent().getExtras().getString("messaging_id"));
+                    intent.putExtra("messaging_username", getIntent().getExtras().getString("messaging_username"));
+                    break;
+                case "3":
+                    intent.putExtra("fileName", getIntent().getExtras().getString("fileName"));
+                    intent.putExtra("fromNotifications", getIntent().getExtras().getBoolean("fromNotifications"));
+                    intent.putExtra("subjectName", getIntent().getExtras().getString("subjectName"));
+                    intent.putExtra("folderName", getIntent().getExtras().getString("folderName"));
+                    break;
+                case "5":
+                    intent.putExtra("username", getIntent().getExtras().getString("username"));
+                    break;
+            }
             startActivity(intent);
             finish();
         }
@@ -403,7 +525,12 @@ public class OpeningPage extends AppCompatActivity {
 
         if(!isDisplayed){
             return;
+        }else{
+            stopOnResume = true;
         }
+
+
+        getIntentValue();
 
         // - 1 - not logged in
         // 0   - regular
@@ -411,11 +538,23 @@ public class OpeningPage extends AppCompatActivity {
         // 2   - google
         int flag = -1;
 
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        // Regular login
+        SharedPreferences sharedPreferences = getSharedPreferences(OpeningPage.AUTO_LOGIN, 0);
+        if (sharedPreferences.getBoolean("loggedIn", false))
+            flag = 0;
 
         // Facebook
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         if (accessToken != null)
             flag = 1;
+
 
 
         // Google
@@ -424,10 +563,6 @@ public class OpeningPage extends AppCompatActivity {
             flag = 2;
 
 
-        // Regular login
-        SharedPreferences sharedPreferences = getSharedPreferences(OpeningPage.AUTO_LOGIN, 0);
-        if (sharedPreferences.getBoolean("loggedIn", false))
-            flag = 0;
 
 
 
@@ -508,7 +643,6 @@ public class OpeningPage extends AppCompatActivity {
 
         }
 
-
         // NO ACCOUNT LOGGED IN
         Intent intent = new Intent(this, LoginPage.class);
         startActivity(intent);
@@ -528,8 +662,13 @@ public class OpeningPage extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+
         // When maximizing the app - to start the thread for looking for internet connection
         isDisplayed = true;
+        if(stopOnResume){
+            stopOnResume = false;
+            return;
+        }
         onStart();
     }
 }

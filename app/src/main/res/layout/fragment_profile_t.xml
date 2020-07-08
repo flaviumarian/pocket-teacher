@@ -52,7 +52,7 @@
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_gravity="center_horizontal"
-                    app:cardBackgroundColor="@color/lightGrey"
+                    app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="75dp"
                     app:cardElevation="10dp">
 
@@ -68,14 +68,14 @@
                 <!-- Edit Profile card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/editProfileC"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="100dp"
-                    android:layout_marginStart="60dp"
+                    android:layout_marginTop="110dp"
+                    android:layout_marginStart="55dp"
                     app:cardBackgroundColor="@color/white"
-                    app:cardCornerRadius="25dp"
-                    app:cardElevation="10dp">
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="50dp">
 
                     <ImageView
                         android:id="@+id/editProfileIV"
@@ -87,26 +87,57 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <!-- Messages -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/messagesC"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="100dp"
-                    android:layout_marginEnd="60dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:cardCornerRadius="25dp"
-                    app:cardElevation="10dp">
+                <FrameLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="110dp"
+                    android:layout_marginEnd="55dp"
+                    android:elevation="10dp"
+                    android:layout_gravity="center_horizontal">
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:contentDescription="@string/description_profile_edit_pencil"
-                        android:src="@drawable/logo_message" />
+                    <!-- Messages -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/messagesC"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="10dp"
+                        app:cardElevation="20dp">
 
-                </androidx.cardview.widget.CardView>
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:contentDescription="@string/description_profile_edit_pencil"
+                            android:src="@drawable/logo_message" />
+
+                    </androidx.cardview.widget.CardView>
+
+
+                    <!-- New messages -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/newMessagesC"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="20dp"
+                        android:visibility="invisible"
+                        app:cardBackgroundColor="@color/red"
+                        app:cardElevation="20dp"
+                        app:cardCornerRadius="15dp">
+
+                        <TextView
+                            android:id="@+id/newMessagesTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="2dp"
+                            android:layout_gravity="center"
+                            android:textColor="@color/white"
+                            android:textSize="10sp" />
+
+                    </androidx.cardview.widget.CardView>
+
+
+                </FrameLayout>
 
             </FrameLayout>
 

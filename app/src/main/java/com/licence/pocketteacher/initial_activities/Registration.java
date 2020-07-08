@@ -15,6 +15,7 @@ import android.os.StrictMode;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -60,50 +61,68 @@ public class Registration extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-
         initiateComponents();
-        setOnClickListeners();
-        setUpPasswordListeners();
-
 
     }
 
 
     private void initiateComponents(){
 
-        // Current View
-        view = findViewById(android.R.id.content);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Text Views
-        passwordProgressTV = findViewById(R.id.passwordProgressTV);
-        confirmPasswordProgressTV = findViewById(R.id.confirmPasswordProgressTV);
-        termsAndConditionsTV = findViewById(R.id.termsAndConditionsTV);
-        privacyPolicyTV = findViewById(R.id.privacyPolicyTV);
+                // Current View
+                view = findViewById(android.R.id.content);
 
-        // Edit Texts
-        usernameET = findViewById(R.id.usernameET);
-        emailET = findViewById(R.id.emailET);
-        passwordET = findViewById(R.id.passwordET);
-        confirmPasswordET = findViewById(R.id.confirmPasswordET);
-        verificationET = findViewById(R.id.verificationET);
+                // Text Views
+                passwordProgressTV = findViewById(R.id.passwordProgressTV);
+                confirmPasswordProgressTV = findViewById(R.id.confirmPasswordProgressTV);
+                termsAndConditionsTV = findViewById(R.id.termsAndConditionsTV);
+                privacyPolicyTV = findViewById(R.id.privacyPolicyTV);
 
-        // Buttons
-        signUpBttn = findViewById(R.id.signUpBttn);
+                // Edit Texts
+                usernameET = findViewById(R.id.usernameET);
+                emailET = findViewById(R.id.emailET);
+                passwordET = findViewById(R.id.passwordET);
+                confirmPasswordET = findViewById(R.id.confirmPasswordET);
+                verificationET = findViewById(R.id.verificationET);
 
-        // Progress Bars
-        passwordPB = findViewById(R.id.passwordPB);
-        confirmPasswordPB = findViewById(R.id.confirmPasswordPB);
+                // Buttons
+                signUpBttn = findViewById(R.id.signUpBttn);
 
-        // Image Views
-        backIV = findViewById(R.id.backIV);
-        studentIV = findViewById(R.id.studentIV);
-        studentIV.setTag(NOT_SELECTED);
-        teacherIV = findViewById(R.id.teacherIV);
-        teacherIV.setTag(NOT_SELECTED);
+                // Progress Bars
+                passwordPB = findViewById(R.id.passwordPB);
+                confirmPasswordPB = findViewById(R.id.confirmPasswordPB);
+
+                // Image Views
+                backIV = findViewById(R.id.backIV);
+                studentIV = findViewById(R.id.studentIV);
+                studentIV.setTag(NOT_SELECTED);
+                teacherIV = findViewById(R.id.teacherIV);
+                teacherIV.setTag(NOT_SELECTED);
+
+                // LinerLayouts
+                bottomLayout = findViewById(R.id.bottomLayout);
+
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            setOnClickListeners();
+
+                            setUpPasswordListeners();
 
 
-        // LinerLayouts
-        bottomLayout = findViewById(R.id.bottomLayout);
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
 
     }
 
@@ -380,15 +399,30 @@ public class Registration extends AppCompatActivity {
                 String passwordToSendToDB = PasswordEncryptDecrypt.encrypt(passwordET.getText().toString()).trim();
 
                 String confirmationCode = HelpingFunctions.generateRandomString(10);
+
+                String messagingId;
+
+                while(true) {
+                    messagingId = HelpingFunctions.generateRandomMessageId();
+
+                    if(HelpingFunctions.verifyIfMessagingIdExists(messagingId).equals("Not found.")){
+                        break;
+                    }
+                }
+
                 // Registering the user
                 if(teacherIV.getTag().equals(1)){
-                    String result = HelpingFunctions.registerUser(usernameET.getText().toString().toLowerCase(), emailET.getText().toString().toLowerCase(), passwordToSendToDB, verificationET.getText().toString(), confirmationCode);
+                    // TEACHER ACCOUNT
+
+                    String result = HelpingFunctions.registerUser(usernameET.getText().toString().toLowerCase(), emailET.getText().toString().toLowerCase(), passwordToSendToDB, verificationET.getText().toString(), confirmationCode, messagingId);
                     if(result.equals("Error occurred.")){
                         Toast.makeText(this, "An error occurred. Please try again later.", Toast.LENGTH_SHORT).show();
                         return;
                     }
                 } else{
-                    String result = HelpingFunctions.registerUser(usernameET.getText().toString().toLowerCase(), emailET.getText().toString().toLowerCase(), passwordToSendToDB, "no_code", confirmationCode);
+                    // STUDENT ACCOUNT
+
+                    String result = HelpingFunctions.registerUser(usernameET.getText().toString().toLowerCase(), emailET.getText().toString().toLowerCase(), passwordToSendToDB, "no_code", confirmationCode, messagingId);
                     if(result.equals("Error occurred.")){
                         Toast.makeText(this, "An error occurred. Please try again later.", Toast.LENGTH_SHORT).show();
                         return;

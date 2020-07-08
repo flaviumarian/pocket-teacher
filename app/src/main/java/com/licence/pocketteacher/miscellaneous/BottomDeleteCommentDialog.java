@@ -9,6 +9,7 @@ import android.widget.Button;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.aiding_classes.Comment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,10 +17,10 @@ import androidx.annotation.Nullable;
 public class BottomDeleteCommentDialog extends BottomSheetDialogFragment {
 
     private BottomDeleteCommentListener bottomDeleteCommentListener;
-    private int position;
+    private Comment comment;
 
-    public BottomDeleteCommentDialog(int position){
-        this.position = position;
+    public BottomDeleteCommentDialog(Comment comment){
+        this.comment = comment;
     }
 
     @Nullable
@@ -33,7 +34,7 @@ public class BottomDeleteCommentDialog extends BottomSheetDialogFragment {
         deleteCommentBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bottomDeleteCommentListener.onButtonClicked("Delete comment.", position);
+                bottomDeleteCommentListener.onButtonClicked("Delete comment.", comment);
                 dismiss();
             }
         });
@@ -41,7 +42,7 @@ public class BottomDeleteCommentDialog extends BottomSheetDialogFragment {
         cancelBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bottomDeleteCommentListener.onButtonClicked("Cancel.", position);
+                bottomDeleteCommentListener.onButtonClicked("Cancel.", comment);
                 dismiss();
             }
         });
@@ -50,7 +51,7 @@ public class BottomDeleteCommentDialog extends BottomSheetDialogFragment {
     }
 
     public interface BottomDeleteCommentListener {
-        void onButtonClicked(String text, int position);
+        void onButtonClicked(String text, Comment comment);
     }
 
     @Override

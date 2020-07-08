@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +71,7 @@ public class StudentsRecyclerAdapter extends RecyclerView.Adapter<StudentsRecycl
                     holder.profileImageIV.setImageResource(R.drawable.profile_picture_female);
                     break;
                 case "2":
-                    holder.profileImageIV.setImageResource(0);
+                    holder.profileImageIV.setImageResource(R.drawable.profile_picture_neutral);
                     break;
             }
         }else{
@@ -141,7 +142,8 @@ public class StudentsRecyclerAdapter extends RecyclerView.Adapter<StudentsRecycl
             // follow
             String result = HelpingFunctions.approveRequest(recentlyDeletedStudent.getUsername(), MainPageT.teacher.getUsername());
             if(result.equals("Data inserted.")){
-                HelpingFunctions.sendNotification(recentlyDeletedStudent.getUsername(), MainPageT.teacher.getUsername() + " has approved your follow request.");
+                HelpingFunctions.sendNotificationToStudents(recentlyDeletedStudent.getUsername(), MainPageT.teacher.getUsername(), "", "", "", "Has approved your follow request.");
+//                HelpingFunctions.sendNotification(recentlyDeletedStudent.getUsername(), MainPageT.teacher.getUsername() + " has approved your follow request.");
             }
         }
         if(students.size() == 0){

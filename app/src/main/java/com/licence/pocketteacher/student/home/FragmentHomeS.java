@@ -2,14 +2,11 @@ package com.licence.pocketteacher.student.home;
 
 import android.app.Activity;
 import android.app.DownloadManager;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,7 +89,7 @@ public class FragmentHomeS extends Fragment {
                         @Override
                         public void run() {
 
-                            if(!HelpingFunctions.isConnected(view.getContext())){
+                            if (!HelpingFunctions.isConnected(view.getContext())) {
                                 Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                                 return;
                             }
@@ -175,7 +172,7 @@ public class FragmentHomeS extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(!HelpingFunctions.isConnected(view.getContext())){
+                if (!HelpingFunctions.isConnected(view.getContext())) {
                     Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                     swipeRefreshLayout.setRefreshing(false);
                     return;
@@ -183,7 +180,6 @@ public class FragmentHomeS extends Fragment {
 
                 swipeRefreshLayout.setRefreshing(true);
                 postsRV.setVisibility(View.INVISIBLE);
-
 
 
                 new Handler().postDelayed(new Runnable() {
@@ -288,7 +284,7 @@ public class FragmentHomeS extends Fragment {
                 this.activity = activity;
                 this.context = activity.getApplicationContext();
                 this.posts = posts;
-            }catch(Exception e){
+            } catch (Exception e) {
                 return;
             }
 
@@ -368,7 +364,7 @@ public class FragmentHomeS extends Fragment {
                             viewHolder.profileImageIV.setImageResource(R.drawable.profile_picture_female);
                             break;
                         case "2":
-                            viewHolder.profileImageIV.setImageResource(0);
+                            viewHolder.profileImageIV.setImageResource(R.drawable.profile_picture_neutral);
                             break;
                     }
                 } else {
@@ -422,7 +418,7 @@ public class FragmentHomeS extends Fragment {
                 viewHolder.profileImageIV.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!HelpingFunctions.isConnected(context)){
+                        if (!HelpingFunctions.isConnected(context)) {
                             Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -438,7 +434,7 @@ public class FragmentHomeS extends Fragment {
                 viewHolder.teacherNameTV.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!HelpingFunctions.isConnected(context)){
+                        if (!HelpingFunctions.isConnected(context)) {
                             Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -454,7 +450,7 @@ public class FragmentHomeS extends Fragment {
                 viewHolder.teacherUsernameTV.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!HelpingFunctions.isConnected(context)){
+                        if (!HelpingFunctions.isConnected(context)) {
                             Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -472,7 +468,7 @@ public class FragmentHomeS extends Fragment {
                     @Override
                     public void onClick(View v) {
 
-                        if(!HelpingFunctions.isConnected(context)){
+                        if (!HelpingFunctions.isConnected(context)) {
                             Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -480,15 +476,14 @@ public class FragmentHomeS extends Fragment {
                         if (viewHolder.likesIV.getTag().equals("0")) {
 
                             String result = HelpingFunctions.likePost(viewHolder.teacherUsernameTV.getText().toString(), viewHolder.subjectTV.getText().toString(), viewHolder.folderTV.getText().toString(), viewHolder.titleTV.getText().toString(), MainPageS.student.getUsername());
-                            Log.i("array1", result + " e rezultatul la like");
                             if (result.equals("Data inserted.")) {
 
                                 new Thread() {
                                     @Override
                                     public void run() {
                                         // Send notification
-                                        HelpingFunctions.sendNotification(viewHolder.teacherUsernameTV.getText().toString(), MainPageS.student.getUsername() + " liked your post.");
-                                    }
+                                        HelpingFunctions.sendNotificationToTeachers(MainPageS.student.getUsername(), viewHolder.teacherUsernameTV.getText().toString(), viewHolder.subjectTV.getText().toString(), viewHolder.folderTV.getText().toString(), viewHolder.titleTV.getText().toString(), "Liked your post.");
+                                   }
                                 }.start();
                             }
                             viewHolder.likesIV.setImageResource(R.drawable.ic_favorite_red_24dp);
@@ -522,43 +517,21 @@ public class FragmentHomeS extends Fragment {
                     @Override
                     public void onClick(View v) {
 
-                        if(!HelpingFunctions.isConnected(context)){
+                        if (!HelpingFunctions.isConnected(context)) {
                             Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
-                        final ProgressDialog loading = ProgressDialog.show(view.getContext(), "Please wait", "Loading...", true);
-                        new Thread() {
-                            @Override
-                            public void run() {
+                        positionPostOpened = position;
 
+                        Intent intent = new Intent(view.getContext(), SeePostStudent.class);
+                        intent.putExtra("usernameTeacher", post.getUsername());
+                        intent.putExtra("folderName", post.getFolder());
+                        intent.putExtra("subject", post.getSubject());
+                        intent.putExtra("fileName", post.getTitle());
+                        startActivity(intent);
+                        getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
 
-
-                                positionPostOpened = position;
-
-                                Intent intent = new Intent(view.getContext(), SeePostStudent.class);
-                                intent.putExtra("usernameTeacher", post.getUsername());
-                                intent.putExtra("folderName", post.getFolder());
-                                intent.putExtra("subject", post.getSubject());
-                                intent.putExtra("fileName", post.getTitle());
-                                intent.putExtra("likedStatus", post.getLikedStatus());
-                                intent.putExtra("likes", post.getLikes());
-                                intent.putExtra("comments", post.getComments());
-                                startActivity(intent);
-                                getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
-
-                                try {
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            loading.dismiss();
-                                        }
-                                    });
-                                } catch (final Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }.start();
                     }
                 });
 
@@ -568,7 +541,7 @@ public class FragmentHomeS extends Fragment {
                         @Override
                         public void onClick(View v) {
 
-                            if(!HelpingFunctions.isConnected(context)){
+                            if (!HelpingFunctions.isConnected(context)) {
                                 Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
                                 return;
                             }
@@ -619,7 +592,7 @@ public class FragmentHomeS extends Fragment {
                         public void run() {
                             if (MainPageS.needsRefresh) {
 
-                                if(!HelpingFunctions.isConnected(view.getContext())){
+                                if (!HelpingFunctions.isConnected(view.getContext())) {
                                     Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                                     return;
                                 }

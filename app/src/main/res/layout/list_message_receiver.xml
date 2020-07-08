@@ -3,13 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="5dp"
     android:layout_marginTop="2dp"
     android:id="@+id/relativeLayout">
+
+    <TextView
+        android:id="@+id/timeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/black"
+        android:fontFamily="@font/roboto_light"
+        android:textSize="1dp"
+        />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_below="@id/timeTV"
         android:orientation="vertical">
 
 
@@ -19,16 +30,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/timeTV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:fontFamily="@font/roboto_light"
-                android:gravity="end"
-                android:text=""
-                android:textColor="@color/black"
-                android:textSize="12sp" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/messageC"
@@ -49,6 +50,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
+                    android:text="message"
                     android:fontFamily="@font/roboto"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
@@ -65,8 +67,8 @@
             android:id="@+id/updatesTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="Sent" />
+            android:layout_marginStart="5dp"
+            android:text="Seen: 14:23" />
 
     </LinearLayout>
 </RelativeLayout>

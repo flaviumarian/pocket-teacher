@@ -6,7 +6,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -67,7 +66,7 @@ public class SeeSubject extends AppCompatActivity {
 
     }
 
-    private void getSubjectFromIntent(){
+    private void getSubjectFromIntent() {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
@@ -76,7 +75,7 @@ public class SeeSubject extends AppCompatActivity {
         }
     }
 
-    private void initiateComponents(){
+    private void initiateComponents() {
 
         // Toolbar
         Toolbar subjectToolbar = findViewById(R.id.subjectToolbar);
@@ -105,12 +104,11 @@ public class SeeSubject extends AppCompatActivity {
                 Collections.sort(folders);
 
 
-
                 // List View
                 foldersLV = findViewById(R.id.foldersLV);
                 postsLV = findViewById(R.id.postsLV);
 
-                try{
+                try {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -127,7 +125,7 @@ public class SeeSubject extends AppCompatActivity {
                         }
                     });
 
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -136,7 +134,7 @@ public class SeeSubject extends AppCompatActivity {
 
     }
 
-    private void setListeners(){
+    private void setListeners() {
 
         // Image View
         backIV.setOnClickListener(new View.OnClickListener() {
@@ -162,7 +160,7 @@ public class SeeSubject extends AppCompatActivity {
         HelpingFunctions.setListViewHeightBasedOnChildren(foldersLV);
     }
 
-    private boolean getAllPostsForFolder(String folderName){
+    private boolean getAllPostsForFolder(String folderName) {
 
         ArrayList<ArrayList> information = HelpingFunctions.getAllFilesForFolder(MainPageS.student.getUsername(), usernameTeacher, subject, folderName);
         fileNames = information.get(1);
@@ -232,10 +230,10 @@ public class SeeSubject extends AppCompatActivity {
 
                 folderTV.setText(folders.get(position));
 
-                if(currentPosition == position){
+                if (currentPosition == position) {
                     endIV.setImageResource(R.drawable.ic_expand_less_black_24dp);
                     endIV.setTag("1");
-                }else {
+                } else {
                     endIV.setImageResource(R.drawable.ic_expand_more_black_24dp);
                     endIV.setTag("0");
                 }
@@ -245,12 +243,12 @@ public class SeeSubject extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        if (!HelpingFunctions.isConnected(getApplicationContext())) {
                             Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
-                        if(endIV.getTag().equals("1")){
+                        if (endIV.getTag().equals("1")) {
                             endIV.setImageResource(R.drawable.ic_expand_more_black_24dp);
                             endIV.setTag("0");
                             currentPosition = -1;
@@ -264,13 +262,13 @@ public class SeeSubject extends AppCompatActivity {
                             return;
                         }
 
-                        if(getAllPostsForFolder(folderTV.getText().toString())){
+                        if (getAllPostsForFolder(folderTV.getText().toString())) {
                             endIV.setImageResource(R.drawable.ic_expand_less_black_24dp);
                             endIV.setTag("1");
                             currentPosition = position;
                             currentFolder = folderTV.getText().toString();
                             info1TV.setVisibility(View.INVISIBLE);
-                        }else{
+                        } else {
                             // no posts
                             endIV.setImageResource(R.drawable.ic_expand_less_black_24dp);
                             endIV.setTag("1");
@@ -351,7 +349,7 @@ public class SeeSubject extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        if (!HelpingFunctions.isConnected(getApplicationContext())) {
                             Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -385,47 +383,19 @@ public class SeeSubject extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        if (!HelpingFunctions.isConnected(getApplicationContext())) {
                             Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
-                        final ProgressDialog loading = ProgressDialog.show(SeeSubject.this, "Please wait", "Loading...", true);
-                        new Thread() {
-                            @Override
-                            public void run() {
+                        Intent intent = new Intent(getApplicationContext(), SeePostStudent.class);
+                        intent.putExtra("usernameTeacher", usernameTeacher);
+                        intent.putExtra("folderName", currentFolder);
+                        intent.putExtra("subject", subject);
+                        intent.putExtra("fileName", fileTV.getText().toString());
+                        startActivityForResult(intent, 1);
+                        overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
 
-                                String likedStatus;
-                                if (likesIV.getTag().equals("0")) {
-                                    likedStatus = "";
-                                } else {
-                                    likedStatus = "1";
-                                }
-
-                                Intent intent = new Intent(getApplicationContext(), SeePostStudent.class);
-                                intent.putExtra("usernameTeacher", usernameTeacher);
-                                intent.putExtra("folderName", currentFolder);
-                                intent.putExtra("subject", subject);
-                                intent.putExtra("fileName", fileTV.getText().toString());
-                                intent.putExtra("likedStatus", likedStatus);
-                                intent.putExtra("likes", likesTV.getText().toString());
-                                intent.putExtra("comments", commentsTV.getText().toString());
-                                startActivityForResult(intent, 1);
-                                overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
-
-
-                                try {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            loading.dismiss();
-                                        }
-                                    });
-                                } catch (final Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }.start();
                     }
                 });
             }
@@ -477,7 +447,6 @@ public class SeeSubject extends AppCompatActivity {
     }
 
 
-
     /*                      *** T O O L B A R    M E N U ***                         */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -506,7 +475,7 @@ public class SeeSubject extends AppCompatActivity {
 
         switch (id) {
             case R.id.details:
-                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                if (!HelpingFunctions.isConnected(getApplicationContext())) {
                     Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                     break;
                 }
@@ -544,7 +513,7 @@ public class SeeSubject extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        if (!HelpingFunctions.isConnected(getApplicationContext())) {
                             Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -592,7 +561,7 @@ public class SeeSubject extends AppCompatActivity {
                 break;
             case R.id.report:
 
-                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                if (!HelpingFunctions.isConnected(getApplicationContext())) {
                     Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                     break;
                 }
@@ -621,7 +590,7 @@ public class SeeSubject extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        if (!HelpingFunctions.isConnected(getApplicationContext())) {
                             Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -673,7 +642,7 @@ public class SeeSubject extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 1 && resultCode == Activity.RESULT_OK){
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
 
             currentPosition = -1;
             foldersAdapter = new FoldersAdapter(SeeSubject.this, folders);
@@ -688,7 +657,7 @@ public class SeeSubject extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if(!HelpingFunctions.isConnected(getApplicationContext())){
+        if (!HelpingFunctions.isConnected(getApplicationContext())) {
             Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
             return;
         }

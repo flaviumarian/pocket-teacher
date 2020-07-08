@@ -90,7 +90,7 @@
                 <ListView
                     android:id="@+id/changeLV"
                     android:layout_width="match_parent"
-                    android:layout_height="275dp" />
+                    android:layout_height="270dp" />
 
             </androidx.cardview.widget.CardView>
 

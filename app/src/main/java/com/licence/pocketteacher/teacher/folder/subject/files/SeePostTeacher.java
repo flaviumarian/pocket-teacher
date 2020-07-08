@@ -17,18 +17,22 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -39,6 +43,7 @@ import com.licence.pocketteacher.aiding_classes.Comment;
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.BottomDeleteCommentDialog;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
+import com.licence.pocketteacher.student.home.LoadMore;
 import com.licence.pocketteacher.teacher.MainPageT;
 import com.licence.pocketteacher.teacher.folder.subject.SubjectPage;
 import com.licence.pocketteacher.teacher.profile.followers.SeeStudent;
@@ -55,10 +60,12 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
     private RecyclerView commentsRV;
     private Dialog deletePopup;
 
-    private ArrayList<Comment> comments;
-    private CommentsRecyclerAdapter commentsRecyclerAdapter;
+    private ArrayList<Comment> displayedComments;
+    private CommentsRecyclerAdapter commentsAdapter;
 
     private String fileName, likedStatus, likesNumber, commentsNumber, subjectName, folderName, fileUrl;
+    private String commentsJSON;
+    private int numberOfComments, lastPos = 0;
     private boolean fromNotifications;
 
 
@@ -77,12 +84,10 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
         Bundle bundle = intent.getExtras();
 
         if (bundle != null) {
-            fileName = bundle.getString("fileName");
-            likedStatus = bundle.getString("likedStatus");
-            likesNumber = bundle.getString("likes");
-            commentsNumber = bundle.getString("comments");
-            subjectName = bundle.getString("subjectName");
             folderName = bundle.getString("folderName");
+            fileName = bundle.getString("fileName");
+            subjectName = bundle.getString("subjectName");
+
             fromNotifications = bundle.getBoolean("fromNotifications");
 
             if (subjectName == null) {
@@ -100,19 +105,36 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
         this.setSupportActionBar(fileToolbar);
 
 
-        // Edit Text
-        commentET = findViewById(R.id.commentET);
-
-        // Image Views
-        backIV = findViewById(R.id.backIV);
-
         new Thread(new Runnable() {
             @Override
             public void run() {
 
+
+                // Remove all notifications for this post
+                HelpingFunctions.deleteNotificationsForPost(MainPageT.teacher.getUsername(), subjectName, folderName, fileName, MainPageT.teacher.getUsername());
+
+                // Back image
+                backIV = findViewById(R.id.backIV);
+
+                // Profile Image
                 final ImageView profileImageIV = findViewById(R.id.profileImageIV);
+
+                // Likes Image
                 likesIV = findViewById(R.id.likesIV);
+
+                // Liked status
+                likedStatus = HelpingFunctions.getLikedStatus(MainPageT.teacher.getUsername(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName);
+
+                // Likes number
+                likesNumber = HelpingFunctions.getLikesForPost(MainPageT.teacher.getUsername(), subjectName, folderName, fileName);
+
+                // Comment Field
+                commentET = findViewById(R.id.commentET);
                 sendCommentIV = findViewById(R.id.sendCommentIV);
+
+                // Comments number
+                commentsNumber = HelpingFunctions.getCommentsForPost(MainPageT.teacher.getUsername(), subjectName, folderName, fileName);
+                numberOfComments = Integer.parseInt(commentsNumber);
 
                 // Text Views declarations
                 infoTV = findViewById(R.id.infoTV);
@@ -128,14 +150,20 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                 final TextView timeTV = findViewById(R.id.timeTV);
                 downloadTV = findViewById(R.id.downloadTV);
 
+                // File information
                 final ArrayList<String> fileInformation = HelpingFunctions.getFileInformation(MainPageT.teacher.getUsername(), subjectName, folderName, fileName);
 
                 try {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
+                            commentET.requestFocus();
+
+                            // Profile Image
                             profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(MainPageT.teacher.getProfileImageBase64()));
 
+                            // Liked status
                             if (likedStatus.equals("1")) {
                                 likesIV.setImageResource(R.drawable.ic_favorite_red_24dp);
                                 likesIV.setTag("1");
@@ -144,13 +172,16 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                                 likesIV.setTag("0");
                             }
 
+                            // Download button
                             fileUrl = fileInformation.get(0);
                             if (fileUrl.equals("null")) {
                                 downloadTV.setVisibility(View.INVISIBLE);
                             }
 
+                            // Title
                             fileNameTV.setText(fileName);
 
+                            // Name
                             if (MainPageT.teacher.getFirstName().equals("") || MainPageT.teacher.getLastName().equals("") || MainPageT.teacher.getFirstName().equals("null") || MainPageT.teacher.getLastName().equals("null")) {
                                 teacherNameTV.setText(R.string.message_unknown_name);
                             } else {
@@ -158,8 +189,10 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                                 teacherNameTV.setText(name);
                             }
 
+                            // Username
                             teacherUsernameTV.setText(MainPageT.teacher.getUsername());
 
+                            // Other fields
                             likesTV.setText(likesNumber);
                             commentsTV.setText(commentsNumber);
                             titleTV.setText(fileInformation.get(1));
@@ -185,12 +218,16 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                 scrollView = findViewById(R.id.scrollView);
 
                 // Comments
-                comments = HelpingFunctions.getAllCommentsForPost(MainPageT.teacher.getUsername(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName);
+                displayedComments = new ArrayList<>();
+                commentsJSON = HelpingFunctions.getAllCommentsJSON(MainPageT.teacher.getUsername(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName);
+
+                getNextComments();
+
                 try {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (comments.size() > 0) {
+                            if (displayedComments.size() > 0) {
                                 infoTV.setVisibility(View.INVISIBLE);
                             } else {
                                 infoTV.setVisibility(View.VISIBLE);
@@ -216,12 +253,10 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
             @Override
             public void onClick(View v) {
 
-
                 if(!HelpingFunctions.isConnected(getApplicationContext())){
                     Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
 
                 try {
                     DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
@@ -302,15 +337,13 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                 }
 
                 HelpingFunctions.commentOnPost(commentET.getText().toString(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName, MainPageT.teacher.getUsername());
-                HelpingFunctions.sendNotificationTeacherCommented(MainPageT.teacher.getUsername(), subjectName, folderName, fileName, MainPageT.teacher.getUsername() + " commented on a post you commented.");
+                HelpingFunctions.sendNotificationToStudents(MainPageT.teacher.getUsername(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName, "Commented on a post you commented.");
                 Comment newComment = new Comment("1", MainPageT.teacher.getUsername(), MainPageT.teacher.getProfileImageBase64(), MainPageT.teacher.getGender(), commentET.getText().toString(), "0s", HelpingFunctions.getCommentTimestamp(commentET.getText().toString(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName, MainPageT.teacher.getUsername()), 0, "");
-                comments.add(newComment);
-                commentsRecyclerAdapter.notifyDataSetChanged();
+                displayedComments.add(0, newComment);
+                commentsAdapter.notifyItemInserted(0);
                 commentET.setText("");
-                int newNoComm = Integer.parseInt(commentsTV.getText().toString()) + 1;
-                String newNoComments = newNoComm + "";
-                commentsNumber = newNoComments;
-                commentsTV.setText(newNoComments);
+                numberOfComments ++;
+                commentsTV.setText(String.valueOf(numberOfComments));
                 infoTV.setVisibility(View.INVISIBLE);
                 if (!fromNotifications) {
                     FilesPage.comments.set(FilesPage.fileNames.indexOf(fileName), FilesPage.comments.get(FilesPage.fileNames.indexOf(fileName)) + 1);
@@ -325,6 +358,8 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                nestedCommentsView.smoothScrollTo(0, 0);
 
             }
         });
@@ -350,6 +385,27 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                 if (commentET.getLayout().getLineCount() > 5) {
                     commentET.getText().delete(commentET.getText().length() - 1, commentET.getText().length());
                 }
+            }
+        });
+
+        commentET.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                nestedScrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        final int scrollViewHeight = nestedScrollView.getHeight();
+                        if (scrollViewHeight > 0) {
+                            nestedScrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                            final View lastView = nestedScrollView.getChildAt(nestedScrollView.getChildCount() - 1);
+                            final int lastViewBottom = lastView.getBottom() + nestedScrollView.getPaddingBottom();
+                            final int deltaScrollY = lastViewBottom - scrollViewHeight - nestedScrollView.getScrollY();
+                            nestedScrollView.scrollBy(0, deltaScrollY);
+                        }
+                    }
+                });
             }
         });
 
@@ -380,19 +436,69 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
 
 
         // Recycler View
-        commentsRecyclerAdapter = new CommentsRecyclerAdapter(comments, getApplicationContext());
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(SeePostTeacher.this);
+        commentsAdapter = new CommentsRecyclerAdapter(commentsRV, linearLayoutManager, SeePostTeacher.this, displayedComments);
+        commentsRV.setHasFixedSize(true);
+        commentsRV.setLayoutManager(linearLayoutManager);
+        commentsRV.setAdapter(commentsAdapter);
+        nestedCommentsView.smoothScrollTo(0, 0);
+        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
 
-        commentsRV.setAdapter(commentsRecyclerAdapter);
-        commentsRV.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        commentsAdapter.setLoadMore(new LoadMore() {
+            @Override
+            public void onLoadMore() {
+
+                if (displayedComments.size() < numberOfComments) {
+                    displayedComments.add(null);
+                    commentsAdapter.notifyItemInserted(displayedComments.size() - 1);
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            displayedComments.remove(displayedComments.size() - 1);
+                            commentsAdapter.notifyItemRemoved(displayedComments.size());
+
+                            // load 10 more comments
+                            getNextComments();
+
+                            commentsAdapter.notifyDataSetChanged();
+                            commentsAdapter.setLoaded();
+                        }
+                    }, 1000);
+                }
+            }
+        });
+
 
     }
 
-    @Override
-    public void onButtonClicked(String text, int position) {
-        if (text.equals("Delete comment.")) {
-            commentsRecyclerAdapter.deleteComment(position);
+    private void getNextComments() {
 
-            if (comments.size() == 0) {
+        int number;
+        if (numberOfComments - displayedComments.size() >= 5) {
+            number = 5;
+        } else {
+            number = numberOfComments - displayedComments.size();
+        }
+
+        displayedComments.addAll(HelpingFunctions.getCommentsFromJSON(lastPos, lastPos + number, commentsJSON));
+        lastPos += number;
+    }
+
+    @Override
+    public void onButtonClicked(String text, Comment comment) {
+
+        if (!HelpingFunctions.isConnected(getApplicationContext())) {
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (text.equals("Delete comment.")) {
+
+            commentsAdapter.deleteComment(comment);
+            displayedComments.remove(comment);
+
+            if (displayedComments.size() == 0) {
                 infoTV.setVisibility(View.VISIBLE);
             }
         }
@@ -400,162 +506,239 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
 
 
     /*                                   *** A D A P T O R  ***                                   */
-    class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecyclerAdapter.ViewHolder> {
+    class LoadingViewHolder extends RecyclerView.ViewHolder {
 
+        ProgressBar progressBar;
+
+        LoadingViewHolder(View itemView) {
+            super(itemView);
+
+            progressBar = itemView.findViewById(R.id.progressBar);
+        }
+    }
+
+    class CommentViewHolder extends RecyclerView.ViewHolder {
+
+        ImageView profileImageIV;
+        TextView timeTV;
+        TextView usernameTV;
+        TextView commentTV;
+        ImageView likeIV;
+        TextView likeTV;
+        RelativeLayout relativeLayout;
+
+        CommentViewHolder(View itemView) {
+            super(itemView);
+
+            profileImageIV = itemView.findViewById(R.id.profileImageIV);
+            timeTV = itemView.findViewById(R.id.timeTV);
+            usernameTV = itemView.findViewById(R.id.usernameTV);
+            commentTV = itemView.findViewById(R.id.commentTV);
+            likeIV = itemView.findViewById(R.id.likeIV);
+            likeTV = itemView.findViewById(R.id.likeTV);
+            relativeLayout = itemView.findViewById(R.id.relativeLayout);
+        }
+    }
+
+    class CommentsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        private final int VIEW_TYPE_COMMENT = 0, VIEW_TYPE_LOADING = 1;
+        Activity activity;
+        Context context;
+        LinearLayoutManager linearLayoutManager;
         private ArrayList<Comment> comments;
-        private Context context;
 
-        public CommentsRecyclerAdapter(ArrayList<Comment> comments, Context context) {
+        LoadMore loadMore;
+        boolean isLoading;
+        int visibleThreshold = 5;
+        int lastVisibleItem, totalItemCount;
+
+        CommentsRecyclerAdapter(RecyclerView recyclerView, final LinearLayoutManager linearLayoutManager, Activity activity, ArrayList<Comment> comments) {
+            this.activity = activity;
+            this.context = activity.getApplicationContext();
             this.comments = comments;
-            this.context = context;
+            this.linearLayoutManager = linearLayoutManager;
+
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    totalItemCount = linearLayoutManager.getItemCount();
+                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+
+
+                    // Reached the top
+                    if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                        if (loadMore != null) {
+                            loadMore.onLoadMore();
+                        }
+                        isLoading = true;
+                    }
+
+                }
+            });
+
+        }
+
+        void setLoadMore(LoadMore loadMore) {
+            this.loadMore = loadMore;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+
+            if (comments.get(position) == null) {
+                return VIEW_TYPE_LOADING;
+            }
+
+            return VIEW_TYPE_COMMENT;
+
         }
 
         @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_custom_comment, parent, false);
-            ViewHolder holder = new ViewHolder(view);
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-            return holder;
+            if (viewType == VIEW_TYPE_COMMENT) {
+                View view = LayoutInflater.from(activity).inflate(R.layout.list_custom_comment, parent, false);
+                return new CommentViewHolder(view);
+            } else if (viewType == VIEW_TYPE_LOADING) {
+                View view = LayoutInflater.from(activity).inflate(R.layout.load_more_progress_bar, parent, false);
+                return new LoadingViewHolder(view);
+            }
+
+            return null;
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, final int position) {
+        public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
 
             final Comment comment = comments.get(position);
 
-            // Profile image
-            if (comment.getImageBase64().equals("")) {
-                switch (comment.getGender()) {
-                    case "0":
-                        holder.profileImageIV.setImageResource(R.drawable.profile_picture_male);
-                        break;
-                    case "1":
-                        holder.profileImageIV.setImageResource(R.drawable.profile_picture_female);
-                        break;
-                    case "2":
-                        holder.profileImageIV.setImageResource(0);
-                        break;
+            if (holder instanceof CommentViewHolder){
+                final CommentViewHolder viewHolder = (CommentViewHolder) holder;
+
+                // Profile image
+                if (comment.getImageBase64().equals("")) {
+                    switch (comment.getGender()) {
+                        case "0":
+                            viewHolder.profileImageIV.setImageResource(R.drawable.profile_picture_male);
+                            break;
+                        case "1":
+                            viewHolder.profileImageIV.setImageResource(R.drawable.profile_picture_female);
+                            break;
+                        case "2":
+                            viewHolder.profileImageIV.setImageResource(R.drawable.profile_picture_neutral);
+                            break;
+                    }
+                } else {
+                    viewHolder.profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(comment.getImageBase64()));
                 }
-            } else {
-                holder.profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(comment.getImageBase64()));
-            }
 
+                viewHolder.timeTV.setText(comment.getTimeSince());
+                viewHolder.usernameTV.setText(comment.getUsername());
+                viewHolder.commentTV.setText(comment.getComment());
+                String likes = comment.getLikes() + "";
+                viewHolder.likeTV.setText(likes);
 
-            holder.timeTV.setText(comment.getTimeSince());
-            holder.usernameTV.setText(comment.getUsername());
-            holder.commentTV.setText(comment.getComment());
-            String likes = comment.getLikes() + "";
-            holder.likeTV.setText(likes);
-
-            // Like/Unlike comment
-            if (comment.getLikedStatus().equals("1")) {
-                holder.likeIV.setImageResource(R.drawable.ic_favorite_red_24dp);
-                holder.likeIV.setTag("1");
-            } else {
-                holder.likeIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                holder.likeIV.setTag("0");
-            }
-
-
-            // LISTENERS
-
-            // Profile image
-            holder.profileImageIV.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if(!HelpingFunctions.isConnected(getApplicationContext())){
-                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (comment.getType().equals("0")) {
-                        Intent intent = new Intent(context, SeeStudent.class);
-                        intent.putExtra("username", comment.getUsername());
-                        v.getContext().startActivity(intent);
-                        overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
-                    }
+                // Like/Unlike comment
+                if (comment.getLikedStatus().equals("1")) {
+                    viewHolder.likeIV.setImageResource(R.drawable.ic_favorite_red_24dp);
+                    viewHolder.likeIV.setTag("1");
+                } else {
+                    viewHolder.likeIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                    viewHolder.likeIV.setTag("0");
                 }
-            });
 
-            // Userame
-            holder.usernameTV.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                // LISTENERS
 
-                    if(!HelpingFunctions.isConnected(getApplicationContext())){
-                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                // Profile image
+                viewHolder.profileImageIV.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                    if (comment.getType().equals("0")) {
-                        Intent intent = new Intent(context, SeeStudent.class);
-                        intent.putExtra("username", comment.getUsername());
-                        v.getContext().startActivity(intent);
-                        overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
-                    }
-                }
-            });
-
-            holder.likeIV.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if(!HelpingFunctions.isConnected(getApplicationContext())){
-                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (holder.likeIV.getTag().equals("0")) {
-                        String result = HelpingFunctions.likeComment(comment.getComment(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName, comment.getTimestamp(), MainPageT.teacher.getUsername(), comment.getUsername());
-                        if (result.equals("Data inserted.")) {
-                            if (!MainPageT.teacher.getUsername().equals(comment.getUsername())) {
-                                // send notification
-                                HelpingFunctions.sendNotification(comment.getUsername(), MainPageT.teacher.getUsername() + " liked your comment.");
-                            }
-                            holder.likeIV.setImageResource(R.drawable.ic_favorite_red_24dp);
-                            holder.likeIV.setTag("1");
-                            int numLikes = Integer.parseInt(holder.likeTV.getText().toString()) + 1;
-                            String newLikes = numLikes + "";
-                            holder.likeTV.setText(newLikes);
-                            comments.get(position).setLikes(numLikes);
-                            comments.get(position).setLikedStatus("1");
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
                         }
-                    } else {
-                        HelpingFunctions.unlikeComment(comment.getComment(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName, comment.getTimestamp(), MainPageT.teacher.getUsername(), comment.getUsername());
-                        holder.likeIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                        holder.likeIV.setTag("0");
-                        int numLikes = Integer.parseInt(holder.likeTV.getText().toString()) - 1;
-                        String newLikes = numLikes + "";
-                        holder.likeTV.setText(newLikes);
-                        comments.get(position).setLikes(numLikes);
-                        comments.get(position).setLikedStatus("0");
+
+                        openProfile(comment);
+
                     }
-                }
-            });
+                });
 
-            // Delete comment
-            holder.relativeLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
+                // Userame
+                viewHolder.usernameTV.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                    if(!HelpingFunctions.isConnected(getApplicationContext())){
-                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
-                        return false;
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        openProfile(comment);
+
                     }
+                });
 
-                    if (comment.getUsername().equals(MainPageT.teacher.getUsername())) {
-                        // apare optiune sa sterg comentariul
-                        BottomDeleteCommentDialog bottomDeleteCommentDialog = new BottomDeleteCommentDialog(position);
-                        bottomDeleteCommentDialog.show(getSupportFragmentManager(), "DELETE_COMMENT");
+                // Like/Unlike comment
+                viewHolder.likeIV.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (viewHolder.likeIV.getTag().equals("0")) {
+                            String result = HelpingFunctions.likeComment(comment.getComment(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName, comment.getTimestamp(), MainPageT.teacher.getUsername(), comment.getUsername());
+                            if (result.equals("Data inserted.")) {
+                                if (!MainPageT.teacher.getUsername().equals(comment.getUsername())) {
+                                    // send notification
+                                    if(comment.getType().equals("0")) {
+                                        // STUDENT COMMENT
+                                        HelpingFunctions.sendNotificationToStudents(comment.getUsername(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName, "Liked your comment.");
+                                    }
+                                }
+                                likeUnlikeComment(comment, "1");
+
+                            }
+                        } else {
+                            HelpingFunctions.unlikeComment(comment.getComment(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName, comment.getTimestamp(), MainPageT.teacher.getUsername(), comment.getUsername());
+                            likeUnlikeComment(comment, "0");
+                        }
+                    }
+                });
+
+                // Delete comment
+                viewHolder.relativeLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+
+                        if (comment.getUsername().equals(MainPageT.teacher.getUsername())) {
+                            // apare optiune sa sterg comentariul
+                            BottomDeleteCommentDialog bottomDeleteCommentDialog = new BottomDeleteCommentDialog(comment);
+                            bottomDeleteCommentDialog.show(getSupportFragmentManager(), "DELETE_COMMENT");
+
+                            return true;
+                        }
                         return true;
                     }
-                    return true;
-                }
-            });
+                });
+            }
 
+            if (holder instanceof LoadingViewHolder) {
+                LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
+                loadingViewHolder.progressBar.setIndeterminate(true);
+            }
 
         }
 
@@ -564,13 +747,13 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
             return comments.size();
         }
 
-        public void deleteComment(int position) {
-            Comment comment = comments.get(position);
+        void deleteComment(Comment comment) {
+
             String result = HelpingFunctions.removeComment(comment.getComment(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName, comment.getTimestamp(), comment.getUsername());
             if (result.equals("Success.")) {
-                int newCommentsCount = Integer.parseInt(commentsNumber) - 1;
-                String newCommentsCountString = newCommentsCount + "";
-                commentsTV.setText(newCommentsCountString);
+                numberOfComments --;
+                commentsTV.setText(String.valueOf(numberOfComments));
+                int position = comments.indexOf(comment);
                 comments.remove(position);
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position, comments.size());
@@ -582,29 +765,37 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
             }
         }
 
+        void openProfile(Comment comment){
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
-
-            ImageView profileImageIV;
-            TextView timeTV;
-            TextView usernameTV;
-            TextView commentTV;
-            ImageView likeIV;
-            TextView likeTV;
-            RelativeLayout relativeLayout;
-
-            public ViewHolder(@NonNull View itemView) {
-                super(itemView);
-
-                profileImageIV = itemView.findViewById(R.id.profileImageIV);
-                timeTV = itemView.findViewById(R.id.timeTV);
-                usernameTV = itemView.findViewById(R.id.usernameTV);
-                commentTV = itemView.findViewById(R.id.commentTV);
-                likeIV = itemView.findViewById(R.id.likeIV);
-                likeTV = itemView.findViewById(R.id.likeTV);
-                relativeLayout = itemView.findViewById(R.id.relativeLayout);
+            if (comment.getType().equals("0")) {
+                Intent intent = new Intent(context, SeeStudent.class);
+                intent.putExtra("username", comment.getUsername());
+                context.startActivity(intent);
+                overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
+
         }
+
+        void likeUnlikeComment(Comment comment, String likedStatus) {
+            int position = comments.indexOf(comment);
+
+
+            comments.get(position).setLikedStatus(likedStatus);
+            if (likedStatus.equals("1")) {
+                comments.get(position).setLikes(comments.get(position).getLikes() + 1);
+            } else {
+                comments.get(position).setLikes(comments.get(position).getLikes() - 1);
+            }
+
+            notifyItemChanged(position);
+
+        }
+
+
+        void setLoaded() {
+            isLoading = false;
+        }
+
     }
 
 

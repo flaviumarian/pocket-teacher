@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -30,10 +31,14 @@ import com.licence.pocketteacher.LoginPage;
 import com.licence.pocketteacher.OpeningPage;
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.aiding_classes.Teacher;
+import com.licence.pocketteacher.messaging.MessagingPage;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.teacher.folder.FragmentFolderT;
+import com.licence.pocketteacher.teacher.folder.subject.files.SeePostTeacher;
 import com.licence.pocketteacher.teacher.profile.FragmentProfileT;
+import com.licence.pocketteacher.teacher.profile.followers.SeeStudent;
 import com.licence.pocketteacher.teacher.updates.FragmentUpdatesT;
+import com.licence.pocketteacher.teacher.updates.follow_requests.SeeFollowRequests;
 
 import java.util.Collections;
 
@@ -41,10 +46,11 @@ public class MainPageT extends AppCompatActivity {
 
     private Dialog logOutPopup;
     private BottomNavigationView bottomNavigationView;
-    public static BadgeDrawable badgeDrawable;
+    public static BadgeDrawable badgeDrawable, badgeDrawableProfile;
 
     public static Teacher teacher;
     public static int flag; // 0 - normal, 1 - facebook, 2 - google
+    private String notificationsFlag;
 
 
     @Override
@@ -55,6 +61,7 @@ public class MainPageT extends AppCompatActivity {
         getLoginIntent();
         initiateComponents();
         setListeners();
+        goFromNotification();
 
     }
 
@@ -65,8 +72,11 @@ public class MainPageT extends AppCompatActivity {
         if (bundle != null) {
             teacher = bundle.getParcelable("teacher");
             flag = bundle.getInt("flag");
+            notificationsFlag = bundle.getString("notifications_flag");
+            if(notificationsFlag == null){
+                notificationsFlag = "-1";
+            }
         }
-
     }
 
     private void initiateComponents(){
@@ -82,6 +92,7 @@ public class MainPageT extends AppCompatActivity {
 
         // Notifications badge
         badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.updates);
+        badgeDrawableProfile = bottomNavigationView.getOrCreateBadge(R.id.profile);
 
         resetBadge();
     }
@@ -136,13 +147,66 @@ public class MainPageT extends AppCompatActivity {
         });
     }
 
+    private void goFromNotification(){
+
+        // Messaging notification
+        if(notificationsFlag.equals("0")){
+            String usernameToMessage = getIntent().getExtras().getString("messaging_username");
+
+            Intent intent = new Intent(getApplicationContext(), MessagingPage.class);
+            intent.putExtra("flag", "0");
+            intent.putExtra("messaging_id", getIntent().getExtras().getString("messaging_id"));
+            intent.putExtra("username_sender", teacher.getUsername());
+            intent.putExtra("type", 1);
+            intent.putExtra("username_receiver", usernameToMessage);
+            intent.putExtra("blocked", 0);
+            intent.putExtra("image", HelpingFunctions.getProfileImageBasedOnUsername(usernameToMessage));
+            startActivity(intent);
+        }
+
+        // Open post Teacher
+        if(notificationsFlag.equals("3")){
+            Intent intent = new Intent(getApplicationContext(), SeePostTeacher.class);
+            intent.putExtra("fileName", getIntent().getExtras().getString("fileName"));
+            intent.putExtra("fromNotifications", getIntent().getExtras().getBoolean("fromNotifications"));
+            intent.putExtra("subjectName", getIntent().getExtras().getString("subjectName"));
+            intent.putExtra("folderName", getIntent().getExtras().getString("folderName"));
+            startActivity(intent);
+        }
+
+        // Open follow requests
+        if (notificationsFlag.equals("4")) {
+            Intent intent = new Intent(getApplicationContext(), SeeFollowRequests.class);
+            startActivity(intent);
+        }
+
+        // Open Student profile
+        if(notificationsFlag.equals("5")){
+            Intent intent = new Intent(getApplicationContext(), SeeStudent.class);
+            intent.putExtra("username", getIntent().getExtras().getString("username"));
+            startActivity(intent);
+        }
+
+    }
+
     public static void resetBadge(){
         String numberNotifications = HelpingFunctions.getNumberOfNotifications(teacher.getUsername());
-        if(numberNotifications.equals("0")){
+        String numberFollowRequests = HelpingFunctions.getNumberOfFollowRequests(teacher.getUsername());
+
+        int notifications = Integer.parseInt(numberNotifications) + Integer.parseInt(numberFollowRequests);
+        if(notifications == 0){
             badgeDrawable.setVisible(false);
         }else{
-            badgeDrawable.setNumber(Integer.parseInt(numberNotifications));
+            badgeDrawable.setNumber(notifications);
             badgeDrawable.setVisible(true);
+        }
+
+        String numberOfUnreadMessages = HelpingFunctions.getNumberOfUnreadMessages(teacher.getUsername());
+        if(numberOfUnreadMessages.equals("0")){
+            badgeDrawableProfile.setVisible(false);
+        }else{
+            badgeDrawableProfile.setNumber(Integer.parseInt(numberOfUnreadMessages));
+            badgeDrawableProfile.setVisible(true);
         }
     }
 

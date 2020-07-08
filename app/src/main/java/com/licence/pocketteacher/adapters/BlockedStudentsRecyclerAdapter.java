@@ -67,7 +67,7 @@ public class BlockedStudentsRecyclerAdapter extends RecyclerView.Adapter<Blocked
                     holder.profileImageIV.setImageResource(R.drawable.profile_picture_female);
                     break;
                 case "2":
-                    holder.profileImageIV.setImageResource(0);
+                    holder.profileImageIV.setImageResource(R.drawable.profile_picture_neutral);
                     break;
             }
         }else{

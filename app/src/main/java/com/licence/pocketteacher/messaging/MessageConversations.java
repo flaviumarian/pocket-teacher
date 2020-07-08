@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.aiding_classes.Conversation;
+import com.licence.pocketteacher.aiding_classes.TextMessage;
 import com.licence.pocketteacher.messaging.new_conversation_student_account.StartConversationListStudent;
 import com.licence.pocketteacher.messaging.new_conversation_teacher_account.StartConversationListTeacher;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
@@ -38,7 +40,7 @@ public class MessageConversations extends AppCompatActivity {
     private ConversationsAdapter conversationsAdapter;
     private ArrayList<Conversation> conversations;
     private String masterUsername;
-    private boolean keepChecking = true, skipDelay = false;
+    private boolean keepChecking = true, skipDelay = false, isDisplayed = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +50,6 @@ public class MessageConversations extends AppCompatActivity {
         getIntentType();
         initiateComponents();
 
-
-        checkForConversationChanges();
     }
 
     private void getIntentType() {
@@ -164,6 +164,8 @@ public class MessageConversations extends AppCompatActivity {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+
+
                     // Wait for everything to be settled in
                     try {
                         Thread.sleep(3000);
@@ -173,6 +175,11 @@ public class MessageConversations extends AppCompatActivity {
 
                     // Continuously check for new updates every 1.5s
                     while (keepChecking) {
+
+                        if(!isDisplayed){
+                            return;
+                        }
+
 
                         if (!skipDelay) {
                             try {
@@ -187,6 +194,7 @@ public class MessageConversations extends AppCompatActivity {
                         if (!HelpingFunctions.isConnected(context)) {
                             continue;
                         }
+
                         final int numberOfMessages = HelpingFunctions.getNumberOfAllMessages(masterUsername);
                         try {
                             if (numberOfMessages != messagesCount) {
@@ -202,7 +210,6 @@ public class MessageConversations extends AppCompatActivity {
 
                                 if (!hasMoreOrLess) {
                                     // ONE OF THE EXISTING CONVERSATIONS IS UPDATED
-
                                     if (!HelpingFunctions.isConnected(context)) {
                                         continue;
                                     }
@@ -386,7 +393,7 @@ public class MessageConversations extends AppCompatActivity {
                         holder.profileImageIV.setImageResource(R.drawable.profile_picture_female);
                         break;
                     case "2":
-                        holder.profileImageIV.setImageResource(0);
+                        holder.profileImageIV.setImageResource(R.drawable.profile_picture_neutral);
                         break;
                 }
             } else {
@@ -396,7 +403,10 @@ public class MessageConversations extends AppCompatActivity {
 
             holder.usernameTV.setText(conversation.getUsername());
             holder.lastMessageTV.setText(conversation.getLastMessage());
-            holder.timeTV.setText(conversation.getTime());
+            if(conversation.getSeenStatus() == 0){
+                holder.lastMessageTV.setTypeface(holder.lastMessageTV.getTypeface(), Typeface.BOLD);
+            }
+            holder.timeTV.setText(conversation.getTimeSince());
 
             holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -406,6 +416,7 @@ public class MessageConversations extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                         return;
                     }
+
 
                     keepChecking = false;
 
@@ -436,9 +447,18 @@ public class MessageConversations extends AppCompatActivity {
                 return;
             }
 
-            ArrayList<String> newData = HelpingFunctions.getLastMessage(masterUsername, username);
-            conversations.get(position).setLastMessage(newData.get(0));
-            conversations.get(position).setTime(newData.get(1));
+            TextMessage lastTextMessage = HelpingFunctions.getLastMessage(masterUsername, username);
+
+            if(conversations.get(position).getTime().equals(lastTextMessage.getFullDate())){
+                conversations.get(position).setSeenStatus(lastTextMessage.getSeenStatus());
+                notifyItemChanged(position);
+                return;
+            }
+
+            conversations.get(position).setLastMessage(lastTextMessage.getMessage());
+            conversations.get(position).setTime(lastTextMessage.getFullDate());
+            conversations.get(position).setSeenStatus(lastTextMessage.getSeenStatus());
+
 
 
             if (position != 0) {
@@ -534,4 +554,22 @@ public class MessageConversations extends AppCompatActivity {
         finish();
         overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // When minimizing the app - to stop the thread for looking for internet connection
+        isDisplayed = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // When maximizing the app - to start the thread for looking for internet connection
+        isDisplayed = true;
+        checkForConversationChanges();
+    }
+
 }

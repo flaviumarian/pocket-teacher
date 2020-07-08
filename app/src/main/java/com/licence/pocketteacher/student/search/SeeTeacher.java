@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,7 +123,7 @@ public class SeeTeacher extends AppCompatActivity {
                                     profilePictureIV.setImageResource(R.drawable.profile_picture_female);
                                     break;
                                 case "2":
-                                    profilePictureIV.setImageResource(0);
+                                    profilePictureIV.setImageResource(R.drawable.profile_picture_neutral);
                                     break;
                             }
                         } else {
@@ -147,6 +148,7 @@ public class SeeTeacher extends AppCompatActivity {
                             // following
                             followC.setCardBackgroundColor(getResources().getColor(R.color.red));
                             followIV.setImageResource(R.drawable.logo_minus);
+                            messagesC.setVisibility(View.VISIBLE);
                         } else if (teacher.getFollowingRequestStatus().equals("1")) {
                             // requested
                             followC.setCardBackgroundColor(getResources().getColor(R.color.yellow));
@@ -312,7 +314,7 @@ public class SeeTeacher extends AppCompatActivity {
                     // Public account
                     if (teacher.getPrivacy().equals("0")) {
                         HelpingFunctions.followTeacher(MainPageS.student.getUsername(), username);
-                        HelpingFunctions.sendNotification(username, MainPageS.student.getUsername() + " has started following you.");
+                        HelpingFunctions.sendNotificationToTeachers(MainPageS.student.getUsername(), username, "", "", "", "Has started following you.");
                         followC.setCardBackgroundColor(getResources().getColor(R.color.red));
                         followIV.setImageResource(R.drawable.logo_minus);
 
@@ -329,7 +331,7 @@ public class SeeTeacher extends AppCompatActivity {
                     // Private account
                     String result = HelpingFunctions.requestFollowTeacher(MainPageS.student.getUsername(), username);
                     if(result.equals("Data inserted.")){
-                        HelpingFunctions.sendNotification(username, MainPageS.student.getUsername() + " has requested to follow you.");
+                        HelpingFunctions.sendNotificationToTeachers(MainPageS.student.getUsername(), username, "", "", "",  "Has requested to follow you.");
                     }
                     followC.setCardBackgroundColor(getResources().getColor(R.color.yellow));
                     followIV.setImageResource(R.drawable.logo_dots);

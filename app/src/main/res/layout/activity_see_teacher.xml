@@ -83,7 +83,7 @@
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_gravity="center_horizontal"
-                    app:cardBackgroundColor="@color/lightGrey"
+                    app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="75dp"
                     app:cardElevation="10dp">
 
@@ -103,7 +103,6 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="100dp"
                     android:layout_marginStart="60dp"
-                    app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="25dp"
                     app:cardElevation="10dp">
 
@@ -113,21 +112,21 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:contentDescription="@string/description_profile_edit_pencil"
-                        android:src="@drawable/logo_pencil" />
+                        />
 
                 </androidx.cardview.widget.CardView>
 
                 <!-- Messages -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/messagesC"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="100dp"
-                    android:layout_marginEnd="60dp"
+                    android:layout_marginTop="110dp"
+                    android:layout_marginEnd="55dp"
                     android:visibility="invisible"
-                    app:cardBackgroundColor="@color/white"
-                    app:cardCornerRadius="25dp"
+                    app:cardBackgroundColor="@color/lightGrey"
+                    app:cardCornerRadius="10dp"
                     app:cardElevation="10dp">
 
                     <ImageView

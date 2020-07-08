@@ -85,7 +85,7 @@ public class ChangeProfilePictureT extends AppCompatActivity {
                     profilePictureIV.setImageResource(R.drawable.profile_picture_female);
                     break;
                 case "2":
-                    profilePictureIV.setImageResource(0);
+                    profilePictureIV.setImageResource(R.drawable.profile_picture_neutral);
                     break;
             }
         } else {
@@ -178,7 +178,7 @@ public class ChangeProfilePictureT extends AppCompatActivity {
                                 profilePictureIV.setImageResource(R.drawable.profile_picture_female);
                                 break;
                             case "2":
-                                profilePictureIV.setImageResource(0);
+                                profilePictureIV.setImageResource(R.drawable.profile_picture_neutral);
                                 break;
                         }
                     }

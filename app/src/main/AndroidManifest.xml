@@ -15,6 +15,7 @@
         android:xlargeScreens="false" />
 
     <application
+        android:name=".ApplicationWrapper"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:hardwareAccelerated="true"
@@ -26,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".messaging.new_conversation_teacher_account.StartConversationListTeacher"></activity>
+        <activity android:name=".messaging.new_conversation_teacher_account.StartConversationListTeacher" />
         <activity android:name=".messaging.new_conversation_student_account.StartConversationListStudent" />
         <activity android:name=".messaging.MessageConversations" />
         <activity
@@ -289,6 +290,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/profile_image_path" />
         </provider>
+
     </application>
 
 </manifest>

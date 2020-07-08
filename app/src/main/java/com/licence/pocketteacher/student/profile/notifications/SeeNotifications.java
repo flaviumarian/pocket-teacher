@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,6 +41,8 @@ public class SeeNotifications extends AppCompatActivity {
     private NotificationsRecyclerAdapter notificationsRecyclerAdapter;
     private ArrayList<Notification> notifications;
 
+    boolean firstLaunch = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +53,7 @@ public class SeeNotifications extends AppCompatActivity {
     }
 
 
-    private void initiateComponents(){
+    private void initiateComponents() {
 
         // Toolbar
         Toolbar subjectToolbar = findViewById(R.id.notificationsToolbar);
@@ -74,27 +75,27 @@ public class SeeNotifications extends AppCompatActivity {
                 // Array List
                 notifications = HelpingFunctions.getAllNotifications(MainPageS.student.getUsername());
 
-                try{
+                try {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(notifications.size() == 0){
+                            if (notifications.size() == 0) {
                                 infoTV.setVisibility(View.VISIBLE);
-                            }else{
+                            } else {
                                 infoTV.setVisibility(View.INVISIBLE);
                             }
 
                             setListeners();
                         }
                     });
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }).start();
     }
 
-    private void setListeners(){
+    private void setListeners() {
 
         // Image View
         backIV.setOnClickListener(new View.OnClickListener() {
@@ -109,16 +110,51 @@ public class SeeNotifications extends AppCompatActivity {
         notificationsRV.setAdapter(notificationsRecyclerAdapter);
         notificationsRV.setLayoutManager(new LinearLayoutManager(SeeNotifications.this));
 
+        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+    }
+
+    private void reloadNotifications(){
+
+        findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                notifications.clear();
+                notifications.addAll(HelpingFunctions.getAllNotifications(MainPageS.student.getUsername()));
+
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            notificationsRecyclerAdapter.notifyDataSetChanged();
+                            if(notifications.size() > 0){
+                                infoTV.setVisibility(View.INVISIBLE);
+                            }else{
+                                infoTV.setVisibility(View.VISIBLE);
+                            }
+
+                            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
     }
 
 
     /*                                   *** A D A P T O R  ***                                   */
-    class NotificationsRecyclerAdapter extends RecyclerView.Adapter<NotificationsRecyclerAdapter.ViewHolder>{
+    class NotificationsRecyclerAdapter extends RecyclerView.Adapter<NotificationsRecyclerAdapter.ViewHolder> {
 
         private ArrayList<Notification> notifications;
         private Context context;
 
-        public NotificationsRecyclerAdapter(ArrayList<Notification> notifications, Context context){
+        public NotificationsRecyclerAdapter(ArrayList<Notification> notifications, Context context) {
             this.notifications = notifications;
             this.context = context;
         }
@@ -138,8 +174,8 @@ public class SeeNotifications extends AppCompatActivity {
             final Notification notification = notifications.get(position);
 
             // Profile image
-            if(notification.getProfileImageBase64().equals("")){
-                switch(notification.getGender()){
+            if (notification.getProfileImageBase64().equals("")) {
+                switch (notification.getGender()) {
                     case "0":
                         holder.profileImageIV.setImageResource(R.drawable.profile_picture_male);
                         break;
@@ -147,13 +183,12 @@ public class SeeNotifications extends AppCompatActivity {
                         holder.profileImageIV.setImageResource(R.drawable.profile_picture_female);
                         break;
                     case "2":
-                        holder.profileImageIV.setImageResource(0);
+                        holder.profileImageIV.setImageResource(R.drawable.profile_picture_neutral);
                         break;
                 }
-            }else{
+            } else {
                 holder.profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(notification.getProfileImageBase64()));
             }
-
 
 
             holder.timeTV.setText(notification.getTime());
@@ -164,54 +199,33 @@ public class SeeNotifications extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    if(!HelpingFunctions.isConnected(context)){
+                    if (!HelpingFunctions.isConnected(context)) {
                         Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    if(holder.messageTV.getText().toString().equals("approved your follow request.")){
+                    if (holder.messageTV.getText().toString().equals("approved your follow request.")) {
+                        HelpingFunctions.deleteNotificationApprovedFollowRequest(notification.getUsername(), MainPageS.student.getUsername());
+
                         Intent intent = new Intent(context, SeeTeacher.class);
                         intent.putExtra("username", notification.getUsername());
                         startActivity(intent);
                         overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
-                    }else {
-                        final ProgressDialog loading = ProgressDialog.show(context, "Please wait", "Loading...", true);
-                        new Thread() {
-                            @Override
-                            public void run() {
+                    } else {
 
-                                Intent intent = new Intent(context, SeePostStudent.class);
-                                intent.putExtra("usernameTeacher", notification.getUsernamePoster());
-                                intent.putExtra("folderName", notification.getFolderName());
-                                intent.putExtra("subject", notification.getSubjectName());
-                                intent.putExtra("fileName", notification.getPostName());
-                                intent.putExtra("likedStatus", HelpingFunctions.getLikedStatus(MainPageS.student.getUsername(), notification.getUsernamePoster(), notification.getSubjectName(), notification.getFolderName(), notification.getPostName()));
-                                intent.putExtra("likes", HelpingFunctions.getLikesForPost(notification.getUsernamePoster(), notification.getSubjectName(), notification.getFolderName(), notification.getPostName()));
-                                intent.putExtra("comments", HelpingFunctions.getCommentsForPost(notification.getUsernamePoster(), notification.getSubjectName(), notification.getFolderName(), notification.getPostName()));
+                        Intent intent = new Intent(context, SeePostStudent.class);
+                        intent.putExtra("usernameTeacher", notification.getUsernamePoster());
+                        intent.putExtra("folderName", notification.getFolderName());
+                        intent.putExtra("subject", notification.getSubjectName());
+                        intent.putExtra("fileName", notification.getPostName());
 
-                                startActivity(intent);
-                                overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
 
-
-                                try {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            loading.dismiss();
-                                        }
-                                    });
-                                } catch (final Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }.start();
                     }
 
-
-                    delete(position);
-                    HelpingFunctions.deleteNotification(notification.getUsernamePoster(), notification.getSubjectName(), notification.getFolderName(), notification.getPostName(), notification.getMessage(), notification.getUsername(), MainPageS.student.getUsername(), notification.getComment());
                     Intent returnIntent = new Intent();
-                    setResult(Activity.RESULT_OK,  returnIntent);
+                    setResult(Activity.RESULT_OK, returnIntent);
                 }
             });
 
@@ -223,16 +237,6 @@ public class SeeNotifications extends AppCompatActivity {
             return notifications.size();
         }
 
-
-        private void delete(int position){
-            notifications.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, notifications.size());
-            if(notifications.size() == 0 ){
-                infoTV.setVisibility(View.VISIBLE);
-                notificationsRV.setVisibility(View.INVISIBLE);
-            }
-        }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -253,7 +257,6 @@ public class SeeNotifications extends AppCompatActivity {
             }
         }
     }
-
 
 
     /*                      *** T O O L B A R    M E N U ***                         */
@@ -279,7 +282,7 @@ public class SeeNotifications extends AppCompatActivity {
         switch (id) {
             case R.id.clearNotifications:
 
-                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                if (!HelpingFunctions.isConnected(getApplicationContext())) {
                     Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                     break;
                 }
@@ -289,7 +292,7 @@ public class SeeNotifications extends AppCompatActivity {
                 infoTV.setVisibility(View.VISIBLE);
                 notificationsRV.setVisibility(View.INVISIBLE);
                 Intent returnIntent = new Intent();
-                setResult(Activity.RESULT_OK,  returnIntent);
+                setResult(Activity.RESULT_OK, returnIntent);
 
                 HelpingFunctions.deleteAllNotifications(MainPageS.student.getUsername());
                 break;
@@ -299,12 +302,21 @@ public class SeeNotifications extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(firstLaunch){
+            firstLaunch = false;
+            return;
+        }
 
+        reloadNotifications();
+    }
 
     @Override
     public void onBackPressed() {
 
-        if(!HelpingFunctions.isConnected(getApplicationContext())){
+        if (!HelpingFunctions.isConnected(getApplicationContext())) {
             Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
             return;
         }

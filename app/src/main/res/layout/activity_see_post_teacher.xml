@@ -90,8 +90,8 @@
                                 android:id="@+id/profileImageIV"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:scaleType="centerCrop"
-                                android:contentDescription="@string/description_profile_image"/>
+                                android:contentDescription="@string/description_profile_image"
+                                android:scaleType="centerCrop" />
 
                         </androidx.cardview.widget.CardView>
 
@@ -243,8 +243,8 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_marginStart="10dp"
-                            android:src="@drawable/ic_favorite_border_black_24dp"
-                            android:contentDescription="@string/description_like"/>
+                            android:contentDescription="@string/description_like"
+                            android:src="@drawable/ic_favorite_border_black_24dp" />
 
                         <!-- Likes number -->
                         <TextView
@@ -265,8 +265,8 @@
                             android:layout_centerVertical="true"
                             android:layout_marginStart="10dp"
                             android:layout_toEndOf="@id/likesTV"
-                            android:src="@drawable/ic_comment_black_24dp"
-                            android:contentDescription="@string/description_comment"/>
+                            android:contentDescription="@string/description_comment"
+                            android:src="@drawable/ic_comment_black_24dp" />
 
                         <!-- Likes number -->
                         <TextView
@@ -305,8 +305,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/postC"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
+                android:layout_marginBottom="40dp"
                 app:cardBackgroundColor="@color/lightGrey"
                 app:cardElevation="10dp">
 
@@ -314,15 +315,30 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
+
+                    <RelativeLayout
+                        android:id="@+id/loadingPanel"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="center">
+
+                        <ProgressBar
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:indeterminate="true" />
+                    </RelativeLayout>
+
                     <!-- UPPER SIDE - COMMENTS -->
                     <RelativeLayout
                         android:id="@+id/upperLayout1"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:layout_alignParentTop="true"
-                        android:gravity="center|start"
                         android:background="@color/white"
-                        android:elevation="10dp">
+                        android:elevation="10dp"
+                        android:gravity="center|start">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -340,86 +356,81 @@
                         android:id="@+id/infoTV"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_centerHorizontal="true"
                         android:layout_below="@id/upperLayout1"
+                        android:visibility="invisible"
+                        android:layout_centerHorizontal="true"
                         android:layout_marginTop="10dp"
                         android:fontFamily="@font/roboto"
-                        android:textAlignment="center"
-                        android:text="@string/message_post_2"/>
+                        android:text="@string/message_post_2"
+                        android:textAlignment="center" />
 
                     <androidx.core.widget.NestedScrollView
                         android:id="@+id/nestedCommentsView"
                         android:layout_width="match_parent"
-                        android:layout_height="250dp"
-                        android:fillViewport="true"
-                        android:layout_below="@id/upperLayout1">
+                        android:layout_height="260dp"
+                        android:layout_below="@id/upperLayout1"
+                        android:fillViewport="true">
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/commentsRV"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent">
-                            
+
                         </androidx.recyclerview.widget.RecyclerView>
 
-                        <!-- Comments list view-->
-                        <!-- <ListView
-                            android:id="@+id/commentsLV"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:nestedScrollingEnabled="true"/>      -->
 
                     </androidx.core.widget.NestedScrollView>
-
-
-
-                    <!-- Insert comment -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/nestedCommentsView"
-                        android:layout_margin="10dp"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardElevation="10dp"
-                        app:cardCornerRadius="10dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:background="@color/white"
-                            android:orientation="horizontal">
-
-                            <EditText
-                                android:id="@+id/commentET"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:inputType="textMultiLine"
-                                android:importantForAutofill="no"
-                                android:layout_weight="0.5"
-                                android:layout_marginStart="5dp"
-                                android:maxLength="150"
-                                android:hint="@string/hint_comment" />
-
-                            <ImageView
-                                android:id="@+id/sendCommentIV"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center|bottom"
-                                android:layout_marginStart="5dp"
-                                android:layout_marginTop="10dp"
-                                android:layout_marginBottom="10dp"
-                                android:src="@drawable/logo_send_grey"
-                                android:contentDescription="@string/description_send_comment"/>
-
-                        </LinearLayout>
-
-                    </androidx.cardview.widget.CardView>
-
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- INSERT COMMENT -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="-5dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="5dp"
+        app:contentPaddingBottom="5dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/commentET"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_weight="0.5"
+                android:hint="@string/hint_comment"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:maxLength="150" />
+
+            <ImageView
+                android:id="@+id/sendCommentIV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|bottom"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:contentDescription="@string/description_send_comment"
+                android:src="@drawable/logo_send_grey" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </RelativeLayout>

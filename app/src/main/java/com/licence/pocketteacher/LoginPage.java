@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -76,6 +77,7 @@ public class LoginPage extends AppCompatActivity {
         // Allow the main thread to perform a task that involves communicating with the db
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
 
 
         initiateComponents();
@@ -184,7 +186,7 @@ public class LoginPage extends AppCompatActivity {
         if (canLogIn) {
 
             // PASSWORD
-            String loginID = usernameET.getText().toString();
+            String loginID = usernameET.getText().toString().toLowerCase();
             String password = passwordET.getText().toString();
             try {
                 password = PasswordEncryptDecrypt.encrypt(password).trim();
@@ -357,7 +359,6 @@ public class LoginPage extends AppCompatActivity {
                             URL imageURL = new URL(imageUrl);
                             Bitmap bitmap = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
                             String base64Image = HelpingFunctions.convertImageToBase64(bitmap);
-
 
                             intent = new Intent(getApplicationContext(), RegistrationFbGoogle.class);
                             intent.putExtra("firstName", firstName);

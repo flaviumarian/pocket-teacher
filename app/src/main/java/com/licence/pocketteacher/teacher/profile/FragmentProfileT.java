@@ -11,6 +11,7 @@ import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.AlignmentSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,10 +60,14 @@ public class FragmentProfileT extends Fragment {
 
     private View view;
     private ImageView profilePictureIV;
-    private CardView editProfileC, messagesC, followersCard;
-    private TextView nameTV, universityTV, descriptionTV, followersTV;
+    private CardView editProfileC, messagesC, followersCard, newMessagesC;
+    private TextView nameTV, universityTV, descriptionTV, followersTV, newMessagesTV;
     private Dialog aboutPopup, logOutPopup;
     private ListView subjectsLV;
+
+    private static int EDIT_PROFILE_CODE = 0;
+    private static int SEE_FOLLOWERS_CODE = 1;
+    private static int SEE_MESSAGES_CODE = 2;
 
 
     @Nullable
@@ -96,6 +101,11 @@ public class FragmentProfileT extends Fragment {
                 universityTV = view.findViewById(R.id.universityTV);
                 descriptionTV = view.findViewById(R.id.descriptionTV);
                 followersTV = view.findViewById(R.id.followersTV);
+                final String followingNumber = HelpingFunctions.getFollowersNumber(MainPageT.teacher.getUsername());
+
+                newMessagesTV = view.findViewById(R.id.newMessagesTV);
+                final String newMessagesCount = HelpingFunctions.getNumberOfUnreadMessages(MainPageT.teacher.getUsername());
+
 
                 // List View
                 subjectsLV = view.findViewById(R.id.subjectsLV);
@@ -104,12 +114,22 @@ public class FragmentProfileT extends Fragment {
                 editProfileC = view.findViewById(R.id.editProfileC);
                 followersCard = view.findViewById(R.id.followersCard);
                 messagesC = view.findViewById(R.id.messagesC);
+                newMessagesC = view.findViewById(R.id.newMessagesC);
 
                 try {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            followersTV.setText(HelpingFunctions.getFollowersNumber(MainPageT.teacher.getUsername()));
+                            followersTV.setText(followingNumber);
+
+                            if(!newMessagesCount.equals("0")){
+                                newMessagesC.setVisibility(View.VISIBLE);
+                                if(Integer.parseInt(newMessagesCount) > 10){
+                                    newMessagesTV.setText(String.valueOf("10+"));
+                                }else{
+                                    newMessagesTV.setText(newMessagesCount);
+                                }
+                            }
 
                             setListeners();
                         }
@@ -135,7 +155,7 @@ public class FragmentProfileT extends Fragment {
                 }
 
                 Intent intent = new Intent(view.getContext(), EditProfileT.class);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, EDIT_PROFILE_CODE);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
@@ -149,7 +169,7 @@ public class FragmentProfileT extends Fragment {
                 }
 
                 Intent intent = new Intent(view.getContext(), SeeFollowers.class);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, SEE_FOLLOWERS_CODE);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
@@ -165,7 +185,7 @@ public class FragmentProfileT extends Fragment {
 
                 Intent intent = new Intent(view.getContext(), MessageConversations.class);
                 intent.putExtra("type", 1);
-                startActivity(intent);
+                startActivityForResult(intent, SEE_MESSAGES_CODE);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
@@ -241,7 +261,7 @@ public class FragmentProfileT extends Fragment {
                                         profilePictureIV.setImageResource(R.drawable.profile_picture_female);
                                         break;
                                     case "2":
-                                        profilePictureIV.setImageResource(0);
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_neutral);
                                         break;
                                 }
                             } else {
@@ -469,7 +489,7 @@ public class FragmentProfileT extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 0){
+        if(requestCode == EDIT_PROFILE_CODE){
 
             if(!HelpingFunctions.isConnected(view.getContext())){
                 Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
@@ -480,7 +500,7 @@ public class FragmentProfileT extends Fragment {
             setFields();
         }
 
-        if(requestCode == 1){
+        if(requestCode == SEE_FOLLOWERS_CODE){
 
             if(!HelpingFunctions.isConnected(view.getContext())){
                 Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
@@ -488,6 +508,25 @@ public class FragmentProfileT extends Fragment {
             }
 
             followersTV.setText(HelpingFunctions.getFollowersNumber(MainPageT.teacher.getUsername()));
+        }
+
+        if(requestCode == SEE_MESSAGES_CODE){
+            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String unreadMessages = HelpingFunctions.getNumberOfUnreadMessages(MainPageT.teacher.getUsername());
+            if(!unreadMessages.equals("0")){
+                newMessagesC.setVisibility(View.VISIBLE);
+                if(Integer.parseInt(unreadMessages) > 10){
+                    newMessagesTV.setText(String.valueOf("10+"));
+                }else{
+                    newMessagesTV.setText(unreadMessages);
+                }
+            }else{
+                newMessagesC.setVisibility(View.INVISIBLE);
+            }
         }
     }
 

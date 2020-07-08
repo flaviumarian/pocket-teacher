@@ -1,5 +1,7 @@
 package com.licence.pocketteacher.aiding_classes;
 
+
+
 import java.util.Calendar;
 
 
@@ -9,12 +11,13 @@ public class Conversation  implements Comparable<Conversation>{
     private String imageBase64;
     private String gender;
     private String lastMessage;
+    private int seenStatus;
     private String time;
     private int numberOfMessages;
     private int blocked;
 
 
-    public Conversation(String username, String imageBase64, String gender, String lastMessage, String time, int numberOfMessages, int blocked) {
+    public Conversation(String username, String imageBase64, String gender, String lastMessage, String time, int numberOfMessages, int blocked, int seenStatus) {
         this.username = username;
         this.imageBase64 = imageBase64;
         this.gender = gender;
@@ -22,6 +25,9 @@ public class Conversation  implements Comparable<Conversation>{
         setTime(time);
         this.numberOfMessages = numberOfMessages;
         this.blocked = blocked;
+        this.seenStatus = seenStatus;
+
+
 
 
     }
@@ -67,9 +73,7 @@ public class Conversation  implements Comparable<Conversation>{
         }
     }
 
-    public String getTime() {
-
-
+    public String getTimeSince() {
 
         int day = Integer.parseInt(time.substring(8,10));
         int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
@@ -85,6 +89,8 @@ public class Conversation  implements Comparable<Conversation>{
         return time.substring(0, 10);
 
     }
+
+    public String getTime(){ return time;}
 
     public void setTime(String time) {
         this.time = time;
@@ -104,6 +110,14 @@ public class Conversation  implements Comparable<Conversation>{
 
     public void setBlocked(int blocked) {
         this.blocked = blocked;
+    }
+
+    public int getSeenStatus() {
+        return seenStatus;
+    }
+
+    public void setSeenStatus(int seenStatus) {
+        this.seenStatus = seenStatus;
     }
 
     @Override

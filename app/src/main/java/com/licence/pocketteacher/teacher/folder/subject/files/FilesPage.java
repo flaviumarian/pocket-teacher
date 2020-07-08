@@ -76,7 +76,7 @@ public class FilesPage extends AppCompatActivity {
                 // List View
                 filesLV = findViewById(R.id.filesLV);
 
-                try{
+                try {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -87,7 +87,7 @@ public class FilesPage extends AppCompatActivity {
 
                         }
                     });
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -111,7 +111,7 @@ public class FilesPage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                if (!HelpingFunctions.isConnected(getApplicationContext())) {
                     Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -139,7 +139,7 @@ public class FilesPage extends AppCompatActivity {
                     comments.add(Integer.parseInt(HelpingFunctions.getCommentsForPost(MainPageT.teacher.getUsername(), SubjectPage.subjectName, folderName, fileName)));
                 }
 
-                try{
+                try {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -163,7 +163,7 @@ public class FilesPage extends AppCompatActivity {
 
                         }
                     });
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -231,7 +231,7 @@ public class FilesPage extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        if (!HelpingFunctions.isConnected(getApplicationContext())) {
                             Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -265,45 +265,17 @@ public class FilesPage extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        if (!HelpingFunctions.isConnected(getApplicationContext())) {
                             Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
-                        final ProgressDialog loading = ProgressDialog.show(FilesPage.this, "Please wait", "Loading...", true);
-                        new Thread() {
-                            @Override
-                            public void run() {
+                        Intent intent = new Intent(getApplicationContext(), SeePostTeacher.class);
+                        intent.putExtra("fileName", fileTV.getText().toString());
+                        intent.putExtra("fromNotifications", false);
+                        startActivityForResult(intent, 1);
+                        overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
 
-                                String likedStatus;
-                                if (likesIV.getTag().equals("0")) {
-                                    likedStatus = "";
-                                } else {
-                                    likedStatus = "1";
-                                }
-
-                                Intent intent = new Intent(getApplicationContext(), SeePostTeacher.class);
-                                intent.putExtra("fileName", fileTV.getText().toString());
-                                intent.putExtra("likedStatus", likedStatus);
-                                intent.putExtra("likes", likesTV.getText().toString());
-                                intent.putExtra("comments", commentsTV.getText().toString());
-                                intent.putExtra("fromNotifications", false);
-                                startActivityForResult(intent, 1);
-                                overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
-
-
-                                try {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            loading.dismiss();
-                                        }
-                                    });
-                                } catch (final Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }.start();
                     }
                 });
             }
@@ -318,7 +290,7 @@ public class FilesPage extends AppCompatActivity {
 
         if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
 
-            if(!HelpingFunctions.isConnected(getApplicationContext())){
+            if (!HelpingFunctions.isConnected(getApplicationContext())) {
                 Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -337,7 +309,7 @@ public class FilesPage extends AppCompatActivity {
 
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
 
-            if(!HelpingFunctions.isConnected(getApplicationContext())){
+            if (!HelpingFunctions.isConnected(getApplicationContext())) {
                 Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -377,7 +349,7 @@ public class FilesPage extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if(!HelpingFunctions.isConnected(getApplicationContext())){
+        if (!HelpingFunctions.isConnected(getApplicationContext())) {
             Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
             return;
         }

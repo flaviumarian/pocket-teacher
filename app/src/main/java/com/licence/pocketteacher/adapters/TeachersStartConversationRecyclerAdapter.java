@@ -60,7 +60,7 @@ public class TeachersStartConversationRecyclerAdapter extends RecyclerView.Adapt
                     holder.profileImageIV.setImageResource(R.drawable.profile_picture_female);
                     break;
                 case "2":
-                    holder.profileImageIV.setImageResource(0);
+                    holder.profileImageIV.setImageResource(R.drawable.profile_picture_neutral);
                     break;
             }
         }else{
@@ -104,7 +104,8 @@ public class TeachersStartConversationRecyclerAdapter extends RecyclerView.Adapt
                                         // REQUEST TO FOLLOW
                                         String result = HelpingFunctions.requestFollowTeacher(usernameSender, teacher.getUsername());
                                         if(result.equals("Data inserted.")){
-                                            HelpingFunctions.sendNotification(teacher.getUsername(), usernameSender + " has requested to follow you.");
+//                                            HelpingFunctions.sendNotification(teacher.getUsername(), usernameSender + " has requested to follow you.");
+                                            HelpingFunctions.sendNotificationToTeachers(usernameSender, teacher.getUsername(), "", "", "", "Has requested to follow you.");
                                             teacher.setFollowingRequestStatus("1");
                                         }
                                         Snackbar.make(v, "Requested to follow.", Snackbar.LENGTH_SHORT).show();

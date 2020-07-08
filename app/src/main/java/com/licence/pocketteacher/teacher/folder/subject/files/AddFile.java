@@ -3,6 +3,7 @@ package com.licence.pocketteacher.teacher.folder.subject.files;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -12,10 +13,12 @@ import okhttp3.Response;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -29,6 +32,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
@@ -61,6 +65,10 @@ public class AddFile extends AppCompatActivity {
     private String filePath;
     private Dialog goBackPopup;
 
+    public static final int MULTIPLE_PERMISSIONS = 1;
+    public static final int STORAGE_WRITE_REQUEST_CODE = 2;
+    public static final int STORAGE_READ_REQUEST_CODE = 3;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +80,7 @@ public class AddFile extends AppCompatActivity {
 
     }
 
-    private void initiateComponents(){
+    private void initiateComponents() {
 
         // Image View
         backIV = findViewById(R.id.backIV);
@@ -90,7 +98,7 @@ public class AddFile extends AppCompatActivity {
 
     }
 
-    private void setListeners(){
+    private void setListeners() {
 
         // Image View
         backIV.setOnClickListener(new View.OnClickListener() {
@@ -103,10 +111,12 @@ public class AddFile extends AppCompatActivity {
         // Edit Text
         descriptionET.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -123,10 +133,8 @@ public class AddFile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ActivityCompat.checkSelfPermission(AddFile.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
-                        return;
-                    }
+                    askPermissions();
+                    return;
                 }
 
                 // if permission is granted it can continue
@@ -138,33 +146,32 @@ public class AddFile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                if (!HelpingFunctions.isConnected(getApplicationContext())) {
                     Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 boolean canPost = true;
 
-                if(HelpingFunctions.isEditTextEmpty(titleET)){
+                if (HelpingFunctions.isEditTextEmpty(titleET)) {
                     titleET.setError("Insert title");
                     canPost = false;
-                } else{
-                    for(String title : FilesPage.fileNames){
-                        if(title.equalsIgnoreCase(titleET.getText().toString())){
+                } else {
+                    for (String title : FilesPage.fileNames) {
+                        if (title.equalsIgnoreCase(titleET.getText().toString())) {
                             titleET.setError("Title already exists");
                             canPost = false;
                             break;
                         }
                     }
                 }
-                if(HelpingFunctions.isEditTextEmpty(descriptionET)){
+                if (HelpingFunctions.isEditTextEmpty(descriptionET)) {
                     descriptionET.setError("Insert description");
                     canPost = false;
                 }
 
 
-
-                if(canPost){
+                if (canPost) {
                     final ProgressDialog loading = ProgressDialog.show(AddFile.this, "Please wait", "Posting...", true);
                     new Thread() {
                         @Override
@@ -172,14 +179,14 @@ public class AddFile extends AppCompatActivity {
 
                             uploadFile();
                             String pathToSend;
-                            if(fileGood){
+                            if (fileGood) {
                                 pathToSend = "http://pocketteacher.ro/uploads/" + filePath;
-                            }else{
+                            } else {
                                 pathToSend = "null";
                             }
 
                             String result = HelpingFunctions.postFile(MainPageT.teacher.getEmail(), SubjectPage.subjectName, FilesPage.folderName, titleET.getText().toString().replace("'", "\\\'"), descriptionET.getText().toString().replace("'", "\\\'"), pathToSend);
-                            if(result.equals("Error occured.")){
+                            if (result.equals("Error occured.")) {
                                 Snackbar.make(getCurrentFocus(), "An error occured, please try again later.", Snackbar.LENGTH_SHORT).show();
                                 return;
                             }
@@ -189,7 +196,7 @@ public class AddFile extends AppCompatActivity {
                             FilesPage.likes.add(0, 0);
                             FilesPage.comments.add(0, 0);
                             Intent returnIntent = new Intent();
-                            setResult(Activity.RESULT_OK,  returnIntent);
+                            setResult(Activity.RESULT_OK, returnIntent);
                             finish();
                             overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);
 
@@ -211,7 +218,71 @@ public class AddFile extends AppCompatActivity {
 
     }
 
-    private void chooseFile(){
+    private void askPermissions(){
+        int permissionCheckStorageWrite = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permissionCheckStorageRead = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+
+        // we already asked for permisson & Permission granted, call file opening system
+        if (permissionCheckStorageWrite == PackageManager.PERMISSION_GRANTED && permissionCheckStorageRead == PackageManager.PERMISSION_GRANTED) {
+            chooseFile();
+
+        } //asking permission for the first time
+        else if (permissionCheckStorageWrite != PackageManager.PERMISSION_GRANTED && permissionCheckStorageRead != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, MULTIPLE_PERMISSIONS);
+
+        } else {
+            // Permission denied, so request permission
+
+            // if write request is denied
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("You need to give permission to write external storage in order to work this feature.");
+                builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.setPositiveButton("GIVE PERMISSION", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+
+                        // Show permission request popup
+                        ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},STORAGE_WRITE_REQUEST_CODE);
+                    }
+                });
+                builder.show();
+
+            }   // if read request is denied
+            else if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("You need to give permission to read storage in order to work this feature.");
+                builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.setPositiveButton("GIVE PERMISSION", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+
+                        // Show permission request popup
+                        ActivityCompat.requestPermissions(getParent(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_READ_REQUEST_CODE);
+                    }
+                });
+                builder.show();
+
+            }
+
+        }
+    }
+
+    private void chooseFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -226,9 +297,9 @@ public class AddFile extends AppCompatActivity {
         }
     }
 
-    private void uploadFile(){
+    private void uploadFile() {
 
-        if(!fileGood){
+        if (!fileGood) {
             return;
         }
 
@@ -239,8 +310,6 @@ public class AddFile extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
-
 
     private String getMimeType(String path) {
         String extension = MimeTypeMap.getFileExtensionFromUrl(path);
@@ -321,8 +390,8 @@ public class AddFile extends AppCompatActivity {
                                 .url("http://pocketteacher.ro/upload_file_to_server.php")
                                 .post(request_body)
                                 .build();
-                    }catch(Exception e){
-                        runOnUiThread(new Runnable(){
+                    } catch (Exception e) {
+                        runOnUiThread(new Runnable() {
 
                             @Override
                             public void run() {
@@ -342,7 +411,8 @@ public class AddFile extends AppCompatActivity {
 
         public static final String AUTHORITY = "com.licence.pocketteacher";
 
-        private FileUtils() { } //private constructor to enforce Singleton pattern
+        private FileUtils() {
+        } //private constructor to enforce Singleton pattern
 
         /**
          * @return Whether the URI is a local one.
@@ -532,27 +602,62 @@ public class AddFile extends AppCompatActivity {
             }
             return null;
         }
+
     }
 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-            chooseFile();
-        } else {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case STORAGE_WRITE_REQUEST_CODE:
+                if (grantResults.length > 0 && permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    // check whether write permission granted or not.
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        chooseFile();
+                    }
+                }
+                break;
+            case STORAGE_READ_REQUEST_CODE:
+                if (grantResults.length > 0 && permissions[0].equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    // check whether READ storage permission granted or not.
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        chooseFile();
+                    }
+                }
+                break;
+            case MULTIPLE_PERMISSIONS:
+                if (grantResults.length > 0 && permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE) && permissions[1].equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    // check whether All permission granted or not.
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                        chooseFile();
+
+                    }
+                }
+                break;
+            default:
+                break;
         }
+
+
+
+//        if (requestCode == 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//            chooseFile();
+//        } else {
+//            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+//        }
     }
 
     @Override
     public void onBackPressed() {
 
-        if(!HelpingFunctions.isConnected(getApplicationContext())){
+        if (!HelpingFunctions.isConnected(getApplicationContext())) {
             Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if(!HelpingFunctions.isEditTextEmpty(titleET) || !HelpingFunctions.isEditTextEmpty(descriptionET) || fileGood){
+        if (!HelpingFunctions.isEditTextEmpty(titleET) || !HelpingFunctions.isEditTextEmpty(descriptionET) || fileGood) {
             goBackPopup = new Dialog(AddFile.this);
             goBackPopup.setContentView(R.layout.popup_go_back);
 
@@ -579,7 +684,7 @@ public class AddFile extends AppCompatActivity {
                     overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);
                 }
             });
-        }else {
+        } else {
             finish();
             overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);
         }

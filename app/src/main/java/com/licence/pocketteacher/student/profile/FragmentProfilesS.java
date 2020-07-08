@@ -57,10 +57,15 @@ public class FragmentProfilesS extends Fragment {
 
     private View view;
     private ImageView profilePictureIV;
-    private CardView editProfileC, messagesC, followersCard;
-    private TextView nameTV, universityTV, descriptionTV, followingTV, notificationBadgeTV;
+    private CardView editProfileC, messagesC, followersCard, newMessagesC;
+    private TextView nameTV, universityTV, descriptionTV, followingTV, notificationBadgeTV, newMessagesTV;
     private Dialog aboutPopup, logOutPopup;
     private Button notificationBttn;
+
+    private static int EDIT_PROFILE_CODE = 0;
+    private static int SEE_FOLLOWERS_CODE = 1;
+    private static int SEE_NOTIFICATIONS_CODE = 2;
+    private static int SEE_MESSAGES_CODE = 3;
 
 
     @Nullable
@@ -100,6 +105,10 @@ public class FragmentProfilesS extends Fragment {
                 universityTV = view.findViewById(R.id.universityTV);
                 descriptionTV = view.findViewById(R.id.descriptionTV);
                 followingTV = view.findViewById(R.id.followingTV);
+                final String followingNumber = HelpingFunctions.getFollowingNumber(MainPageS.student.getUsername());
+
+                newMessagesTV = view.findViewById(R.id.newMessagesTV);
+                final String newMessagesCount = HelpingFunctions.getNumberOfUnreadMessages(MainPageS.student.getUsername());
 
                 notificationBadgeTV = view.findViewById(R.id.notificationBadgeTV);
                 final String notificationNumber = HelpingFunctions.getNumberOfNotifications(MainPageS.student.getUsername());
@@ -108,6 +117,7 @@ public class FragmentProfilesS extends Fragment {
                 editProfileC = view.findViewById(R.id.editProfileC);
                 followersCard = view.findViewById(R.id.followersCard);
                 messagesC = view.findViewById(R.id.messagesC);
+                newMessagesC = view.findViewById(R.id.newMessagesC);
 
                 // Button
                 notificationBttn = view.findViewById(R.id.notificationBttn);
@@ -117,13 +127,25 @@ public class FragmentProfilesS extends Fragment {
                         @Override
                         public void run() {
 
-                            followingTV.setText(HelpingFunctions.getFollowingNumber(MainPageS.student.getUsername()));
+                            followingTV.setText(followingNumber);
+
+                            if(!newMessagesCount.equals("0")){
+                                newMessagesC.setVisibility(View.VISIBLE);
+                                if(Integer.parseInt(newMessagesCount) > 10){
+                                    newMessagesTV.setText(String.valueOf("10+"));
+                                }else{
+                                    newMessagesTV.setText(newMessagesCount);
+                                }
+                            }
+
                             if (notificationNumber.equals("0")) {
                                 notificationBadgeTV.setVisibility(View.INVISIBLE);
                             } else {
                                 notificationBadgeTV.setVisibility(View.VISIBLE);
                                 notificationBadgeTV.setText(notificationNumber);
                             }
+
+
 
                             setListeners();
                         }
@@ -152,7 +174,7 @@ public class FragmentProfilesS extends Fragment {
                 }
 
                 Intent intent = new Intent(view.getContext(), EditProfileS.class);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, EDIT_PROFILE_CODE);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
@@ -167,7 +189,7 @@ public class FragmentProfilesS extends Fragment {
                 }
 
                 Intent intent = new Intent(view.getContext(), SeeFollowing.class);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, SEE_FOLLOWERS_CODE);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
@@ -183,7 +205,7 @@ public class FragmentProfilesS extends Fragment {
 
                 Intent intent = new Intent(view.getContext(), MessageConversations.class);
                 intent.putExtra("type", 0);
-                startActivity(intent);
+                startActivityForResult(intent, SEE_MESSAGES_CODE);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
@@ -199,7 +221,7 @@ public class FragmentProfilesS extends Fragment {
                 }
 
                 Intent intent = new Intent(view.getContext(), SeeNotifications.class);
-                startActivityForResult(intent, 2);
+                startActivityForResult(intent, SEE_NOTIFICATIONS_CODE);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
@@ -239,7 +261,7 @@ public class FragmentProfilesS extends Fragment {
                                         profilePictureIV.setImageResource(R.drawable.profile_picture_female);
                                         break;
                                     case "2":
-                                        profilePictureIV.setImageResource(0);
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_neutral);
                                         break;
                                 }
                             } else {
@@ -402,7 +424,7 @@ public class FragmentProfilesS extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 0){
+        if(requestCode == EDIT_PROFILE_CODE){
 
             if(!HelpingFunctions.isConnected(getApplicationContext())){
                 Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
@@ -413,7 +435,7 @@ public class FragmentProfilesS extends Fragment {
             setFields();
         }
 
-        if(requestCode == 1){
+        if(requestCode == SEE_FOLLOWERS_CODE){
 
             if(!HelpingFunctions.isConnected(getApplicationContext())){
                 Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
@@ -432,7 +454,7 @@ public class FragmentProfilesS extends Fragment {
             }
         }
 
-        if(requestCode == 2 && resultCode == Activity.RESULT_OK){
+        if(requestCode == SEE_NOTIFICATIONS_CODE && resultCode == Activity.RESULT_OK){
 
             if(!HelpingFunctions.isConnected(getApplicationContext())){
                 Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
@@ -447,6 +469,26 @@ public class FragmentProfilesS extends Fragment {
                 notificationBadgeTV.setVisibility(View.VISIBLE);
                 notificationBadgeTV.setText(notificationNumber);
                 MainPageS.badgeDrawable.setNumber(Integer.parseInt(notificationNumber));
+            }
+        }
+
+        if(requestCode == SEE_MESSAGES_CODE){
+
+            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String unreadMessages = HelpingFunctions.getNumberOfUnreadMessages(MainPageS.student.getUsername());
+            if(!unreadMessages.equals("0")){
+                newMessagesC.setVisibility(View.VISIBLE);
+                if(Integer.parseInt(unreadMessages) > 10){
+                    newMessagesTV.setText(String.valueOf("10+"));
+                }else{
+                    newMessagesTV.setText(unreadMessages);
+                }
+            }else{
+                newMessagesC.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -471,6 +513,8 @@ public class FragmentProfilesS extends Fragment {
             Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
             return;
         }
+
+
         // Notification Badge
         MainPageS.resetBadge();
     }

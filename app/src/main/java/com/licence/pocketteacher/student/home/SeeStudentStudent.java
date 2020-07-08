@@ -1,6 +1,7 @@
 package com.licence.pocketteacher.student.home;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.messaging.MessagingPage;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.MainPageS;
 
@@ -23,8 +25,9 @@ public class SeeStudentStudent extends AppCompatActivity {
 
     private ImageView backIV, reportIV;
     private Dialog reportPopup, reportSentPopup;
+    private CardView messagesC;
 
-    private String username;
+    private String username, imageBase64;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +36,8 @@ public class SeeStudentStudent extends AppCompatActivity {
 
         getUsernameFromIntent();
         initiateComponents();
-        setListeners();
 
     }
-
-
 
     private void getUsernameFromIntent(){
         Intent intent = getIntent();
@@ -49,74 +49,131 @@ public class SeeStudentStudent extends AppCompatActivity {
 
     private void initiateComponents(){
 
-        if(!HelpingFunctions.isConnected(getApplicationContext())){
-            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        // Image View
-        backIV = findViewById(R.id.backIV);
+                // CardView
+                messagesC = findViewById(R.id.messagesC);
 
-        reportIV = findViewById(R.id.reportIV);
+                // Image View
+                backIV = findViewById(R.id.backIV);
+                reportIV = findViewById(R.id.reportIV);
 
-        // Toolbar username
-        TextView toolbarUsernameTV = findViewById(R.id.toolbarUsernameTV);
-        toolbarUsernameTV.setText(username);
+                // Toolbar username
+                final TextView toolbarUsernameTV = findViewById(R.id.toolbarUsernameTV);
 
-        // Profile picture
-        ImageView profilePictureIV = findViewById(R.id.profilePictureIV);
-        String image = HelpingFunctions.getProfileImageBasedOnUsername(username);
-        if(image.equals("")){
-            switch (HelpingFunctions.getGenderBasedOnUsername(username)) {
-                case "0":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_male);
-                    break;
-                case "1":
-                    profilePictureIV.setImageResource(R.drawable.profile_picture_female);
-                    break;
-                case "2":
-                    profilePictureIV.setImageResource(0);
-                    break;
+                // Profile picture
+                final ImageView profilePictureIV = findViewById(R.id.profilePictureIV);
+                imageBase64 = HelpingFunctions.getProfileImageBasedOnUsername(username);
+
+                // Name
+                final TextView nameTV = findViewById(R.id.nameTV);
+                final String firstName = HelpingFunctions.getFirstNameBasedOnUsername(username);
+                final String lastName = HelpingFunctions.getLastNameBasedOnUsername(username);
+
+
+                // University
+                final TextView universityTV = findViewById(R.id.universityTV);
+                final String university = HelpingFunctions.getUniversityBasedOnUsername(username);
+
+
+                // Followers number
+                final TextView followingTV = findViewById(R.id.followingTV);
+
+                // Description
+                final TextView descriptionTV = findViewById(R.id.descriptionTV);
+                final String description = HelpingFunctions.getProfileDescriptionBasedOnUsername(username);
+
+                try{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Toolbar username
+                            toolbarUsernameTV.setText(username);
+
+                            // Profile picture
+                            if(imageBase64.equals("")){
+                                switch (HelpingFunctions.getGenderBasedOnUsername(username)) {
+                                    case "0":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_male);
+                                        break;
+                                    case "1":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_female);
+                                        break;
+                                    case "2":
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_neutral);
+                                        break;
+                                }
+                            }else{
+                                profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(imageBase64));
+                            }
+
+                            // Name
+                            if(firstName.equals("") || lastName.equals("")){
+                                nameTV.setText(R.string.message_unknown_name);
+                            }else{
+                                String name = firstName + " " + lastName;
+                                nameTV.setText(name);
+                            }
+
+
+                            // University
+                            if(university.equals("")){
+                                universityTV.setText("");
+                            }else {
+                                universityTV.setText(university);
+                            }
+
+                            // Followers number
+                            followingTV.setText(HelpingFunctions.getFollowingNumber(username));
+
+                            // Description
+                            if(description.equals("")){
+                                descriptionTV.setText(R.string.message_no_description);
+                            }else {
+                                descriptionTV.setText(description);
+                            }
+
+                            setListeners();
+
+
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+
             }
-        }else{
-            profilePictureIV.setImageBitmap(HelpingFunctions.convertBase64toImage(image));
-        }
+        }).start();
 
-        // Name
-        TextView nameTV = findViewById(R.id.nameTV);
-        String firstName = HelpingFunctions.getFirstNameBasedOnUsername(username);
-        String lastName = HelpingFunctions.getLastNameBasedOnUsername(username);
-        if(firstName.equals("") || lastName.equals("")){
-            nameTV.setText(R.string.message_unknown_name);
-        }else{
-            String name = firstName + " " + lastName;
-            nameTV.setText(name);
-        }
-
-        // University
-        TextView universityTV = findViewById(R.id.universityTV);
-        String university = HelpingFunctions.getUniversityBasedOnUsername(username);
-        if(university.equals("")){
-            universityTV.setText("");
-        }else {
-            universityTV.setText(university);
-        }
-
-        // Followers number
-        TextView followingTV = findViewById(R.id.followingTV);
-        followingTV.setText(HelpingFunctions.getFollowingNumber(username));
-
-        // Description
-        TextView descriptionTV = findViewById(R.id.descriptionTV);
-        String description = HelpingFunctions.getProfileDescriptionBasedOnUsername(username);
-        if(description.equals("")){
-            descriptionTV.setText(R.string.message_no_description);
-        }else {
-            descriptionTV.setText(description);
-        }
     }
 
     private void setListeners(){
+
+        // Card View
+        messagesC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(getApplicationContext(), MessagingPage.class);
+                intent.putExtra("username_sender", MainPageS.student.getUsername());
+                intent.putExtra("type", 0);
+                intent.putExtra("username_receiver", username);
+                intent.putExtra("blocked", 0);
+                intent.putExtra("image", imageBase64);
+                startActivityForResult(intent, 0);
+                overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
+            }
+        });
+
 
         // Image View
         backIV.setOnClickListener(new View.OnClickListener() {
