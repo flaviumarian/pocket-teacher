@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -128,8 +129,10 @@ public class FilesPage extends AppCompatActivity {
             public void run() {
                 // List View
                 ArrayList<ArrayList> information = HelpingFunctions.getAllFilesForFolder(MainPageT.teacher.getUsername(), MainPageT.teacher.getUsername(), SubjectPage.subjectName, folderName);
-                fileNames = information.get(1);
-                likedStatuses = information.get(3);
+                fileNames = information.get(0);
+                likedStatuses = information.get(1);
+
+
 
                 likes = new ArrayList<>();
                 comments = new ArrayList<>();

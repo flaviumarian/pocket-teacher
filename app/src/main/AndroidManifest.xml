@@ -221,7 +221,8 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".teacher.MainPageT"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".initial_activities.EmailConf2"
             android:screenOrientation="portrait" />
@@ -231,7 +232,8 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".student.MainPageS"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".initial_activities.ConfirmationSent"
             android:screenOrientation="portrait" />

@@ -161,7 +161,22 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                             commentET.requestFocus();
 
                             // Profile Image
-                            profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(MainPageT.teacher.getProfileImageBase64()));
+                            String image = MainPageT.teacher.getProfileImageBase64();
+                            if (image.equals("")) {
+                                switch (MainPageT.teacher.getGender()) {
+                                    case "0":
+                                        profileImageIV.setImageResource(R.drawable.profile_picture_male);
+                                        break;
+                                    case "1":
+                                        profileImageIV.setImageResource(R.drawable.profile_picture_female);
+                                        break;
+                                    case "2":
+                                        profileImageIV.setImageResource(R.drawable.profile_picture_neutral);
+                                        break;
+                                }
+                            } else {
+                                profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(image));
+                            }
 
                             // Liked status
                             if (likedStatus.equals("1")) {

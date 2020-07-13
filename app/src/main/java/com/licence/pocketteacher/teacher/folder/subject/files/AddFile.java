@@ -65,9 +65,7 @@ public class AddFile extends AppCompatActivity {
     private String filePath;
     private Dialog goBackPopup;
 
-    public static final int MULTIPLE_PERMISSIONS = 1;
-    public static final int STORAGE_WRITE_REQUEST_CODE = 2;
-    public static final int STORAGE_READ_REQUEST_CODE = 3;
+    public static final int STORAGE_READ_REQUEST_CODE = 1;
 
 
     @Override
@@ -219,67 +217,13 @@ public class AddFile extends AppCompatActivity {
     }
 
     private void askPermissions(){
-        int permissionCheckStorageWrite = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        int permissionCheckStorageRead = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
 
-
-        // we already asked for permisson & Permission granted, call file opening system
-        if (permissionCheckStorageWrite == PackageManager.PERMISSION_GRANTED && permissionCheckStorageRead == PackageManager.PERMISSION_GRANTED) {
-            chooseFile();
-
-        } //asking permission for the first time
-        else if (permissionCheckStorageWrite != PackageManager.PERMISSION_GRANTED && permissionCheckStorageRead != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, MULTIPLE_PERMISSIONS);
-
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_READ_REQUEST_CODE);
         } else {
-            // Permission denied, so request permission
-
-            // if write request is denied
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("You need to give permission to write external storage in order to work this feature.");
-                builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                builder.setPositiveButton("GIVE PERMISSION", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-
-                        // Show permission request popup
-                        ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},STORAGE_WRITE_REQUEST_CODE);
-                    }
-                });
-                builder.show();
-
-            }   // if read request is denied
-            else if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("You need to give permission to read storage in order to work this feature.");
-                builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                builder.setPositiveButton("GIVE PERMISSION", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-
-                        // Show permission request popup
-                        ActivityCompat.requestPermissions(getParent(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_READ_REQUEST_CODE);
-                    }
-                });
-                builder.show();
-
-            }
-
+            chooseFile();
         }
+
     }
 
     private void chooseFile() {
@@ -610,43 +554,15 @@ public class AddFile extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
-            case STORAGE_WRITE_REQUEST_CODE:
-                if (grantResults.length > 0 && permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    // check whether write permission granted or not.
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        chooseFile();
-                    }
-                }
-                break;
-            case STORAGE_READ_REQUEST_CODE:
-                if (grantResults.length > 0 && permissions[0].equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    // check whether READ storage permission granted or not.
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        chooseFile();
-                    }
-                }
-                break;
-            case MULTIPLE_PERMISSIONS:
-                if (grantResults.length > 0 && permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE) && permissions[1].equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    // check whether All permission granted or not.
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                        chooseFile();
-
-                    }
-                }
-                break;
-            default:
-                break;
+        if (requestCode == STORAGE_READ_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                chooseFile();
+            } else {
+                // no permission granted
+                Snackbar.make(getCurrentFocus(), "Storage permission is needed.", Snackbar.LENGTH_SHORT).show();
+            }
         }
 
-
-
-//        if (requestCode == 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//            chooseFile();
-//        } else {
-//            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
-//        }
     }
 
     @Override

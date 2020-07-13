@@ -19,6 +19,7 @@ import android.widget.ListView;
 
 import com.licence.pocketteacher.aiding_classes.Comment;
 import com.licence.pocketteacher.aiding_classes.Conversation;
+import com.licence.pocketteacher.aiding_classes.Folder;
 import com.licence.pocketteacher.aiding_classes.Post;
 import com.licence.pocketteacher.aiding_classes.Student;
 import com.licence.pocketteacher.aiding_classes.Subject;
@@ -2261,7 +2262,6 @@ public class HelpingFunctions {
 
         JSONArray jsonArray;
         ArrayList<String> folderNames = new ArrayList<>();
-        String folderName;
 
         try {
             JSONObject jsonObject = new JSONObject(jsonResult);
@@ -2272,9 +2272,7 @@ public class HelpingFunctions {
             while (count < jsonArray.length()) {
                 JSONObject jo = jsonArray.getJSONObject(count);
 
-                folderName = jo.getString("name");
-                folderNames.add(folderName);
-
+                folderNames.add(jo.getString("name"));
 
                 count++;
             }
@@ -2282,20 +2280,16 @@ public class HelpingFunctions {
             e.printStackTrace();
         }
 
+
         return folderNames;
     }
 
-    public static ArrayList<ArrayList> getAllFilesForFolder(String usernameWatcher, String usernamePoster, String subject, String folder) {
-        String jsonResult = frameForPHPscriptUsageWithFourParameters("http://pocketteacher.ro/getters/get_all_files_for_folder.php", usernameWatcher, "username_watcher", usernamePoster, "username_poster", subject, "subject", folder, "folder");
-
-        ArrayList<String> urls = new ArrayList<>();
-        ArrayList<String> titles = new ArrayList<>();
-        ArrayList<String> descriptions = new ArrayList<>();
-        ArrayList<String> likedStatuses = new ArrayList<>();
+    public static ArrayList<Folder> getFolders(String username, String subject) {
+        String jsonResult = frameForPHPscriptUsageWithTwoParameters("http://pocketteacher.ro/getters/get_all_folders.php", username, "username", subject, "subject");
 
 
         JSONArray jsonArray;
-        String url, title, description, likedStatus;
+        ArrayList<String> folderNames = new ArrayList<>();
 
         try {
             JSONObject jsonObject = new JSONObject(jsonResult);
@@ -2306,13 +2300,76 @@ public class HelpingFunctions {
             while (count < jsonArray.length()) {
                 JSONObject jo = jsonArray.getJSONObject(count);
 
-                url = jo.getString("file_url");
-                urls.add(url);
+                folderNames.add(jo.getString("name"));
+
+                count++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<Folder> folders = new ArrayList<>();
+
+        for(String folderName : folderNames){
+            folders.add(new Folder(folderName));
+        }
+
+        return folders;
+    }
+
+    public static String getPostsForFolderJSON(String usernameWatcher, String usernamePoster, String subject, String folder){
+        return frameForPHPscriptUsageWithFourParameters("http://pocketteacher.ro/getters/get_all_files_for_folder.php", usernameWatcher, "username_watcher", usernamePoster, "username_poster", subject, "subject", folder, "folder");
+    }
+
+    public static ArrayList<Post> getPostsFromJSON(String json){
+
+        ArrayList<Post> posts = new ArrayList<>();
+        JSONArray jsonArray;
+
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            int count = 0;
+            jsonArray = jsonObject.getJSONArray("data");
+
+
+            while (count < jsonArray.length()) {
+                JSONObject jo = jsonArray.getJSONObject(count);
+                posts.add(new Post(jo.getString("title"), jo.getString("liked"), jo.getString("likes"), jo.getString("comments")));
+
+                count++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return posts;
+    }
+
+    public static ArrayList<ArrayList> getAllFilesForFolder(String usernameWatcher, String usernamePoster, String subject, String folder) {
+        String jsonResult = frameForPHPscriptUsageWithFourParameters("http://pocketteacher.ro/getters/get_all_files_for_folder.php", usernameWatcher, "username_watcher", usernamePoster, "username_poster", subject, "subject", folder, "folder");
+
+        ArrayList<String> titles = new ArrayList<>();
+        ArrayList<String> likedStatuses = new ArrayList<>();
+
+
+        JSONArray jsonArray;
+        String title, likedStatus;
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResult);
+            int count = 0;
+            jsonArray = jsonObject.getJSONArray("data");
+
+
+            while (count < jsonArray.length()) {
+                JSONObject jo = jsonArray.getJSONObject(count);
+
+
                 title = jo.getString("title");
                 titles.add(title);
-                description = jo.getString("description");
-                descriptions.add(description);
-                likedStatus = jo.getString("liked_status");
+
+                likedStatus = jo.getString("liked");
                 likedStatuses.add(likedStatus);
 
                 count++;
@@ -2322,9 +2379,7 @@ public class HelpingFunctions {
         }
 
         ArrayList<ArrayList> information = new ArrayList<>();
-        information.add(urls);
         information.add(titles);
-        information.add(descriptions);
         information.add(likedStatuses);
 
         return information;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/backgroundBlue"
     android:focusableInTouchMode="true">
 
@@ -30,10 +30,10 @@
             android:id="@+id/subjectNameTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
             android:layout_gravity="center"
             android:fontFamily="@font/open_sans"
             android:text=""
+            android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="22sp" />
 
@@ -48,25 +48,43 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:visibility="visible"
         android:fontFamily="@font/open_sans_bold"
-        android:textAlignment="center"
         android:text="@string/message_see_subject_1"
+        android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:visibility="invisible" />
 
     <!-- Main workspace area -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fillViewport="true"
-        android:layout_below="@id/subjectToolbar">
+        android:layout_below="@id/subjectToolbar"
+        android:fillViewport="true">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="95dp">
+
+            <!-- Information - no posts for the folder -->
+            <TextView
+                android:id="@+id/info1TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/foldersRV"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="@font/open_sans_bold"
+                android:text="@string/message_see_subject_4"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="invisible" />
 
             <!-- Subject Image -->
             <androidx.cardview.widget.CardView
@@ -82,8 +100,8 @@
                     android:id="@+id/subjectLogoIV"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:contentDescription="@string/description_subject_image"/>
+                    android:contentDescription="@string/description_subject_image"
+                    android:scaleType="centerCrop" />
 
             </androidx.cardview.widget.CardView>
 
@@ -93,83 +111,51 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/subjectLogoCard"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:layout_marginStart="40dp"
-                android:visibility="invisible"
                 android:fontFamily="@font/open_sans_bold"
                 android:text="@string/message_see_subject_2"
-                android:textStyle="bold"
                 android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="invisible" />
 
-            <!-- ListView folders -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/foldersCard"
+            <!-- Folders -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/foldersRV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/foldersTV"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="40dp"
-                app:cardElevation="10dp" >
-
-                <ListView
-                    android:id="@+id/foldersLV"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    />
-            </androidx.cardview.widget.CardView>
-
-            <!-- Information - no posts for the folder -->
-            <TextView
-                android:id="@+id/info1TV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/foldersCard"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
+                android:background="@color/white"
                 android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:visibility="invisible"
-                android:fontFamily="@font/open_sans_bold"
-                android:textStyle="bold"
-                android:textAlignment="center"
-                android:text="@string/message_see_subject_4"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp" />
 
             <!-- Information -->
             <TextView
                 android:id="@+id/postsTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/foldersCard"
+                android:layout_below="@id/foldersRV"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:layout_marginStart="40dp"
-                android:visibility="invisible"
                 android:fontFamily="@font/open_sans_bold"
                 android:text="@string/message_see_subject_3"
-                android:textStyle="bold"
                 android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="invisible" />
 
-            <!-- ListView posts -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/postsCard"
+            <!-- Posts -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/postsRV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/postsTV"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="40dp"
-                app:cardElevation="10dp" >
+                android:layout_marginEnd="20dp" />
 
-                <ListView
-                    android:id="@+id/postsLV"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    />
-            </androidx.cardview.widget.CardView>
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 
