@@ -51,7 +51,7 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:visibility="invisible" />
+        />
 
     <RelativeLayout
         android:id="@+id/loadingPanel"
