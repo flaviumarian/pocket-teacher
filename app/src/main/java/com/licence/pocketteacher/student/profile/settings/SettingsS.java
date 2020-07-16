@@ -90,6 +90,7 @@ public class SettingsS extends AppCompatActivity {
                 final String[] names3 = {"Terms and Conditions", "Privacy Policy"};
 
 
+
                 try {
                     runOnUiThread(new Runnable() {
                         @Override

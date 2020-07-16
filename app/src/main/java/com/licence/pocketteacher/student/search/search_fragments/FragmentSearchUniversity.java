@@ -67,6 +67,7 @@ public class FragmentSearchUniversity extends Fragment {
                 domainTV = view.findViewById(R.id.domainTV);
                 infoTV = view.findViewById(R.id.infoTV);
 
+
                 // Recycler View
                 teachersRV = view.findViewById(R.id.teachersRV);
 

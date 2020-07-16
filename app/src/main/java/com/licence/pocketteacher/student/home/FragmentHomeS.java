@@ -73,6 +73,7 @@ public class FragmentHomeS extends Fragment {
                 // Lottie animator
                 lottieAnimationView = view.findViewById(R.id.lottieAnimationView);
 
+
                 // Swipe Refresh Layout
                 swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
@@ -88,6 +89,7 @@ public class FragmentHomeS extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
 
                             if (!HelpingFunctions.isConnected(view.getContext())) {
                                 Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
@@ -154,6 +156,7 @@ public class FragmentHomeS extends Fragment {
                             }
 
                             MainPageS.resetBadge();
+
 
                             setListeners();
                         }
@@ -592,6 +595,7 @@ public class FragmentHomeS extends Fragment {
                         public void run() {
                             if (MainPageS.needsRefresh) {
 
+
                                 if (!HelpingFunctions.isConnected(view.getContext())) {
                                     Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                                     return;
@@ -614,8 +618,10 @@ public class FragmentHomeS extends Fragment {
                                         postAdapter.notifyDataSetChanged();
                                         swipeRefreshLayout.setRefreshing(false);
 
+
                                     }
                                 }, 2000);
+
 
 
                                 MainPageS.needsRefresh = false;
@@ -638,11 +644,14 @@ public class FragmentHomeS extends Fragment {
                         }
                     });
 
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }).start();
+
+
 
 
     }

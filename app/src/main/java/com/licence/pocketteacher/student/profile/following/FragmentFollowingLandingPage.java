@@ -61,12 +61,14 @@ public class FragmentFollowingLandingPage extends Fragment {
                 backIV = view.findViewById(R.id.backIV);
                 searchIV = view.findViewById(R.id.searchIV);
 
+
                 // Recycle View
                 teachersRV = view.findViewById(R.id.teachersRV);
 
                 // Array List
                 followingTeachers = HelpingFunctions.getAllFollowingTeachers(MainPageS.student.getUsername());
                 final TextView infoTV = view.findViewById(R.id.infoTV);
+
 
 
                 try{

@@ -105,10 +105,12 @@ public class FragmentProfilesS extends Fragment {
                 universityTV = view.findViewById(R.id.universityTV);
                 descriptionTV = view.findViewById(R.id.descriptionTV);
                 followingTV = view.findViewById(R.id.followingTV);
+
                 final String followingNumber = HelpingFunctions.getFollowingNumber(MainPageS.student.getUsername());
 
                 newMessagesTV = view.findViewById(R.id.newMessagesTV);
                 final String newMessagesCount = HelpingFunctions.getNumberOfUnreadMessages(MainPageS.student.getUsername());
+
 
                 notificationBadgeTV = view.findViewById(R.id.notificationBadgeTV);
                 final String notificationNumber = HelpingFunctions.getNumberOfNotifications(MainPageS.student.getUsername());
@@ -116,8 +118,10 @@ public class FragmentProfilesS extends Fragment {
                 // Card View
                 editProfileC = view.findViewById(R.id.editProfileC);
                 followersCard = view.findViewById(R.id.followersCard);
+
                 messagesC = view.findViewById(R.id.messagesC);
                 newMessagesC = view.findViewById(R.id.newMessagesC);
+
 
                 // Button
                 notificationBttn = view.findViewById(R.id.notificationBttn);
@@ -126,6 +130,7 @@ public class FragmentProfilesS extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
 
                             followingTV.setText(followingNumber);
 
@@ -138,13 +143,13 @@ public class FragmentProfilesS extends Fragment {
                                 }
                             }
 
+
                             if (notificationNumber.equals("0")) {
                                 notificationBadgeTV.setVisibility(View.INVISIBLE);
                             } else {
                                 notificationBadgeTV.setVisibility(View.VISIBLE);
                                 notificationBadgeTV.setText(notificationNumber);
                             }
-
 
 
                             setListeners();

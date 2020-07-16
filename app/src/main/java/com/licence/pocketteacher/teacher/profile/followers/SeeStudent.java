@@ -76,6 +76,7 @@ public class SeeStudent extends AppCompatActivity {
                 final ImageView profilePictureIV = findViewById(R.id.profilePictureIV);
                 image = HelpingFunctions.getProfileImageBasedOnUsername(username);
 
+
                 // Name
                 final TextView nameTV = findViewById(R.id.nameTV);
                 final String firstName = HelpingFunctions.getFirstNameBasedOnUsername(username);
@@ -164,9 +165,7 @@ public class SeeStudent extends AppCompatActivity {
                                     descriptionTV.setText(description);
                                 }
                             }
-
                             setListeners();
-
                         }
                     });
                 }catch(Exception e){

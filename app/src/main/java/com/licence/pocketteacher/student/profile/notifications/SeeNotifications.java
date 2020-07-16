@@ -82,6 +82,7 @@ public class SeeNotifications extends AppCompatActivity {
                             if (notifications.size() == 0) {
                                 infoTV.setVisibility(View.VISIBLE);
                             } else {
+
                                 infoTV.setVisibility(View.INVISIBLE);
                             }
 
@@ -89,6 +90,7 @@ public class SeeNotifications extends AppCompatActivity {
                         }
                     });
                 } catch (Exception e) {
+
                     e.printStackTrace();
                 }
             }

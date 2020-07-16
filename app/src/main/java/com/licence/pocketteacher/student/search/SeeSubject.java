@@ -148,7 +148,6 @@ public class SeeSubject extends AppCompatActivity {
             }
         }).start();
 
-
     }
 
     private void setListeners() {

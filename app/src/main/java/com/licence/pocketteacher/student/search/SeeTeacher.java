@@ -106,6 +106,7 @@ public class SeeTeacher extends AppCompatActivity {
                 // Message
                 messagesC = findViewById(R.id.messagesC);
 
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.AlignmentSpan;
@@ -142,7 +143,21 @@ public class FragmentProfileT extends Fragment {
 
     }
 
-    private void setListeners(){
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            followersTV.setText(HelpingFunctions.getFollowers(MainPageT.teacher.getUsername()));
+
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
         // Card View
         editProfileC.setOnClickListener(new View.OnClickListener() {
@@ -538,6 +553,7 @@ public class FragmentProfileT extends Fragment {
             Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
             return;
         }
+
 
         // Notification Badge
         MainPageT.resetBadge();

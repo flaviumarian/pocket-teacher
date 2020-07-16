@@ -70,6 +70,7 @@ public class EditProfileS extends AppCompatActivity {
                 final int[] changesImages = {R.drawable.ic_person_black_24dp, R.drawable.ic_wallpaper_black_24dp, R.drawable.logo_description, R.drawable.logo_university, R.drawable.logo_gender};
                 final String[] names = {"Name", "Profile Picture", "Description", "University", "Gender"};
 
+
                 try {
                     runOnUiThread(new Runnable() {
                         @Override

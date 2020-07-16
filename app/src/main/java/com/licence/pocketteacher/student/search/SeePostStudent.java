@@ -85,11 +85,14 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
         }
     }
 
+
     private void initiateComponents() {
+
 
         new Thread(new Runnable() {
             @Override
             public void run() {
+
 
                 // Remove all notifications for this post
                 HelpingFunctions.deleteNotificationsForPost(teacherUsername, subject, folder, fileName, MainPageS.student.getUsername());
@@ -103,6 +106,7 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
                 // Comments number
                 commentsNumber = HelpingFunctions.getCommentsForPost(teacherUsername, subject, folder, fileName);
                 numberOfComments = Integer.parseInt(commentsNumber);
+
 
                 // Image View
                 backIV = findViewById(R.id.backIV);
@@ -122,7 +126,9 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
                             commentET.requestFocus();
+
 
                             if (image.equals("")) {
                                 switch (HelpingFunctions.getGenderBasedOnUsername(teacherUsername)) {
@@ -561,6 +567,7 @@ public class SeePostStudent extends AppCompatActivity implements BottomDeleteCom
                 }
             }
         });
+
 
 
     }

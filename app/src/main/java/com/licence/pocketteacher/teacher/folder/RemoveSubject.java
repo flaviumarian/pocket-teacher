@@ -70,6 +70,7 @@ public class RemoveSubject extends AppCompatActivity {
                             subjectsLV.setAdapter(subjectsAdapter);
                             HelpingFunctions.setListViewHeightBasedOnChildren(subjectsLV);
 
+
                             setListeners();
 
                         }

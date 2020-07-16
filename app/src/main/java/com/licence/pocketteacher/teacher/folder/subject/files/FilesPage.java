@@ -82,6 +82,7 @@ public class FilesPage extends AppCompatActivity {
                         @Override
                         public void run() {
 
+
                             // Text View
                             folderNameTV.setText(folderName);
                             setListeners();
@@ -129,9 +130,13 @@ public class FilesPage extends AppCompatActivity {
             public void run() {
                 // List View
                 ArrayList<ArrayList> information = HelpingFunctions.getAllFilesForFolder(MainPageT.teacher.getUsername(), MainPageT.teacher.getUsername(), SubjectPage.subjectName, folderName);
+
                 fileNames = information.get(0);
                 likedStatuses = information.get(1);
 
+                            FilesAdapter filesAdapter = new FilesAdapter(FilesPage.this, fileNames, likedStatuses, likes, comments);
+                            filesLV.setAdapter(filesAdapter);
+                            HelpingFunctions.setListViewHeightBasedOnChildren(filesLV);
 
 
                 likes = new ArrayList<>();
@@ -161,6 +166,7 @@ public class FilesPage extends AppCompatActivity {
                             FilesAdapter filesAdapter = new FilesAdapter(FilesPage.this, fileNames, likedStatuses, likes, comments);
                             filesLV.setAdapter(filesAdapter);
                             HelpingFunctions.setListViewHeightBasedOnChildren(filesLV);
+
 
                             findViewById(R.id.loadingPanel).setVisibility(View.GONE);
 

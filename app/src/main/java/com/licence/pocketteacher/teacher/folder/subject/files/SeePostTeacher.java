@@ -208,6 +208,7 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                             teacherUsernameTV.setText(MainPageT.teacher.getUsername());
 
                             // Other fields
+
                             likesTV.setText(likesNumber);
                             commentsTV.setText(commentsNumber);
                             titleTV.setText(fileInformation.get(1));
@@ -235,14 +236,15 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                 // Comments
                 displayedComments = new ArrayList<>();
                 commentsJSON = HelpingFunctions.getAllCommentsJSON(MainPageT.teacher.getUsername(), MainPageT.teacher.getUsername(), subjectName, folderName, fileName);
-
                 getNextComments();
+
 
                 try {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if (displayedComments.size() > 0) {
+
                                 infoTV.setVisibility(View.INVISIBLE);
                             } else {
                                 infoTV.setVisibility(View.VISIBLE);
@@ -485,6 +487,9 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
         });
 
 
+        commentsRV.setAdapter(commentsRecyclerAdapter);
+        commentsRV.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
     }
 
     private void getNextComments() {
@@ -554,6 +559,7 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
             relativeLayout = itemView.findViewById(R.id.relativeLayout);
         }
     }
+
 
     class CommentsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -673,13 +679,13 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                     @Override
                     public void onClick(View v) {
 
+
                         if(!HelpingFunctions.isConnected(getApplicationContext())){
                             Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
                         openProfile(comment);
-
                     }
                 });
 
@@ -694,7 +700,6 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                         }
 
                         openProfile(comment);
-
                     }
                 });
 
@@ -738,6 +743,7 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                             return false;
                         }
 
+
                         if (comment.getUsername().equals(MainPageT.teacher.getUsername())) {
                             // apare optiune sa sterg comentariul
                             BottomDeleteCommentDialog bottomDeleteCommentDialog = new BottomDeleteCommentDialog(comment);
@@ -769,6 +775,7 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
                 numberOfComments --;
                 commentsTV.setText(String.valueOf(numberOfComments));
                 int position = comments.indexOf(comment);
+
                 comments.remove(position);
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position, comments.size());
@@ -807,11 +814,12 @@ public class SeePostTeacher extends AppCompatActivity implements BottomDeleteCom
         }
 
 
+
         void setLoaded() {
             isLoading = false;
         }
-
     }
+
 
 
     /*                      *** T O O L B A R    M E N U ***                         */

@@ -115,7 +115,6 @@ public class SeeFollowRequests extends AppCompatActivity {
 
                 requestingStudents = HelpingFunctions.getAllFollowingRequestStudents(MainPageT.teacher.getUsername());
 
-
                 try{
                     runOnUiThread(new Runnable() {
                         @Override
