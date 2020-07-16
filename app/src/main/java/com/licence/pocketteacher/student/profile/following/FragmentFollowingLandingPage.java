@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.MainPageS;
-import com.licence.pocketteacher.student.search.TeachersRecyclerAdapter;
+import com.licence.pocketteacher.adapters.TeachersRecyclerAdapter;
 import com.licence.pocketteacher.aiding_classes.Teacher;
 
 import java.util.ArrayList;
@@ -61,12 +61,14 @@ public class FragmentFollowingLandingPage extends Fragment {
                 backIV = view.findViewById(R.id.backIV);
                 searchIV = view.findViewById(R.id.searchIV);
 
+
                 // Recycle View
                 teachersRV = view.findViewById(R.id.teachersRV);
 
                 // Array List
                 followingTeachers = HelpingFunctions.getAllFollowingTeachers(MainPageS.student.getUsername());
                 final TextView infoTV = view.findViewById(R.id.infoTV);
+
 
 
                 try{
@@ -125,5 +127,7 @@ public class FragmentFollowingLandingPage extends Fragment {
             teachersRV.setAdapter(teachersRecyclerAdapter);
             teachersRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
         }
+
+        view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 }

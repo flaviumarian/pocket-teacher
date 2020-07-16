@@ -1,12 +1,14 @@
 package com.licence.pocketteacher.student.search;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -27,9 +29,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.aiding_classes.Folder;
+import com.licence.pocketteacher.aiding_classes.Post;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.MainPageS;
 import com.licence.pocketteacher.aiding_classes.Subject;
@@ -39,21 +45,20 @@ import java.util.Collections;
 
 public class SeeSubject extends AppCompatActivity {
 
-    private ImageView backIV;
+
     private TextView infoTV, info1TV, foldersTV, postsTV;
-    private ListView foldersLV, postsLV;
-    private FoldersAdapter foldersAdapter;
+    private RecyclerView foldersRV, postsRV;
     private PostsAdapter postsAdapter;
+    private ImageView backIV;
     private Dialog subjectDetailsPopup, domainDetailsPopup, reportPopup, reportSentPopup;
 
-
     private String usernameTeacher, subject;
-    private static ArrayList<String> folders;
-    public static ArrayList<String> fileNames, likedStatuses;
-    public static ArrayList<Integer> likes, comments;
+    private ArrayList<Folder> folders;
+    private ArrayList<Post> postsDisplayed;
+    private ArrayList<String> postsJSONS;
 
-    private static int currentPosition = -1;
-    private static String currentFolder;
+    private Folder currentFolder = null;
+    private Post currentPost = null;
 
 
     @Override
@@ -66,7 +71,7 @@ public class SeeSubject extends AppCompatActivity {
 
     }
 
-    private void getSubjectFromIntent(){
+    private void getSubjectFromIntent() {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
@@ -75,7 +80,7 @@ public class SeeSubject extends AppCompatActivity {
         }
     }
 
-    private void initiateComponents(){
+    private void initiateComponents() {
 
         // Toolbar
         Toolbar subjectToolbar = findViewById(R.id.subjectToolbar);
@@ -100,23 +105,34 @@ public class SeeSubject extends AppCompatActivity {
                 final TextView subjectNameTV = findViewById(R.id.subjectNameTV);
 
                 // Folders
-                folders = HelpingFunctions.getFoldersForSubjectAndTeacher(usernameTeacher, subject);
+                folders = HelpingFunctions.getFolders(usernameTeacher, subject);
                 Collections.sort(folders);
 
+                // Get all posts JSON for each folder
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        postsJSONS = new ArrayList<>();
+                        for (Folder folder : folders) {
+                            postsJSONS.add(HelpingFunctions.getPostsForFolderJSON(MainPageS.student.getUsername(), usernameTeacher, subject, folder.getName()));
+                        }
+
+                    }
+                }).start();
 
 
-                // List View
-                foldersLV = findViewById(R.id.foldersLV);
-                postsLV = findViewById(R.id.postsLV);
+                // Recycler View
+                foldersRV = findViewById(R.id.foldersRV);
+                postsRV = findViewById(R.id.postsRV);
 
-                try{
+                try {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
 
                             // Image View
                             subjectLogoIV.setImageBitmap(HelpingFunctions.convertBase64toImage(HelpingFunctions.getSubjectImage(subject)));
-
 
                             // Toolbar textview
                             subjectNameTV.setText(subject);
@@ -126,16 +142,15 @@ public class SeeSubject extends AppCompatActivity {
                         }
                     });
 
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }).start();
 
-
     }
 
-    private void setListeners(){
+    private void setListeners() {
 
         // Image View
         backIV.setOnClickListener(new View.OnClickListener() {
@@ -155,264 +170,277 @@ public class SeeSubject extends AppCompatActivity {
             foldersTV.setVisibility(View.VISIBLE);
         }
 
-        foldersAdapter = new FoldersAdapter(SeeSubject.this, folders);
-        foldersLV.setAdapter(foldersAdapter);
-        foldersAdapter.notifyDataSetChanged();
-        HelpingFunctions.setListViewHeightBasedOnChildren(foldersLV);
+        // Recycler Views
+        FoldersAdapter foldersAdapter = new FoldersAdapter(folders, getApplicationContext());
+        foldersRV.setAdapter(foldersAdapter);
+        foldersRV.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+        postsDisplayed = new ArrayList<>();
+        postsAdapter = new PostsAdapter(postsDisplayed, getApplicationContext());
+        postsRV.setAdapter(postsAdapter);
+        postsRV.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
     }
-
-    private boolean getAllPostsForFolder(String folderName){
-
-        ArrayList<ArrayList> information = HelpingFunctions.getAllFilesForFolder(MainPageS.student.getUsername(), usernameTeacher, subject, folderName);
-        fileNames = information.get(1);
-        likedStatuses = information.get(3);
-
-        if (fileNames.size() == 0) {
-            postsTV.setVisibility(View.INVISIBLE);
-            postsAdapter = new PostsAdapter(SeeSubject.this, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<Integer>(), new ArrayList<Integer>());
-            postsLV.setAdapter(postsAdapter);
-            HelpingFunctions.setListViewHeightBasedOnChildren(postsLV);
-            return false;
-        } else {
-            postsTV.setVisibility(View.VISIBLE);
-        }
-
-        likes = new ArrayList<>();
-        comments = new ArrayList<>();
-        for (String fileName : fileNames) {
-            likes.add(Integer.parseInt(HelpingFunctions.getLikesForPost(usernameTeacher, subject, folderName, fileName)));
-            comments.add(Integer.parseInt(HelpingFunctions.getCommentsForPost(usernameTeacher, subject, folderName, fileName)));
-        }
-
-        postsAdapter = new PostsAdapter(SeeSubject.this, fileNames, likedStatuses, likes, comments);
-        postsLV.setAdapter(postsAdapter);
-        postsAdapter.notifyDataSetChanged();
-        HelpingFunctions.setListViewHeightBasedOnChildren(postsLV);
-
-        return true;
-    }
-
 
     /*                                   *** A D A P T O R S  ***                                 */
-    class FoldersAdapter extends BaseAdapter {
+    class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.ViewHolder> {
 
-        private ArrayList<String> folders;
-        private LayoutInflater inflater;
+        private ArrayList<Folder> folders;
+        private Context context;
 
-
-        FoldersAdapter(Context context, ArrayList<String> folders) {
-            inflater = LayoutInflater.from(context);
+        FoldersAdapter(ArrayList<Folder> folders, Context context) {
             this.folders = folders;
+            this.context = context;
 
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_custom_folder_rv, parent, false);
+            return new ViewHolder(view);
         }
 
         @Override
-        public int getCount() {
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
+            final Folder folder = folders.get(position);
+
+            holder.folderTV.setText(folder.getName());
+            if (folder.isShowPosts()) {
+                holder.endIV.setImageResource(R.drawable.ic_expand_less_black_24dp);
+            } else {
+                holder.endIV.setImageResource(R.drawable.ic_expand_more_black_24dp);
+            }
+
+            holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (!HelpingFunctions.isConnected(context)) {
+                        Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    showHidePosts(folder);
+
+                    // show posts
+                    showPosts(folder);
+                }
+            });
+
+        }
+
+        void showHidePosts(Folder folder) {
+            int position = folders.indexOf(folder);
+            if (folders.get(position).isShowPosts()) {
+                folders.get(position).setShowPosts(false);
+                currentFolder = null;
+            } else {
+                folders.get(position).setShowPosts(true);
+                currentFolder = folder;
+
+                // change all others to false as well
+                for (Folder folderAux : folders) {
+                    if (folderAux != folder && folderAux.isShowPosts()) {
+                        folders.get(folders.indexOf(folderAux)).setShowPosts(false);
+                        notifyItemChanged(folders.indexOf(folderAux));
+                    }
+                }
+            }
+
+            notifyItemChanged(position);
+        }
+
+        void showPosts(Folder folder) {
+            postsDisplayed.clear();
+
+            if (folder.isShowPosts()) {
+                postsTV.setVisibility(View.VISIBLE);
+                postsDisplayed.addAll(HelpingFunctions.getPostsFromJSON(postsJSONS.get(folders.indexOf(folder))));
+                if (postsDisplayed.size() == 0) {
+                    info1TV.setVisibility(View.VISIBLE);
+                } else {
+                    info1TV.setVisibility(View.INVISIBLE);
+                }
+            } else {
+                postsTV.setVisibility(View.INVISIBLE);
+            }
+
+            postsAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public int getItemCount() {
             return folders.size();
         }
 
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
 
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
+        public class ViewHolder extends RecyclerView.ViewHolder {
 
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = inflater.inflate(R.layout.list_custom_folder, null);
+            ImageView endIV;
+            TextView folderTV;
 
-                final TextView folderTV = convertView.findViewById(R.id.folderTV);
-                final ImageView endIV = convertView.findViewById(R.id.endIV);
+            RelativeLayout relativeLayout;
 
-                folderTV.setText(folders.get(position));
+            ViewHolder(@NonNull View itemView) {
+                super(itemView);
 
-                if(currentPosition == position){
-                    endIV.setImageResource(R.drawable.ic_expand_less_black_24dp);
-                    endIV.setTag("1");
-                }else {
-                    endIV.setImageResource(R.drawable.ic_expand_more_black_24dp);
-                    endIV.setTag("0");
-                }
-
-
-                convertView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        if(endIV.getTag().equals("1")){
-                            endIV.setImageResource(R.drawable.ic_expand_more_black_24dp);
-                            endIV.setTag("0");
-                            currentPosition = -1;
-                            postsTV.setVisibility(View.INVISIBLE);
-                            info1TV.setVisibility(View.INVISIBLE);
-
-                            postsAdapter = new PostsAdapter(SeeSubject.this, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<Integer>(), new ArrayList<Integer>());
-                            postsLV.setAdapter(postsAdapter);
-                            HelpingFunctions.setListViewHeightBasedOnChildren(postsLV);
-
-                            return;
-                        }
-
-                        if(getAllPostsForFolder(folderTV.getText().toString())){
-                           endIV.setImageResource(R.drawable.ic_expand_less_black_24dp);
-                           endIV.setTag("1");
-                           currentPosition = position;
-                           currentFolder = folderTV.getText().toString();
-                           info1TV.setVisibility(View.INVISIBLE);
-                        }else{
-                            // no posts
-                            endIV.setImageResource(R.drawable.ic_expand_less_black_24dp);
-                            endIV.setTag("1");
-                            currentPosition = position;
-                            info1TV.setVisibility(View.VISIBLE);
-                        }
-
-                        foldersAdapter = new FoldersAdapter(SeeSubject.this, folders);
-                        foldersLV.setAdapter(foldersAdapter);
-                        foldersAdapter.notifyDataSetChanged();
-                        HelpingFunctions.setListViewHeightBasedOnChildren(foldersLV);
-
-                    }
-                });
+                endIV = itemView.findViewById(R.id.endIV);
+                folderTV = itemView.findViewById(R.id.folderTV);
+                relativeLayout = itemView.findViewById(R.id.relativeLayout);
             }
-            return convertView;
         }
-
     }
 
-    class PostsAdapter extends BaseAdapter {
+    class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> {
 
-        private ArrayList<String> names, likedStatuses;
-        private ArrayList<Integer> likes, comments;
+        private ArrayList<Post> posts;
         private Context context;
-        private LayoutInflater inflater;
 
 
-        PostsAdapter(Context context, ArrayList<String> names, ArrayList<String> likedStatuses, ArrayList<Integer> likes, ArrayList<Integer> comments) {
+        PostsAdapter(ArrayList<Post> posts, Context context) {
+            this.posts = posts;
             this.context = context;
-            inflater = LayoutInflater.from(context);
-            this.names = names;
-            this.likedStatuses = likedStatuses;
-            this.likes = likes;
-            this.comments = comments;
+
         }
 
-
+        @NonNull
         @Override
-        public int getCount() {
-            return names.size();
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_custom_file_display_in_folder, parent, false);
+            return new ViewHolder(view);
         }
 
         @Override
-        public Object getItem(int position) {
-            return null;
-        }
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
+            final Post post = posts.get(position);
 
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
+            holder.fileTV.setText(post.getTitle());
+            holder.commentsTV.setText(post.getComments());
+            holder.likesTV.setText(post.getLikes());
 
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = inflater.inflate(R.layout.list_custom_file_display_in_folder, null);
-
-
-                final TextView fileTV = convertView.findViewById(R.id.fileTV);
-                final ImageView likesIV = convertView.findViewById(R.id.likesIV);
-                final TextView likesTV = convertView.findViewById(R.id.likesTV);
-                final TextView commentsTV = convertView.findViewById(R.id.commentsTV);
-
-                fileTV.setText(names.get(position));
-                if (likedStatuses.get(position).equals("1")) {
-                    likesIV.setImageResource(R.drawable.ic_favorite_red_24dp);
-                    likesIV.setTag("1");
-                } else {
-                    likesIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                    likesIV.setTag("0");
-                }
-                likesTV.setText(likes.get(position) + "");
-                commentsTV.setText(comments.get(position) + "");
-
-                // Set up like-unlike system
-                likesIV.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (likedStatuses.get(position).equals("1")) {
-                            HelpingFunctions.unlikePost(usernameTeacher, subject, currentFolder, fileNames.get(position), MainPageS.student.getUsername());
-                            likesIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                            likesIV.setTag("0");
-
-                            int likeCount = Integer.parseInt(likesTV.getText().toString());
-                            String newCount = (likeCount - 1) + "";
-                            likedStatuses.set(position, "");
-                            likes.set(position, likeCount - 1);
-                            likesTV.setText(newCount);
-                        } else {
-                            HelpingFunctions.likePost(usernameTeacher, subject, currentFolder, fileNames.get(position), MainPageS.student.getUsername());
-                            likesIV.setImageResource(R.drawable.ic_favorite_red_24dp);
-                            likesIV.setTag("1");
-
-                            int likeCount = Integer.parseInt(likesTV.getText().toString());
-                            String newCount = (likeCount + 1) + "";
-                            likedStatuses.set(position, "1");
-                            likes.set(position, likeCount + 1);
-                            likesTV.setText(newCount);
-                        }
-                    }
-                });
-
-
-                convertView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        final ProgressDialog loading = ProgressDialog.show(SeeSubject.this, "Please wait", "Loading...", true);
-                        new Thread() {
-                            @Override
-                            public void run() {
-
-                                String likedStatus;
-                                if (likesIV.getTag().equals("0")) {
-                                    likedStatus = "";
-                                } else {
-                                    likedStatus = "1";
-                                }
-
-                                Intent intent = new Intent(getApplicationContext(), SeePostStudent.class);
-                                intent.putExtra("usernameTeacher", usernameTeacher);
-                                intent.putExtra("folderName", currentFolder);
-                                intent.putExtra("subject", subject);
-                                intent.putExtra("fileName", fileTV.getText().toString());
-                                intent.putExtra("likedStatus", likedStatus);
-                                intent.putExtra("likes", likesTV.getText().toString());
-                                intent.putExtra("comments", commentsTV.getText().toString());
-                                startActivityForResult(intent, 1);
-                                overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
-
-
-                                try {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            loading.dismiss();
-                                        }
-                                    });
-                                } catch (final Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }.start();
-                    }
-                });
+            if (post.getLikedStatus().equals("1")) {
+                holder.likesIV.setImageResource(R.drawable.ic_favorite_red_24dp);
+            } else {
+                holder.likesIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
             }
-            return convertView;
+
+            holder.likesIV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (!HelpingFunctions.isConnected(context)) {
+                        Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    likeUnlikePost(post);
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // refresh JSON for this post
+                            postsJSONS.set(position, HelpingFunctions.getPostsForFolderJSON(MainPageS.student.getUsername(), usernameTeacher, subject, currentFolder.getName()));
+                        }
+                    }).start();
+                }
+            });
+
+
+            holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!HelpingFunctions.isConnected(context)) {
+                        Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    currentPost = post;
+
+                    // open post
+                    Intent intent = new Intent(context, SeePostStudent.class);
+                    intent.putExtra("usernameTeacher", usernameTeacher);
+                    intent.putExtra("folderName", currentFolder.getName());
+                    intent.putExtra("subject", subject);
+                    intent.putExtra("fileName", post.getTitle());
+                    startActivityForResult(intent, 1);
+                    overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
+                }
+            });
+        }
+
+        void likeUnlikePost(final Post post) {
+
+            // unlike
+            if (post.getLikedStatus().equals("1")) {
+                posts.get(posts.indexOf(post)).setLikedStatus("0");
+                posts.get(posts.indexOf(post)).setLikes(String.valueOf(Integer.parseInt(posts.get(posts.indexOf(post)).getLikes()) - 1));
+                notifyItemChanged(posts.indexOf(post));
+
+                HelpingFunctions.unlikePost(usernameTeacher, subject, currentFolder.getName(), post.getTitle(), MainPageS.student.getUsername());
+                return;
+            }
+
+            // like post
+            posts.get(posts.indexOf(post)).setLikedStatus("1");
+            posts.get(posts.indexOf(post)).setLikes(String.valueOf(Integer.parseInt(posts.get(posts.indexOf(post)).getLikes()) + 1));
+
+            notifyItemChanged(posts.indexOf(post));
+
+            String result = HelpingFunctions.likePost(usernameTeacher, subject, currentFolder.getName(), post.getTitle(), MainPageS.student.getUsername());
+            if (result.equals("Data inserted.")) {
+
+                new Thread() {
+                    @Override
+                    public void run() {
+                        // Send notification
+                        HelpingFunctions.sendNotificationToTeachers(MainPageS.student.getUsername(), usernameTeacher, subject, currentFolder.getName(), post.getTitle(), "Liked your post.");
+                    }
+                }.start();
+            }
+
+
+        }
+
+        void updateField(){
+            String likedStatus = HelpingFunctions.getLikedStatus(MainPageS.student.getUsername(), usernameTeacher, subject, currentFolder.getName(), currentPost.getTitle());
+            String likes = HelpingFunctions.getLikesForPost(usernameTeacher, subject, currentFolder.getName(), currentPost.getTitle());
+
+            posts.get(posts.indexOf(currentPost)).setLikedStatus(likedStatus);
+            posts.get(posts.indexOf(currentPost)).setLikes(likes);
+
+            notifyItemChanged(posts.indexOf(currentPost));
+        }
+
+        @Override
+        public int getItemCount() {
+            return posts.size();
+        }
+
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+
+            TextView fileTV;
+            ImageView likesIV;
+            TextView likesTV;
+            ImageView commentsIV;
+            TextView commentsTV;
+            ImageView endIV;
+
+
+            RelativeLayout relativeLayout;
+
+            ViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                fileTV = itemView.findViewById(R.id.fileTV);
+                likesIV = itemView.findViewById(R.id.likesIV);
+                likesTV = itemView.findViewById(R.id.likesTV);
+                commentsIV = itemView.findViewById(R.id.commentsIV);
+                commentsTV = itemView.findViewById(R.id.commentsTV);
+                endIV = itemView.findViewById(R.id.endIV);
+                relativeLayout = itemView.findViewById(R.id.relativeLayout);
+            }
         }
     }
 
@@ -460,7 +488,6 @@ public class SeeSubject extends AppCompatActivity {
     }
 
 
-
     /*                      *** T O O L B A R    M E N U ***                         */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -489,6 +516,11 @@ public class SeeSubject extends AppCompatActivity {
 
         switch (id) {
             case R.id.details:
+                if (!HelpingFunctions.isConnected(getApplicationContext())) {
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 subjectDetailsPopup = new Dialog(SeeSubject.this);
                 subjectDetailsPopup.setContentView(R.layout.popup_subject_information);
 
@@ -521,6 +553,11 @@ public class SeeSubject extends AppCompatActivity {
                 popupDomainInfoIV.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if (!HelpingFunctions.isConnected(getApplicationContext())) {
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
                         subjectDetailsPopup.dismiss();
 
@@ -564,6 +601,12 @@ public class SeeSubject extends AppCompatActivity {
 
                 break;
             case R.id.report:
+
+                if (!HelpingFunctions.isConnected(getApplicationContext())) {
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 reportPopup = new Dialog(SeeSubject.this);
                 reportPopup.setContentView(R.layout.popup_report);
 
@@ -587,6 +630,12 @@ public class SeeSubject extends AppCompatActivity {
                 sendBttn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if (!HelpingFunctions.isConnected(getApplicationContext())) {
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         boolean canSend = true;
 
                         if (HelpingFunctions.isEditTextEmpty(titleET)) {
@@ -634,20 +683,21 @@ public class SeeSubject extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 1 && resultCode == Activity.RESULT_OK){
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
 
-            currentPosition = -1;
-            foldersAdapter = new FoldersAdapter(SeeSubject.this, folders);
-            foldersLV.setAdapter(foldersAdapter);
-            foldersAdapter.notifyDataSetChanged();
-            HelpingFunctions.setListViewHeightBasedOnChildren(foldersLV);
+            postsAdapter.updateField();
+            currentPost = null;
 
-            getAllPostsForFolder("");
         }
     }
 
     @Override
     public void onBackPressed() {
+
+        if (!HelpingFunctions.isConnected(getApplicationContext())) {
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
 
         finish();

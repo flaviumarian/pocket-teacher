@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -89,6 +90,7 @@ public class SettingsS extends AppCompatActivity {
                 final String[] names3 = {"Terms and Conditions", "Privacy Policy"};
 
 
+
                 try {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -134,6 +136,12 @@ public class SettingsS extends AppCompatActivity {
         logOutBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 logOutPopup = new Dialog(SettingsS.this);
                 logOutPopup.setContentView(R.layout.popup_log_out);
 
@@ -192,6 +200,12 @@ public class SettingsS extends AppCompatActivity {
         deleteAccountC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 deleteAccountPopup = new Dialog(SettingsS.this);
                 deleteAccountPopup.setContentView(R.layout.popup_delete_account);
 
@@ -241,6 +255,12 @@ public class SettingsS extends AppCompatActivity {
                                     deletedAccountPopup.setOnDismissListener(new DialogInterface.OnDismissListener() {
                                         @Override
                                         public void onDismiss(DialogInterface dialog) {
+
+                                            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                                                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
+
                                             deleteAccountPopup.dismiss();
 
                                             if (MainPageS.flag == 0) {
@@ -342,6 +362,12 @@ public class SettingsS extends AppCompatActivity {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if (position == 0) {
                         Intent intent = new Intent(getApplicationContext(), ChangeUsernameS.class);
                         startActivity(intent);
@@ -407,6 +433,12 @@ public class SettingsS extends AppCompatActivity {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if (position == 0) {
                         Intent intent = new Intent(getApplicationContext(), ChangePasswordS.class);
                         startActivity(intent);
@@ -477,6 +509,7 @@ public class SettingsS extends AppCompatActivity {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     if (position == 0) {
                         Intent intent = new Intent(getApplicationContext(), TermsAndConditions.class);
                         startActivity(intent);
@@ -509,6 +542,12 @@ public class SettingsS extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         super.onBackPressed();
         finish();
         SettingsS.this.overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);

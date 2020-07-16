@@ -5,9 +5,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 
 public class SeeFollowing extends AppCompatActivity {
 
@@ -21,6 +23,12 @@ public class SeeFollowing extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         if (fragment instanceof FragmentFollowingLandingPage) {
             finish();

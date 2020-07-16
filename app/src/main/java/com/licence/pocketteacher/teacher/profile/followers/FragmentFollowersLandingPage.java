@@ -15,9 +15,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.adapters.StudentsRecyclerAdapter;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.aiding_classes.Student;
 import com.licence.pocketteacher.teacher.MainPageT;
@@ -124,6 +126,12 @@ public class FragmentFollowersLandingPage extends Fragment {
         searchIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // Create new fragment and transaction
                 Fragment newFragment = new FragmentFollowersNamePage();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -146,11 +154,19 @@ public class FragmentFollowersLandingPage extends Fragment {
         goPremiumBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), GoPremium.class);
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
+
+        view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 
 
@@ -179,11 +195,18 @@ public class FragmentFollowersLandingPage extends Fragment {
 
         switch (id) {
             case R.id.seeBlocked:
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 Intent intent = new Intent(view.getContext(), SeeBlocked.class);
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
                 break;
             case R.id.privacy:
+
                 String privacy;
                 if(MainPageT.teacher.getPrivacy().equals("0")){
                     privacy = "public";

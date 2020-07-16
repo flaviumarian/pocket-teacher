@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.adapters.TeachersRecyclerAdapter;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.MainPageS;
 import com.licence.pocketteacher.student.search.search_fragments.FragmentSearchName;
@@ -93,6 +95,11 @@ public class FragmentSearchS extends Fragment {
         searchIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // Create new fragment and transaction
                 Fragment newFragment = new FragmentSearchName();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();

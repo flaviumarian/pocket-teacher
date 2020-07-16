@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.licence.pocketteacher.LoginPage;
@@ -94,6 +95,12 @@ public class EmailConf1 extends AppCompatActivity {
         verifyBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if(HelpingFunctions.isEditTextEmpty(confirmCodeET)){
                     confirmCodeET.setError("Insert code.");
                     return;
@@ -136,6 +143,12 @@ public class EmailConf1 extends AppCompatActivity {
         reSendTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 String confirmationCode, email;
 
                 if(isStudent){

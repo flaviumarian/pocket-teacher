@@ -12,6 +12,7 @@ import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.AlignmentSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +24,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -32,6 +34,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.licence.pocketteacher.messaging.MessageConversations;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.aiding_classes.Subject;
 import com.licence.pocketteacher.teacher.profile.edit_profile.EditProfileT;
@@ -58,10 +61,14 @@ public class FragmentProfileT extends Fragment {
 
     private View view;
     private ImageView profilePictureIV;
-    private CardView editProfileC, followersCard;
-    private TextView nameTV, universityTV, descriptionTV, followersTV;
+    private CardView editProfileC, messagesC, followersCard, newMessagesC;
+    private TextView nameTV, universityTV, descriptionTV, followersTV, newMessagesTV;
     private Dialog aboutPopup, logOutPopup;
     private ListView subjectsLV;
+
+    private static int EDIT_PROFILE_CODE = 0;
+    private static int SEE_FOLLOWERS_CODE = 1;
+    private static int SEE_MESSAGES_CODE = 2;
 
 
     @Nullable
@@ -95,6 +102,11 @@ public class FragmentProfileT extends Fragment {
                 universityTV = view.findViewById(R.id.universityTV);
                 descriptionTV = view.findViewById(R.id.descriptionTV);
                 followersTV = view.findViewById(R.id.followersTV);
+                final String followingNumber = HelpingFunctions.getFollowersNumber(MainPageT.teacher.getUsername());
+
+                newMessagesTV = view.findViewById(R.id.newMessagesTV);
+                final String newMessagesCount = HelpingFunctions.getNumberOfUnreadMessages(MainPageT.teacher.getUsername());
+
 
                 // List View
                 subjectsLV = view.findViewById(R.id.subjectsLV);
@@ -102,6 +114,35 @@ public class FragmentProfileT extends Fragment {
                 // Card View
                 editProfileC = view.findViewById(R.id.editProfileC);
                 followersCard = view.findViewById(R.id.followersCard);
+                messagesC = view.findViewById(R.id.messagesC);
+                newMessagesC = view.findViewById(R.id.newMessagesC);
+
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            followersTV.setText(followingNumber);
+
+                            if(!newMessagesCount.equals("0")){
+                                newMessagesC.setVisibility(View.VISIBLE);
+                                if(Integer.parseInt(newMessagesCount) > 10){
+                                    newMessagesTV.setText(String.valueOf("10+"));
+                                }else{
+                                    newMessagesTV.setText(newMessagesCount);
+                                }
+                            }
+
+                            setListeners();
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+    }
+
 
                 try {
                     getActivity().runOnUiThread(new Runnable() {
@@ -118,24 +159,48 @@ public class FragmentProfileT extends Fragment {
             }
         }).start();
 
-    }
-
-    private void setListeners(){
-
         // Card View
         editProfileC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), EditProfileT.class);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, EDIT_PROFILE_CODE);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
         followersCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), SeeFollowers.class);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, SEE_FOLLOWERS_CODE);
+                getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
+            }
+        });
+
+        messagesC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(view.getContext(), MessageConversations.class);
+                intent.putExtra("type", 1);
+                startActivityForResult(intent, SEE_MESSAGES_CODE);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
@@ -211,7 +276,7 @@ public class FragmentProfileT extends Fragment {
                                         profilePictureIV.setImageResource(R.drawable.profile_picture_female);
                                         break;
                                     case "2":
-                                        profilePictureIV.setImageResource(0);
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_neutral);
                                         break;
                                 }
                             } else {
@@ -340,11 +405,19 @@ public class FragmentProfileT extends Fragment {
 
         switch (id) {
             case R.id.settings:
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 Intent intent = new Intent(view.getContext(), SettingsT.class);
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
                 break;
             case R.id.about:
+
+
                 aboutPopup = new Dialog(view.getContext());
                 aboutPopup.setContentView(R.layout.popup_about);
 
@@ -361,6 +434,12 @@ public class FragmentProfileT extends Fragment {
                 aboutPopup.show();
                 break;
             case R.id.logOut:
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 logOutPopup = new Dialog(view.getContext());
                 logOutPopup.setContentView(R.layout.popup_log_out);
 
@@ -380,6 +459,11 @@ public class FragmentProfileT extends Fragment {
                 yesButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(view.getContext())){
+                            Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
                         if (MainPageT.flag == 0) {
 
@@ -420,19 +504,55 @@ public class FragmentProfileT extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 0){
+        if(requestCode == EDIT_PROFILE_CODE){
+
+            if(!HelpingFunctions.isConnected(view.getContext())){
+                Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // from Edit profile
             setFields();
         }
 
-        if(requestCode == 1){
-            followersTV.setText(HelpingFunctions.getFollowers(MainPageT.teacher.getUsername()));
+        if(requestCode == SEE_FOLLOWERS_CODE){
+
+            if(!HelpingFunctions.isConnected(view.getContext())){
+                Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            followersTV.setText(HelpingFunctions.getFollowersNumber(MainPageT.teacher.getUsername()));
+        }
+
+        if(requestCode == SEE_MESSAGES_CODE){
+            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String unreadMessages = HelpingFunctions.getNumberOfUnreadMessages(MainPageT.teacher.getUsername());
+            if(!unreadMessages.equals("0")){
+                newMessagesC.setVisibility(View.VISIBLE);
+                if(Integer.parseInt(unreadMessages) > 10){
+                    newMessagesTV.setText(String.valueOf("10+"));
+                }else{
+                    newMessagesTV.setText(unreadMessages);
+                }
+            }else{
+                newMessagesC.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        if(!HelpingFunctions.isConnected(view.getContext())){
+            Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
 
         // Notification Badge

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundBlue">
+
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/searchToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lightGrey"
+        android:elevation="10dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ToolbarTheme"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/backIV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:contentDescription="@string/description_back_logo"
+                android:src="@drawable/ic_arrow_back_black_24dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/open_sans"
+                android:text="@string/toolbar_start_new_conversation"
+                android:textColor="@color/black"
+                android:textSize="22sp" />
+
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/choiceC"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@id/searchToolbar"
+        app:cardBackgroundColor="@color/backgroundBlue"
+        app:cardElevation="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/open_sans_semibold"
+                android:text="@string/message_start_conversation_1"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textTV"
+                android:gravity="center_horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="20dp">
+
+                <android.widget.Button
+                    android:id="@+id/studentBttn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/shape_button_rounded_edges_white"
+                    android:elevation="5dp"
+                    android:fontFamily="@font/open_sans"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
+                    android:stateListAnimator="@null"
+                    android:text="@string/message_registration_page_2"
+                    android:textColor="@color/black"
+                    android:textSize="16sp">
+
+                </android.widget.Button>
+
+                <android.widget.Button
+                    android:id="@+id/teacherBttn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/shape_button_rounded_edges_white"
+                    android:elevation="5dp"
+                    android:fontFamily="@font/open_sans"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
+                    android:stateListAnimator="@null"
+                    android:text="@string/message_registration_page_3"
+                    android:textColor="@color/black"
+                    android:textSize="16sp">
+
+                </android.widget.Button>
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+    <!-- Loading icon-->
+    <RelativeLayout
+        android:id="@+id/loadingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/choiceC"
+        android:gravity="center">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/infoTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/choiceC"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/open_sans"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+    <!-- RecyclerView users -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/teachersRV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/infoTV"
+        android:layout_marginTop="5dp" />
+
+</RelativeLayout>

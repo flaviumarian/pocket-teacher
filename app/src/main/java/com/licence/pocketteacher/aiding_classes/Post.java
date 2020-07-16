@@ -37,6 +37,14 @@ public class Post {
         this.isLastPost = isLastPost;
     }
 
+    public Post(String fileName, String likedStatus, String likes, String comments){
+        this.title = fileName;
+        this.likedStatus = likedStatus;
+        this.likes = likes;
+        this.comments = comments;
+    }
+
+
     public boolean isLastPost() {
         return isLastPost;
     }

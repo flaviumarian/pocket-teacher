@@ -126,6 +126,11 @@ public class AddSubject extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
 
                 if(position == 0){
@@ -158,6 +163,12 @@ public class AddSubject extends AppCompatActivity {
         subjectsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
             }
 
@@ -169,6 +180,12 @@ public class AddSubject extends AppCompatActivity {
         requestBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 requestPopup = new Dialog(AddSubject.this);
                 requestPopup.setContentView(R.layout.popup_request_subject);
 
@@ -194,6 +211,12 @@ public class AddSubject extends AppCompatActivity {
                 sendBttn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         boolean canSend = true;
                         if(HelpingFunctions.isEditTextEmpty(subjectET)){
                             subjectET.setError("Insert subject title");
@@ -263,6 +286,12 @@ public class AddSubject extends AppCompatActivity {
 
         switch (id) {
             case R.id.refresh:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 currentSubjects.clear();
                 currentSubjects.addAll(availableSubjects);
                 currentSubjects.add(0, "Subject");
@@ -278,6 +307,11 @@ public class AddSubject extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         int position = (int)subjectsSpinner.getSelectedItemId();
 

@@ -119,6 +119,12 @@ public class ResetPassword extends AppCompatActivity {
         reSendTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 String subject = "Password Reset Code - NO-REPLY";
                 String text = "Dear Pocket Teacher user,\n\n\tA request to change the password has been made, if you do not recognize this action, ignore this message.\nIf you intend to change it, then use the following code in the application page that opened after this request: \n\n\t\t\t" + resetCode + "\n\nThe code becomes invalid once you exit the page.\n\n\n\tBest regards,\n\t\t\tPocket Teacher team";
 
@@ -138,6 +144,7 @@ public class ResetPassword extends AppCompatActivity {
         verifyCodeBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (HelpingFunctions.isEditTextEmpty(resetCodeET)) {
                     resetCodeET.setError("Insert code.");
                     return;
@@ -161,6 +168,12 @@ public class ResetPassword extends AppCompatActivity {
         changeBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 boolean canRegister = true;
 
                 if(HelpingFunctions.isEditTextEmpty(passwordET)){

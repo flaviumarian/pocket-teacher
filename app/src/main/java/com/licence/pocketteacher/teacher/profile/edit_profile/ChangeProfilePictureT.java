@@ -28,6 +28,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.licence.pocketteacher.R;
@@ -84,7 +85,7 @@ public class ChangeProfilePictureT extends AppCompatActivity {
                     profilePictureIV.setImageResource(R.drawable.profile_picture_female);
                     break;
                 case "2":
-                    profilePictureIV.setImageResource(0);
+                    profilePictureIV.setImageResource(R.drawable.profile_picture_neutral);
                     break;
             }
         } else {
@@ -177,7 +178,7 @@ public class ChangeProfilePictureT extends AppCompatActivity {
                                 profilePictureIV.setImageResource(R.drawable.profile_picture_female);
                                 break;
                             case "2":
-                                profilePictureIV.setImageResource(0);
+                                profilePictureIV.setImageResource(R.drawable.profile_picture_neutral);
                                 break;
                         }
                     }
@@ -399,6 +400,12 @@ public class ChangeProfilePictureT extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         super.onBackPressed();
 
         if(!newBase64Image.equals(currentBase64Image)){

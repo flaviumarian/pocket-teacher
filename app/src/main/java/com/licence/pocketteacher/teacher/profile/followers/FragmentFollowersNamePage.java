@@ -10,9 +10,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.adapters.StudentsRecyclerAdapter;
 import com.licence.pocketteacher.aiding_classes.Student;
+import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 
 import java.util.ArrayList;
 
@@ -30,7 +33,7 @@ public class FragmentFollowersNamePage extends Fragment {
     private View view;
     private EditText searchET;
     private Button cancelBttn;
-    private TextView universityTV;
+    private TextView universityTV, infoTV;
     private RecyclerView studentsRV;
     private StudentsRecyclerAdapter studentsRecyclerAdapter;
 
@@ -57,6 +60,7 @@ public class FragmentFollowersNamePage extends Fragment {
 
         // Text Views
         universityTV = view.findViewById(R.id.universityTV);
+        infoTV = view.findViewById(R.id.infoTV);
 
         // Recycler View
         studentsRV = view.findViewById(R.id.studentsRV);
@@ -76,6 +80,11 @@ public class FragmentFollowersNamePage extends Fragment {
                     imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
                 } catch (Exception e) {
                     e.printStackTrace();
+                }
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
                 // Create new fragment and transaction
@@ -107,8 +116,11 @@ public class FragmentFollowersNamePage extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 if (!s.toString().equals("")) {
+                    infoTV.setVisibility(View.INVISIBLE);
                     filter(s.toString());
                 } else {
+                    infoTV.setVisibility(View.VISIBLE);
+                    infoTV.setText(R.string.message_search_3);
                     filter("No text");
                 }
             }
@@ -138,6 +150,12 @@ public class FragmentFollowersNamePage extends Fragment {
                 if (student.getUsername().toLowerCase().contains(text.toLowerCase()) || student.getFirstName().toLowerCase().contains(text.toLowerCase()) || student.getLastName().toLowerCase().contains(text.toLowerCase())) {
                     filteredStudents.add(student);
                 }
+            }
+
+            if(filteredStudents.size() == 0){
+
+                infoTV.setVisibility(View.VISIBLE);
+                infoTV.setText(R.string.message_search_2);
             }
         }
 

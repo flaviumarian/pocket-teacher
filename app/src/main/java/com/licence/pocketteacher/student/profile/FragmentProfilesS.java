@@ -13,6 +13,7 @@ import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.AlignmentSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -30,6 +32,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.licence.pocketteacher.messaging.MessageConversations;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.profile.edit_profile.EditProfileS;
 import com.licence.pocketteacher.LoginPage;
@@ -54,10 +57,15 @@ public class FragmentProfilesS extends Fragment {
 
     private View view;
     private ImageView profilePictureIV;
-    private CardView editProfileC, followersCard;
-    private TextView nameTV, universityTV, descriptionTV, followingTV, notificationBadgeTV;
+    private CardView editProfileC, messagesC, followersCard, newMessagesC;
+    private TextView nameTV, universityTV, descriptionTV, followingTV, notificationBadgeTV, newMessagesTV;
     private Dialog aboutPopup, logOutPopup;
     private Button notificationBttn;
+
+    private static int EDIT_PROFILE_CODE = 0;
+    private static int SEE_FOLLOWERS_CODE = 1;
+    private static int SEE_NOTIFICATIONS_CODE = 2;
+    private static int SEE_MESSAGES_CODE = 3;
 
 
     @Nullable
@@ -68,6 +76,7 @@ public class FragmentProfilesS extends Fragment {
         setHasOptionsMenu(true);
         initiateComponents();
         setFields();
+
 
         // Clear all notifications
         NotificationManager manager = (NotificationManager) view.getContext()
@@ -97,12 +106,22 @@ public class FragmentProfilesS extends Fragment {
                 descriptionTV = view.findViewById(R.id.descriptionTV);
                 followingTV = view.findViewById(R.id.followingTV);
 
+                final String followingNumber = HelpingFunctions.getFollowingNumber(MainPageS.student.getUsername());
+
+                newMessagesTV = view.findViewById(R.id.newMessagesTV);
+                final String newMessagesCount = HelpingFunctions.getNumberOfUnreadMessages(MainPageS.student.getUsername());
+
+
                 notificationBadgeTV = view.findViewById(R.id.notificationBadgeTV);
                 final String notificationNumber = HelpingFunctions.getNumberOfNotifications(MainPageS.student.getUsername());
 
                 // Card View
                 editProfileC = view.findViewById(R.id.editProfileC);
                 followersCard = view.findViewById(R.id.followersCard);
+
+                messagesC = view.findViewById(R.id.messagesC);
+                newMessagesC = view.findViewById(R.id.newMessagesC);
+
 
                 // Button
                 notificationBttn = view.findViewById(R.id.notificationBttn);
@@ -112,13 +131,26 @@ public class FragmentProfilesS extends Fragment {
                         @Override
                         public void run() {
 
-                            followingTV.setText(HelpingFunctions.getFollowing(MainPageS.student.getUsername()));
+
+                            followingTV.setText(followingNumber);
+
+                            if(!newMessagesCount.equals("0")){
+                                newMessagesC.setVisibility(View.VISIBLE);
+                                if(Integer.parseInt(newMessagesCount) > 10){
+                                    newMessagesTV.setText(String.valueOf("10+"));
+                                }else{
+                                    newMessagesTV.setText(newMessagesCount);
+                                }
+                            }
+
+
                             if (notificationNumber.equals("0")) {
                                 notificationBadgeTV.setVisibility(View.INVISIBLE);
                             } else {
                                 notificationBadgeTV.setVisibility(View.VISIBLE);
                                 notificationBadgeTV.setText(notificationNumber);
                             }
+
 
                             setListeners();
                         }
@@ -140,8 +172,14 @@ public class FragmentProfilesS extends Fragment {
         editProfileC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), EditProfileS.class);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, EDIT_PROFILE_CODE);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
@@ -149,8 +187,30 @@ public class FragmentProfilesS extends Fragment {
         followersCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), SeeFollowing.class);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, SEE_FOLLOWERS_CODE);
+                getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
+            }
+        });
+
+        messagesC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(view.getContext(), MessageConversations.class);
+                intent.putExtra("type", 0);
+                startActivityForResult(intent, SEE_MESSAGES_CODE);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
@@ -159,8 +219,14 @@ public class FragmentProfilesS extends Fragment {
         notificationBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), SeeNotifications.class);
-                startActivityForResult(intent, 2);
+                startActivityForResult(intent, SEE_NOTIFICATIONS_CODE);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
@@ -200,7 +266,7 @@ public class FragmentProfilesS extends Fragment {
                                         profilePictureIV.setImageResource(R.drawable.profile_picture_female);
                                         break;
                                     case "2":
-                                        profilePictureIV.setImageResource(0);
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_neutral);
                                         break;
                                 }
                             } else {
@@ -274,6 +340,12 @@ public class FragmentProfilesS extends Fragment {
 
         switch (id) {
             case R.id.settings:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 Intent intent = new Intent(view.getContext(), SettingsS.class);
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
@@ -295,6 +367,12 @@ public class FragmentProfilesS extends Fragment {
                 aboutPopup.show();
                 break;
             case R.id.logOut:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 logOutPopup = new Dialog(view.getContext());
                 logOutPopup.setContentView(R.layout.popup_log_out);
 
@@ -351,13 +429,25 @@ public class FragmentProfilesS extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 0){
+        if(requestCode == EDIT_PROFILE_CODE){
+
+            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // from Edit profile
             setFields();
         }
 
-        if(requestCode == 1){
-            followingTV.setText(HelpingFunctions.getFollowing(MainPageS.student.getUsername()));
+        if(requestCode == SEE_FOLLOWERS_CODE){
+
+            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            followingTV.setText(HelpingFunctions.getFollowingNumber(MainPageS.student.getUsername()));
             String notificationNumber = HelpingFunctions.getNumberOfNotifications(MainPageS.student.getUsername());
             if(notificationNumber.equals("0")){
                 notificationBadgeTV.setVisibility(View.INVISIBLE);
@@ -369,7 +459,13 @@ public class FragmentProfilesS extends Fragment {
             }
         }
 
-        if(requestCode == 2 && resultCode == Activity.RESULT_OK){
+        if(requestCode == SEE_NOTIFICATIONS_CODE && resultCode == Activity.RESULT_OK){
+
+            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             String notificationNumber = HelpingFunctions.getNumberOfNotifications(MainPageS.student.getUsername());
             if(notificationNumber.equals("0")){
                 notificationBadgeTV.setVisibility(View.INVISIBLE);
@@ -378,6 +474,26 @@ public class FragmentProfilesS extends Fragment {
                 notificationBadgeTV.setVisibility(View.VISIBLE);
                 notificationBadgeTV.setText(notificationNumber);
                 MainPageS.badgeDrawable.setNumber(Integer.parseInt(notificationNumber));
+            }
+        }
+
+        if(requestCode == SEE_MESSAGES_CODE){
+
+            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String unreadMessages = HelpingFunctions.getNumberOfUnreadMessages(MainPageS.student.getUsername());
+            if(!unreadMessages.equals("0")){
+                newMessagesC.setVisibility(View.VISIBLE);
+                if(Integer.parseInt(unreadMessages) > 10){
+                    newMessagesTV.setText(String.valueOf("10+"));
+                }else{
+                    newMessagesTV.setText(unreadMessages);
+                }
+            }else{
+                newMessagesC.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -396,6 +512,13 @@ public class FragmentProfilesS extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+
+        if(!HelpingFunctions.isConnected(view.getContext())){
+            Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
 
         // Notification Badge
         MainPageS.resetBadge();

@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.aiding_classes.Notification;
@@ -61,7 +62,7 @@ public class FragmentUpdatesT extends Fragment {
         return view;
     }
 
-    private void initiateComponents(){
+    private void initiateComponents() {
 
         // Toolbar
         Toolbar profileToolbar = view.findViewById(R.id.updatesToolbar);
@@ -107,7 +108,7 @@ public class FragmentUpdatesT extends Fragment {
                             setListeners();
                         }
                     });
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -117,12 +118,17 @@ public class FragmentUpdatesT extends Fragment {
 
     }
 
-    private void setListeners(){
+    private void setListeners() {
 
         // Card View
         followRequestsC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!HelpingFunctions.isConnected(view.getContext())) {
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(view.getContext(), SeeFollowRequests.class);
                 startActivityForResult(intent, 0);
                 getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
@@ -138,15 +144,56 @@ public class FragmentUpdatesT extends Fragment {
         view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
     }
 
+    private void reloadNotifications(){
+        view.findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                notifications.clear();
+                notifications.addAll(HelpingFunctions.getAllNotifications(MainPageT.teacher.getUsername()));
+
+                final String numberFollowerRequests = HelpingFunctions.getNumberOfFollowRequests(MainPageT.teacher.getUsername());
+
+                try{
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            notificationsRecyclerAdapter.notifyDataSetChanged();
+                            if(notifications.size() > 0){
+                                infoTV.setVisibility(View.INVISIBLE);
+                            }else{
+                                infoTV.setVisibility(View.VISIBLE);
+                            }
+
+                            if (numberFollowerRequests.equals("0") || numberFollowerRequests.equals("None")) {
+                                followRequestsC.setVisibility(View.INVISIBLE);
+                            } else {
+                                followRequestsC.setVisibility(View.VISIBLE);
+                                followRequestsTV.setText(numberFollowerRequests);
+                            }
+
+                            view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+    }
 
 
     /*                                   *** A D A P T O R  ***                                   */
-    class NotificationsRecyclerAdapter extends RecyclerView.Adapter<NotificationsRecyclerAdapter.ViewHolder>{
+    class NotificationsRecyclerAdapter extends RecyclerView.Adapter<NotificationsRecyclerAdapter.ViewHolder> {
 
         private ArrayList<Notification> notifications;
         private Context context;
 
-        public NotificationsRecyclerAdapter(ArrayList<Notification> notifications, Context context){
+        public NotificationsRecyclerAdapter(ArrayList<Notification> notifications, Context context) {
             this.notifications = notifications;
             this.context = context;
         }
@@ -166,8 +213,8 @@ public class FragmentUpdatesT extends Fragment {
             final Notification notification = notifications.get(position);
 
             // Profile image
-            if(notification.getProfileImageBase64().equals("")){
-                switch(notification.getGender()){
+            if (notification.getProfileImageBase64().equals("")) {
+                switch (notification.getGender()) {
                     case "0":
                         holder.profileImageIV.setImageResource(R.drawable.profile_picture_male);
                         break;
@@ -175,10 +222,10 @@ public class FragmentUpdatesT extends Fragment {
                         holder.profileImageIV.setImageResource(R.drawable.profile_picture_female);
                         break;
                     case "2":
-                        holder.profileImageIV.setImageResource(0);
+                        holder.profileImageIV.setImageResource(R.drawable.profile_picture_neutral);
                         break;
                 }
-            }else{
+            } else {
                 holder.profileImageIV.setImageBitmap(HelpingFunctions.convertBase64toImage(notification.getProfileImageBase64()));
             }
 
@@ -190,36 +237,19 @@ public class FragmentUpdatesT extends Fragment {
                 @Override
                 public void onClick(View v) {
 
-                    final ProgressDialog loading = ProgressDialog.show(context, "Please wait", "Loading...", true);
-                    new Thread() {
-                        @Override
-                        public void run() {
+                    if (!HelpingFunctions.isConnected(context)) {
+                        Toast.makeText(context, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-                            Intent intent = new Intent(context, SeePostTeacher.class);
-                            intent.putExtra("fileName", notification.getPostName());
-                            intent.putExtra("likedStatus", HelpingFunctions.getLikedStatus(MainPageT.teacher.getUsername(), MainPageT.teacher.getUsername(), notification.getSubjectName(), notification.getFolderName(), notification.getPostName()));
-                            intent.putExtra("likes", HelpingFunctions.getLikesForPost(MainPageT.teacher.getUsername(), notification.getSubjectName(), notification.getFolderName(), notification.getPostName()));
-                            intent.putExtra("comments", HelpingFunctions.getCommentsForPost(MainPageT.teacher.getUsername(), notification.getSubjectName(), notification.getFolderName(), notification.getPostName()));
-                            intent.putExtra("fromNotifications", true);
-                            intent.putExtra("subjectName", notification.getSubjectName());
-                            intent.putExtra("folderName", notification.getFolderName());
-                            startActivity(intent);
-                            getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
+                    Intent intent = new Intent(context, SeePostTeacher.class);
+                    intent.putExtra("fileName", notification.getPostName());
+                    intent.putExtra("fromNotifications", true);
+                    intent.putExtra("subjectName", notification.getSubjectName());
+                    intent.putExtra("folderName", notification.getFolderName());
+                    startActivity(intent);
+                    getActivity().overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
 
-
-
-                            try {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        loading.dismiss();
-                                    }
-                                });
-                            } catch (final Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }.start();
 
                     delete(position);
                     HelpingFunctions.deleteNotification(MainPageT.teacher.getUsername(), notification.getSubjectName(), notification.getFolderName(), notification.getPostName(), notification.getMessage(), notification.getUsername(), MainPageT.teacher.getUsername(), notification.getComment());
@@ -233,12 +263,12 @@ public class FragmentUpdatesT extends Fragment {
         }
 
 
-        private void delete(int position){
+        private void delete(int position) {
             notifications.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, notifications.size());
             MainPageT.badgeDrawable.setNumber(notifications.size());
-            if(notifications.size() == 0 ){
+            if (notifications.size() == 0) {
                 infoTV.setVisibility(View.VISIBLE);
                 MainPageT.badgeDrawable.setVisible(false);
             }
@@ -287,6 +317,12 @@ public class FragmentUpdatesT extends Fragment {
 
         switch (id) {
             case R.id.clearNotifications:
+
+                if (!HelpingFunctions.isConnected(view.getContext())) {
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 notifications.clear();
                 notificationsRecyclerAdapter.notifyDataSetChanged();
                 infoTV.setVisibility(View.VISIBLE);
@@ -295,6 +331,7 @@ public class FragmentUpdatesT extends Fragment {
                 HelpingFunctions.deleteAllNotifications(MainPageT.teacher.getUsername());
                 break;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -303,12 +340,12 @@ public class FragmentUpdatesT extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 0){
+        if (requestCode == 0) {
             // from follow requests
             String numberFollowerRequests = HelpingFunctions.getNumberOfFollowRequests(MainPageT.teacher.getUsername());
-            if(numberFollowerRequests.equals("0") || numberFollowerRequests.equals("None")){
+            if (numberFollowerRequests.equals("0") || numberFollowerRequests.equals("None")) {
                 followRequestsC.setVisibility(View.INVISIBLE);
-            } else{
+            } else {
                 followRequestsTV.setText(numberFollowerRequests);
             }
         }
@@ -319,7 +356,16 @@ public class FragmentUpdatesT extends Fragment {
     public void onResume() {
         super.onResume();
 
+        if (!HelpingFunctions.isConnected(view.getContext())) {
+            Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Notification Badge
         MainPageT.resetBadge();
+
+        if(notifications != null){
+            reloadNotifications();
+        }
     }
 }

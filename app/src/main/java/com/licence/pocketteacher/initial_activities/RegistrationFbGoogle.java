@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +34,10 @@ import com.licence.pocketteacher.student.MainPageS;
 import com.licence.pocketteacher.aiding_classes.Student;
 import com.licence.pocketteacher.teacher.MainPageT;
 import com.licence.pocketteacher.aiding_classes.Teacher;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class RegistrationFbGoogle extends AppCompatActivity {
 
@@ -158,6 +163,12 @@ public class RegistrationFbGoogle extends AppCompatActivity {
                     Snackbar.make(view, "Don't have one? Request it here: ", Snackbar.LENGTH_LONG).setAction("REQUEST", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+
+                            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             verificationRequestPopup = new Dialog(RegistrationFbGoogle.this);
                             verificationRequestPopup.setContentView(R.layout.popup_request_verification_code);
 
@@ -237,6 +248,11 @@ public class RegistrationFbGoogle extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if(studentIV.getTag().equals(0) && teacherIV.getTag().equals(0)){
                     Snackbar.make(view, "You need to choose a type.", Snackbar.LENGTH_LONG).show();
                     return;
@@ -266,14 +282,28 @@ public class RegistrationFbGoogle extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+                String messagingId;
+
+                while(true) {
+                    messagingId = HelpingFunctions.generateRandomMessageId();
+
+                    if(HelpingFunctions.verifyIfMessagingIdExists(messagingId).equals("Not found.")){
+                        break;
+                    }
+                }
+
                 if(studentIV.getTag().equals(1)){
 
                     // Student account
-                    String result = HelpingFunctions.registerUserFacebookGoogle(username, firstName, lastName, email, password, "no_code");
+                    String result = HelpingFunctions.registerUserFacebookGoogle(username, firstName, lastName, email, password, "no_code", messagingId);
                     if(result.equals("Error occurred.")) {
                         Toast.makeText(getApplicationContext(), "An error occurred. Please try again later.", Toast.LENGTH_SHORT).show();
                         return;
                     }
+
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+                    String imageFileName = "JPEG_" + timeStamp + "_";
+                    HelpingFunctions.setProfileImageBasedOnUsername(username, base64Image, imageFileName);
 
                     registerCurrentToken(username);
                     Student student = new Student(username, firstName, lastName, email, "2", "null", "No description.", base64Image, "0");
@@ -300,12 +330,15 @@ public class RegistrationFbGoogle extends AppCompatActivity {
                 if(teacherIV.getTag().equals(1)){
 
                     // Teacher account
-                    String result = HelpingFunctions.registerUserFacebookGoogle(username, firstName, lastName, email, password, verificationET.getText().toString());
+                    String result = HelpingFunctions.registerUserFacebookGoogle(username, firstName, lastName, email, password, verificationET.getText().toString(), messagingId);
                     if(result.equals("Error occurred.")) {
                         Toast.makeText(getApplicationContext(), "An error occurred. Please try again later.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+                    String imageFileName = "JPEG_" + timeStamp + "_";
+                    HelpingFunctions.setProfileImageBasedOnUsername(username, base64Image, imageFileName);
 
                     registerCurrentToken(username);
                     Teacher teacher = new Teacher(username, firstName, lastName, email, "2", "null", "No description.", base64Image, "0", null);

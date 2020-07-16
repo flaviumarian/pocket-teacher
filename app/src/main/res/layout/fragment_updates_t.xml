@@ -93,7 +93,8 @@
                 android:text="@string/message_updates_2"
                 android:textColor="@color/black"
                 android:textSize="18sp"
-                 />
+                />
+
 
             <TextView
                 android:id="@+id/followRequestsTV"

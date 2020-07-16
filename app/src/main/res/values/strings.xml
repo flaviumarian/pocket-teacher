@@ -110,6 +110,8 @@
     <string name="message_updates_1">There are no new notifications for you.</string>
     <string name="message_updates_2">Follow requests</string>
     <string name="message_search_1">Recommended</string>
+    <string name="message_search_2">No results.</string>
+    <string name="message_search_3">Start by typing in the field above.</string>
     <string name="message_home_1">You currently don\'t follow anyone!\nGo to explore page and find some awesome teachers!</string>
     <string name="message_home_2">There are no posts from the teachers you follow.\nStart following more people!</string>
     <string name="message_home_3">No more posts.</string>
@@ -127,6 +129,11 @@
     <string name="message_onboarding_4">START</string>
     <string name="message_private_student">This account is set to private. \nAll other information is hidden.</string>
     <string name="message_profile_teacher">You currently don\'t have any subjects, \ngo to File Management tab and pick some!</string>
+    <string name="message_messaging_1">You currently have no conversations open.</string>
+    <string name="message_messaging_2">User blocked you. You cannot reply to this conversation.</string>
+    <string name="message_messaging_3">Insert message...</string>
+    <string name="message_start_conversation_1">What type of user are you looking for?</string>
+
 
 
 
@@ -258,6 +265,8 @@
     <string name="toolbar_privacy_policy">Privacy Policy</string>
     <string name="toolbar_follow_requests">Follow Requests</string>
     <string name="toolbar_notifications">NOTIFICATIONS</string>
+    <string name="toolbar_converstions">Conversations</string>
+    <string name="toolbar_start_new_conversation">Start a conversation</string>
 
 
     <!-- Popups -->

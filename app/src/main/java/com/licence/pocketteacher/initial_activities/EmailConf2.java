@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.LoginPage;
 import com.licence.pocketteacher.OpeningPage;
@@ -22,7 +23,6 @@ import com.licence.pocketteacher.student.MainPageS;
 
 public class EmailConf2 extends AppCompatActivity {
 
-    private GifImageView lockedGifImageView;
     private Button getStartedBttn;
 
     private Student student;
@@ -57,8 +57,6 @@ public class EmailConf2 extends AppCompatActivity {
     }
 
     private void initiateComponents(){
-        // Gif Image View
-        lockedGifImageView = findViewById(R.id.gifImageView);
 
         // Button
         getStartedBttn = findViewById(R.id.getStartedBttn);
@@ -66,27 +64,16 @@ public class EmailConf2 extends AppCompatActivity {
     }
 
     private void setOnClickListeners(){
-        // Gif Image View
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                // Gif starts after 1.5s
-                ((GifDrawable) lockedGifImageView.getDrawable()).start();
-            }
-        }, 1500);
-
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                // Gif stops after 3.2s
-                ((GifDrawable) lockedGifImageView.getDrawable()).stop();
-            }
-        }, 1600);
-
 
         // Button
         getStartedBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 String result;
                 if(isStudent){

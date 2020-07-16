@@ -22,9 +22,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.messaging.MessagingPage;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.teacher.MainPageT;
 
@@ -32,8 +34,9 @@ public class SeeStudent extends AppCompatActivity {
 
     private ImageView backIV;
     private Dialog blockPopup, blockedPopup, reportPopup, reportSentPopup;
+    private CardView messagesC;
 
-    private String username;
+    private String username, image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +74,8 @@ public class SeeStudent extends AppCompatActivity {
 
                 // Profile picture
                 final ImageView profilePictureIV = findViewById(R.id.profilePictureIV);
-                final String image = HelpingFunctions.getProfileImageBasedOnUsername(username);
+                image = HelpingFunctions.getProfileImageBasedOnUsername(username);
+
 
                 // Name
                 final TextView nameTV = findViewById(R.id.nameTV);
@@ -80,6 +84,9 @@ public class SeeStudent extends AppCompatActivity {
 
                 // Privacy
                 final String privacy = HelpingFunctions.getPrivacyBasedOnUsername(username);
+
+                // Messages
+                messagesC = findViewById(R.id.messagesC);
 
                 try{
                     runOnUiThread(new Runnable() {
@@ -99,7 +106,7 @@ public class SeeStudent extends AppCompatActivity {
                                         profilePictureIV.setImageResource(R.drawable.profile_picture_female);
                                         break;
                                     case "2":
-                                        profilePictureIV.setImageResource(0);
+                                        profilePictureIV.setImageResource(R.drawable.profile_picture_neutral);
                                         break;
                                 }
                             }else{
@@ -147,7 +154,7 @@ public class SeeStudent extends AppCompatActivity {
 
                                 // Followers number
                                 TextView followingTV = findViewById(R.id.followingTV);
-                                followingTV.setText(HelpingFunctions.getFollowing(username));
+                                followingTV.setText(HelpingFunctions.getFollowingNumber(username));
 
                                 // Description
                                 TextView descriptionTV = findViewById(R.id.descriptionTV);
@@ -158,9 +165,7 @@ public class SeeStudent extends AppCompatActivity {
                                     descriptionTV.setText(description);
                                 }
                             }
-
                             setListeners();
-
                         }
                     });
                 }catch(Exception e){
@@ -178,6 +183,27 @@ public class SeeStudent extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+
+        messagesC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+                Intent intent = new Intent(getApplicationContext(), MessagingPage.class);
+                intent.putExtra("username_sender", MainPageT.teacher.getUsername());
+                intent.putExtra("type", 0);
+                intent.putExtra("username_receiver", username);
+                intent.putExtra("blocked", 0);
+                intent.putExtra("image", image);
+                startActivityForResult(intent, 0);
+                overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
             }
         });
     }
@@ -211,6 +237,12 @@ public class SeeStudent extends AppCompatActivity {
 
         switch (id) {
             case R.id.blockUser:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 blockPopup = new Dialog(SeeStudent.this);
                 blockPopup.setContentView(R.layout.popup_block_student);
 
@@ -230,6 +262,12 @@ public class SeeStudent extends AppCompatActivity {
                 yesBttn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         // Block user
                         String result = HelpingFunctions.blockUser(MainPageT.teacher.getUsername(), username);
                         blockPopup.dismiss();
@@ -261,6 +299,12 @@ public class SeeStudent extends AppCompatActivity {
 
                 break;
             case R.id.report:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 reportPopup = new Dialog(SeeStudent.this);
                 reportPopup.setContentView(R.layout.popup_report);
 
@@ -284,6 +328,12 @@ public class SeeStudent extends AppCompatActivity {
                 sendBttn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         boolean canSend = true;
 
                         if (HelpingFunctions.isEditTextEmpty(titleET)) {
@@ -327,6 +377,11 @@ public class SeeStudent extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         finish();
         SeeStudent.this.overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);

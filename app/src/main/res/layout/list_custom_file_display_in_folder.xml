@@ -1,68 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/white"
+    app:cardElevation="10dp">
 
-    <!-- File name -->
-    <TextView
-        android:id="@+id/fileTV"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="40dp"
-        android:fontFamily="@font/roboto"
-        android:textColor="@color/black"
-        android:textSize="16sp" />
+        android:background="@color/white">
 
-    <!-- Likes image -->
-    <ImageView
-        android:id="@+id/likesIV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="15dp"
-        android:layout_toStartOf="@id/likesTV"
-        android:src="@drawable/ic_favorite_border_black_24dp"
-        android:contentDescription="@string/description_like" />
 
-    <!-- Likes number -->
-    <TextView
-        android:id="@+id/likesTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="15dp"
-        android:layout_toStartOf="@id/commentsIV"
-        android:fontFamily="@font/roboto"
-        android:textColor="@color/black" />
+        <!-- File name -->
+        <TextView
+            android:id="@+id/fileTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="40dp"
+            android:fontFamily="@font/roboto"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
 
-    <!-- Comments image -->
-    <ImageView
-        android:id="@+id/commentsIV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="15dp"
-        android:layout_toStartOf="@id/commentsTV"
-        android:src="@drawable/ic_comment_black_24dp"
-        android:contentDescription="@string/description_list_item_image_2"/>
 
-    <!-- Comments number -->
-    <TextView
-        android:id="@+id/commentsTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="15dp"
-        android:layout_alignParentEnd="true"
-        android:fontFamily="@font/roboto"
-        android:textColor="@color/black" />
+        <!-- Likes image -->
+        <ImageView
+            android:id="@+id/likesIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="15dp"
+            android:layout_toStartOf="@id/likesTV"
+            android:src="@drawable/ic_favorite_border_black_24dp"
+            android:contentDescription="@string/description_like" />
 
-</RelativeLayout>
+
+        <!-- Likes number -->
+        <TextView
+            android:id="@+id/likesTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="15dp"
+            android:layout_toStartOf="@id/commentsIV"
+            android:fontFamily="@font/roboto"
+            android:textColor="@color/black" />
+
+        <!-- Comments image -->
+        <ImageView
+            android:id="@+id/commentsIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="15dp"
+            android:layout_toStartOf="@id/commentsTV"
+            android:src="@drawable/ic_comment_black_24dp"
+            android:contentDescription="@string/description_list_item_image_2"/>
+
+        <!-- Comments number -->
+        <TextView
+            android:id="@+id/commentsTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_alignParentEnd="true"
+            android:fontFamily="@font/roboto"
+            android:textColor="@color/black" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/likesIV"
+            android:background="@color/darkGrey" />
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>
+

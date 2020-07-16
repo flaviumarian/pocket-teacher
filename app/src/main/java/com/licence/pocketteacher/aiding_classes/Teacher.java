@@ -27,13 +27,16 @@ public class Teacher implements Parcelable {
     }
 
     // For Premium teachers
-    public Teacher(String username, String firstName, String lastName, String gender, String university, String profileImageBase64){
+    public Teacher(String username, String firstName, String lastName, String gender, String university, String profileImageBase64, String privacy, String followingStatus, String followingRequestStatus){
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
         this.university = university;
         this.profileImageBase64 = profileImageBase64;
+        this.privacy = privacy;
+        this.followingStatus = followingStatus;
+        this.followingRequestStatus = followingRequestStatus;
     }
 
     // For search teachers
@@ -46,6 +49,21 @@ public class Teacher implements Parcelable {
         this.profileImageBase64 = profileImageBase64;
         this.subjectNames = subjectNames;
         this.domains = domains;
+    }
+
+    // For search teachers when starting conversation
+    public Teacher(String username, String firstName, String lastName, String gender, String university, String profileImageBase64, ArrayList<String> subjectNames, ArrayList<String> domains, String privacy, String followingStatus, String followingRequestStatus){
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+        this.university = university;
+        this.profileImageBase64 = profileImageBase64;
+        this.subjectNames = subjectNames;
+        this.domains = domains;
+        this.privacy = privacy;
+        this.followingStatus = followingStatus;
+        this.followingRequestStatus = followingRequestStatus;
     }
 
     public Teacher(){

@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
@@ -199,6 +200,11 @@ public class SubjectPage extends AppCompatActivity {
         removeFolderC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(getApplicationContext(), RemoveFolder.class);
                 startActivityForResult(intent, 1);
                 overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
@@ -208,6 +214,11 @@ public class SubjectPage extends AppCompatActivity {
         addFolderC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(getApplicationContext(), AddFolder.class);
                 startActivityForResult(intent, 0);
                 overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
@@ -259,6 +270,12 @@ public class SubjectPage extends AppCompatActivity {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if(!HelpingFunctions.isConnected(getApplicationContext())){
+                        Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     Intent intent = new Intent(getApplicationContext(), FilesPage.class);
                     intent.putExtra("folderName", folders.get(position));
                     startActivityForResult(intent, 2);
@@ -342,6 +359,12 @@ public class SubjectPage extends AppCompatActivity {
 
         switch (id) {
             case R.id.details:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 subjectDetailsPopup = new Dialog(SubjectPage.this);
                 subjectDetailsPopup.setContentView(R.layout.popup_subject_information);
 
@@ -372,6 +395,11 @@ public class SubjectPage extends AppCompatActivity {
                 popupDomainInfoIV.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
                         subjectDetailsPopup.dismiss();
 
@@ -416,6 +444,12 @@ public class SubjectPage extends AppCompatActivity {
 
                 break;
             case R.id.report:
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 reportPopup = new Dialog(SubjectPage.this);
                 reportPopup.setContentView(R.layout.popup_report);
 
@@ -439,6 +473,12 @@ public class SubjectPage extends AppCompatActivity {
                 sendBttn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         boolean canSend = true;
 
                         if (HelpingFunctions.isEditTextEmpty(titleET)) {
@@ -487,6 +527,12 @@ public class SubjectPage extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 0) {
+
+            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             addRemoveFolderC.performClick();
             if (resultCode == Activity.RESULT_OK) {
                 // new folder added
@@ -502,6 +548,12 @@ public class SubjectPage extends AppCompatActivity {
         }
 
         if (requestCode == 1) {
+
+            if(!HelpingFunctions.isConnected(getApplicationContext())){
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             addRemoveFolderC.performClick();
             if (resultCode == Activity.RESULT_OK) {
                 // folder(s) removed
@@ -527,6 +579,11 @@ public class SubjectPage extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         finish();
         overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);

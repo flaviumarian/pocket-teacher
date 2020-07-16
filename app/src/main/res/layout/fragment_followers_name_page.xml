@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/backgroundBlue">
 
 
@@ -16,17 +16,17 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ToolbarTheme"
         app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <!-- Search part -->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <LinearLayout
+                android:id="@+id/upperLinearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/upperLinearLayout"
                 android:orientation="horizontal">
 
                 <androidx.cardview.widget.CardView
@@ -40,17 +40,17 @@
                         android:id="@+id/searchET"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:importantForAutofill="no"
-                        android:imeOptions="actionSearch"
-                        android:inputType="text"
-                        android:singleLine="true"
-                        android:paddingBottom="7dp"
-                        android:paddingTop="7dp"
-                        android:paddingStart="5dp"
-                        android:paddingEnd="5dp"
-                        android:drawableStart="@drawable/ic_search_black_24dp"
                         android:background="@android:color/transparent"
-                        android:hint="@string/hint_search_name" />
+                        android:drawableStart="@drawable/ic_search_black_24dp"
+                        android:hint="@string/hint_search_name"
+                        android:imeOptions="actionSearch"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:paddingStart="5dp"
+                        android:paddingTop="7dp"
+                        android:paddingEnd="5dp"
+                        android:paddingBottom="7dp"
+                        android:singleLine="true" />
 
                 </androidx.cardview.widget.CardView>
 
@@ -65,19 +65,18 @@
             </LinearLayout>
 
 
-
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_below="@id/upperLinearLayout"
+                android:layout_marginTop="10dp"
                 android:weightSum="2">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:orientation="vertical">
 
                     <TextView
@@ -85,8 +84,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/fragment_search_1"
-                        android:textSize="16sp"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -98,27 +97,41 @@
                 </LinearLayout>
 
 
-
                 <TextView
                     android:id="@+id/universityTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:text="@string/fragment_search_4"
-                    android:textSize="16sp"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
             </LinearLayout>
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
+
+
+    <!-- Info -->
+    <TextView
+        android:id="@+id/infoTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/searchToolbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/open_sans"
+        android:text="@string/message_search_3"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
 
     <!-- RecyclerView users -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/studentsRV"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
-        android:layout_below="@id/searchToolbar" />
+        android:layout_below="@id/searchToolbar"
+        android:layout_marginTop="5dp" />
 
 </RelativeLayout>

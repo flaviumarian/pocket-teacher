@@ -6,14 +6,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.aiding_classes.Student;
 import com.licence.pocketteacher.teacher.MainPageT;
-import com.licence.pocketteacher.teacher.profile.followers.StudentsRecyclerAdapter;
+import com.licence.pocketteacher.adapters.StudentsRecyclerAdapter;
 
 import java.util.ArrayList;
 
@@ -88,6 +90,11 @@ public class SeeFollowRequests extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         finish();
         overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);
     }
@@ -96,6 +103,11 @@ public class SeeFollowRequests extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         new Thread(new Runnable() {
             @Override
@@ -107,8 +119,12 @@ public class SeeFollowRequests extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            studentsRecyclerAdapter.setStudents(requestingStudents);
-                            studentsRecyclerAdapter.notifyDataSetChanged();
+                            try {
+                                studentsRecyclerAdapter.setStudents(requestingStudents);
+                                studentsRecyclerAdapter.notifyDataSetChanged();
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
                         }
                     });
                 }catch(Exception e){

@@ -10,10 +10,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.search.FragmentSearchS;
-import com.licence.pocketteacher.student.search.TeachersRecyclerAdapter;
+import com.licence.pocketteacher.adapters.TeachersRecyclerAdapter;
 import com.licence.pocketteacher.aiding_classes.Teacher;
 
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public class FragmentSearchDomain extends Fragment {
     private View view;
     private EditText searchET;
     private Button cancelBttn;
-    private TextView nameTV, subjectTV, universityTV;
+    private TextView nameTV, subjectTV, universityTV, infoTV;
     private RecyclerView teachersRV;
     private TeachersRecyclerAdapter teachersRecyclerAdapter;
 
@@ -61,6 +63,8 @@ public class FragmentSearchDomain extends Fragment {
                 nameTV = view.findViewById(R.id.nameTV);
                 subjectTV = view.findViewById(R.id.subjectTV);
                 universityTV = view.findViewById(R.id.universityTV);
+                infoTV = view.findViewById(R.id.infoTV);
+
 
                 // Recycler View
                 teachersRV = view.findViewById(R.id.teachersRV);
@@ -96,6 +100,11 @@ public class FragmentSearchDomain extends Fragment {
                     e.printStackTrace();
                 }
 
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // Create new fragment and transaction
                 Fragment newFragment = new FragmentSearchS();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -125,8 +134,11 @@ public class FragmentSearchDomain extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 if (!s.toString().equals("")) {
+                    infoTV.setVisibility(View.INVISIBLE);
                     filter(s.toString());
                 } else {
+                    infoTV.setVisibility(View.VISIBLE);
+                    infoTV.setText(R.string.message_search_3);
                     filter("No text");
                 }
             }
@@ -136,6 +148,12 @@ public class FragmentSearchDomain extends Fragment {
         nameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(view.getContext())){
+                    Toast.makeText(view.getContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Fragment newFragment = new FragmentSearchName();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
@@ -183,6 +201,12 @@ public class FragmentSearchDomain extends Fragment {
                         filteredTeachers.add(teacher);
                     }
                 }
+            }
+
+            if(filteredTeachers.size() == 0){
+
+                infoTV.setVisibility(View.VISIBLE);
+                infoTV.setText(R.string.message_search_2);
             }
         }
 

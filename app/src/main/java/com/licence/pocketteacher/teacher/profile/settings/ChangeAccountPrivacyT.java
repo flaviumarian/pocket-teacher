@@ -3,11 +3,13 @@ package com.licence.pocketteacher.teacher.profile.settings;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
@@ -116,6 +118,11 @@ public class ChangeAccountPrivacyT extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String newPrivacy;
 
         if(privacySW.isChecked()){
@@ -127,7 +134,7 @@ public class ChangeAccountPrivacyT extends AppCompatActivity {
         if(!initialPrivacy.equals(newPrivacy)){
             if(newPrivacy.equals("0")){
                 // going from private to public => approve pending follow requests
-                HelpingFunctions.sendNotificationToAllStudentsApproved(MainPageT.teacher.getUsername(), MainPageT.teacher.getUsername() + " has approved your follow request.");
+                HelpingFunctions.sendNotificationToStudents(MainPageT.teacher.getUsername(), MainPageT.teacher.getUsername(), "Not a subject, but a string to know it's for multiple approvals.", "", "", "Has approved your follow request.");
                 HelpingFunctions.approveAllRequests(MainPageT.teacher.getUsername());
             }
             MainPageT.teacher.setPrivacy(newPrivacy);

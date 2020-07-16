@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
@@ -75,10 +77,11 @@ public class FilesPage extends AppCompatActivity {
                 // List View
                 filesLV = findViewById(R.id.filesLV);
 
-                try{
+                try {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
 
                             // Text View
                             folderNameTV.setText(folderName);
@@ -86,7 +89,7 @@ public class FilesPage extends AppCompatActivity {
 
                         }
                     });
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -109,6 +112,12 @@ public class FilesPage extends AppCompatActivity {
         addFileC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (!HelpingFunctions.isConnected(getApplicationContext())) {
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(getApplicationContext(), AddFile.class);
                 startActivityForResult(intent, 0);
                 overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
@@ -121,8 +130,14 @@ public class FilesPage extends AppCompatActivity {
             public void run() {
                 // List View
                 ArrayList<ArrayList> information = HelpingFunctions.getAllFilesForFolder(MainPageT.teacher.getUsername(), MainPageT.teacher.getUsername(), SubjectPage.subjectName, folderName);
-                fileNames = information.get(1);
-                likedStatuses = information.get(3);
+
+                fileNames = information.get(0);
+                likedStatuses = information.get(1);
+
+                            FilesAdapter filesAdapter = new FilesAdapter(FilesPage.this, fileNames, likedStatuses, likes, comments);
+                            filesLV.setAdapter(filesAdapter);
+                            HelpingFunctions.setListViewHeightBasedOnChildren(filesLV);
+
 
                 likes = new ArrayList<>();
                 comments = new ArrayList<>();
@@ -132,7 +147,7 @@ public class FilesPage extends AppCompatActivity {
                     comments.add(Integer.parseInt(HelpingFunctions.getCommentsForPost(MainPageT.teacher.getUsername(), SubjectPage.subjectName, folderName, fileName)));
                 }
 
-                try{
+                try {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -152,11 +167,12 @@ public class FilesPage extends AppCompatActivity {
                             filesLV.setAdapter(filesAdapter);
                             HelpingFunctions.setListViewHeightBasedOnChildren(filesLV);
 
+
                             findViewById(R.id.loadingPanel).setVisibility(View.GONE);
 
                         }
                     });
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -223,6 +239,12 @@ public class FilesPage extends AppCompatActivity {
                 likesIV.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if (!HelpingFunctions.isConnected(getApplicationContext())) {
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         if (likedStatuses.get(position).equals("1")) {
                             HelpingFunctions.unlikePost(MainPageT.teacher.getUsername(), SubjectPage.subjectName, folderName, fileNames.get(position), MainPageT.teacher.getUsername());
                             likesIV.setImageResource(R.drawable.ic_favorite_border_black_24dp);
@@ -252,40 +274,17 @@ public class FilesPage extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        final ProgressDialog loading = ProgressDialog.show(FilesPage.this, "Please wait", "Loading...", true);
-                        new Thread() {
-                            @Override
-                            public void run() {
+                        if (!HelpingFunctions.isConnected(getApplicationContext())) {
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-                                String likedStatus;
-                                if (likesIV.getTag().equals("0")) {
-                                    likedStatus = "";
-                                } else {
-                                    likedStatus = "1";
-                                }
+                        Intent intent = new Intent(getApplicationContext(), SeePostTeacher.class);
+                        intent.putExtra("fileName", fileTV.getText().toString());
+                        intent.putExtra("fromNotifications", false);
+                        startActivityForResult(intent, 1);
+                        overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
 
-                                Intent intent = new Intent(getApplicationContext(), SeePostTeacher.class);
-                                intent.putExtra("fileName", fileTV.getText().toString());
-                                intent.putExtra("likedStatus", likedStatus);
-                                intent.putExtra("likes", likesTV.getText().toString());
-                                intent.putExtra("comments", commentsTV.getText().toString());
-                                intent.putExtra("fromNotifications", false);
-                                startActivityForResult(intent, 1);
-                                overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
-
-
-                                try {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            loading.dismiss();
-                                        }
-                                    });
-                                } catch (final Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }.start();
                     }
                 });
             }
@@ -299,6 +298,12 @@ public class FilesPage extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
+
+            if (!HelpingFunctions.isConnected(getApplicationContext())) {
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // Added a new file
 
             infoTV.setVisibility(View.INVISIBLE);
@@ -312,6 +317,12 @@ public class FilesPage extends AppCompatActivity {
         }
 
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+
+            if (!HelpingFunctions.isConnected(getApplicationContext())) {
+                Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // Deleted a file OR added comments
             if (fileNames.size() > 0) {
                 likes.clear();
@@ -346,6 +357,11 @@ public class FilesPage extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if (!HelpingFunctions.isConnected(getApplicationContext())) {
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         finish();
         overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);

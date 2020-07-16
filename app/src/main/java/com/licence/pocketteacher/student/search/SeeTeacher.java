@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +20,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.licence.pocketteacher.R;
+import com.licence.pocketteacher.messaging.MessagingPage;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.MainPageS;
 import com.licence.pocketteacher.aiding_classes.Teacher;
+import com.licence.pocketteacher.teacher.MainPageT;
 
 import java.util.ArrayList;
 
@@ -34,7 +38,7 @@ public class SeeTeacher extends AppCompatActivity {
     private TextView followersTV;
     private ListView subjectsLV;
     private SubjectsAdapter subjectsAdapter;
-    private CardView followC;
+    private CardView followC, messagesC;
     private Dialog reportPopup, reportSentPopup, unfollowDialog;
 
     private String username;
@@ -99,6 +103,8 @@ public class SeeTeacher extends AppCompatActivity {
                 // List View
                 subjectsLV = findViewById(R.id.subjectsLV);
 
+                // Message
+                messagesC = findViewById(R.id.messagesC);
 
 
                 runOnUiThread(new Runnable() {
@@ -118,7 +124,7 @@ public class SeeTeacher extends AppCompatActivity {
                                     profilePictureIV.setImageResource(R.drawable.profile_picture_female);
                                     break;
                                 case "2":
-                                    profilePictureIV.setImageResource(0);
+                                    profilePictureIV.setImageResource(R.drawable.profile_picture_neutral);
                                     break;
                             }
                         } else {
@@ -143,6 +149,7 @@ public class SeeTeacher extends AppCompatActivity {
                             // following
                             followC.setCardBackgroundColor(getResources().getColor(R.color.red));
                             followIV.setImageResource(R.drawable.logo_minus);
+                            messagesC.setVisibility(View.VISIBLE);
                         } else if (teacher.getFollowingRequestStatus().equals("1")) {
                             // requested
                             followC.setCardBackgroundColor(getResources().getColor(R.color.yellow));
@@ -151,6 +158,9 @@ public class SeeTeacher extends AppCompatActivity {
                             // not following
                             followC.setCardBackgroundColor(getResources().getColor(R.color.green));
                             followIV.setImageResource(R.drawable.logo_plus);
+                            if(teacher.getPrivacy().equals("0")){
+                                messagesC.setVisibility(View.VISIBLE);
+                            }
                         }
 
                         // Followers
@@ -193,6 +203,11 @@ public class SeeTeacher extends AppCompatActivity {
         reportIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 reportPopup = new Dialog(SeeTeacher.this);
                 reportPopup.setContentView(R.layout.popup_report);
 
@@ -261,9 +276,35 @@ public class SeeTeacher extends AppCompatActivity {
         HelpingFunctions.setListViewHeightBasedOnChildren(subjectsLV);
 
         // Card View
+        messagesC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(getApplicationContext(), MessagingPage.class);
+                intent.putExtra("username_sender", MainPageS.student.getUsername());
+                intent.putExtra("type", 0);
+                intent.putExtra("username_receiver", teacher.getUsername());
+                intent.putExtra("blocked", 0);
+                intent.putExtra("image", teacher.getProfileImageBase64());
+                startActivityForResult(intent, 0);
+                overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_no_slide);
+            }
+        });
+
         followC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 final View currentView = v;
 
                 MainPageS.needsRefresh = true;
@@ -274,7 +315,7 @@ public class SeeTeacher extends AppCompatActivity {
                     // Public account
                     if (teacher.getPrivacy().equals("0")) {
                         HelpingFunctions.followTeacher(MainPageS.student.getUsername(), username);
-                        HelpingFunctions.sendNotification(username, MainPageS.student.getUsername() + " has started following you.");
+                        HelpingFunctions.sendNotificationToTeachers(MainPageS.student.getUsername(), username, "", "", "", "Has started following you.");
                         followC.setCardBackgroundColor(getResources().getColor(R.color.red));
                         followIV.setImageResource(R.drawable.logo_minus);
 
@@ -291,7 +332,7 @@ public class SeeTeacher extends AppCompatActivity {
                     // Private account
                     String result = HelpingFunctions.requestFollowTeacher(MainPageS.student.getUsername(), username);
                     if(result.equals("Data inserted.")){
-                        HelpingFunctions.sendNotification(username, MainPageS.student.getUsername() + " has requested to follow you.");
+                        HelpingFunctions.sendNotificationToTeachers(MainPageS.student.getUsername(), username, "", "", "",  "Has requested to follow you.");
                     }
                     followC.setCardBackgroundColor(getResources().getColor(R.color.yellow));
                     followIV.setImageResource(R.drawable.logo_dots);
@@ -439,6 +480,12 @@ public class SeeTeacher extends AppCompatActivity {
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         if(endIV.getTag().equals("1")){
 
                             Intent intent = new Intent(SeeTeacher.this, SeeSubject.class);
@@ -463,6 +510,10 @@ public class SeeTeacher extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         finish();
         SeeTeacher.this.overridePendingTransition(R.anim.anim_no_slide, R.anim.anim_slide_out_right);

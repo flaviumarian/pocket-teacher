@@ -6,16 +6,20 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -31,12 +35,18 @@ import com.licence.pocketteacher.OpeningPage;
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.aiding_classes.Post;
 import com.licence.pocketteacher.aiding_classes.Student;
+import com.licence.pocketteacher.messaging.MessagingPage;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
 import com.licence.pocketteacher.student.home.FragmentHomeS;
 import com.licence.pocketteacher.student.profile.FragmentProfilesS;
 import com.licence.pocketteacher.student.search.FragmentSearchS;
+import com.licence.pocketteacher.student.search.SeePostStudent;
+import com.licence.pocketteacher.student.search.SeeTeacher;
+import com.licence.pocketteacher.teacher.MainPageT;
 
 import java.util.ArrayList;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class MainPageS extends AppCompatActivity {
 
@@ -50,7 +60,7 @@ public class MainPageS extends AppCompatActivity {
 
     public static Student student;
     public static int flag; // 0 - normal, 1 - facebook, 2 - google
-
+    private String notificationsFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +70,11 @@ public class MainPageS extends AppCompatActivity {
         getLoginIntent();
         initiateComponents();
         setListeners();
+        goFromNotification();
 
     }
+
+
 
     private void getLoginIntent() {
 
@@ -70,6 +83,10 @@ public class MainPageS extends AppCompatActivity {
         if (bundle != null) {
             student = bundle.getParcelable("student");
             flag = bundle.getInt("flag");
+            notificationsFlag = bundle.getString("notifications_flag");
+            if(notificationsFlag == null){
+                notificationsFlag = "-1";
+            }
         }
     }
 
@@ -97,23 +114,43 @@ public class MainPageS extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
+                boolean notConnected = false;
 
                 switch (item.getItemId()) {
                     case R.id.search:
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            notConnected = true;
+                            break;
+                        }
                         selectedFragment = new FragmentSearchS();
                         resetBadge();
                         break;
                     case R.id.home:
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            notConnected = true;
+                            break;
+                        }
                         selectedFragment = new FragmentHomeS();
                         resetBadge();
                         break;
                     case R.id.profile:
+                        if(!HelpingFunctions.isConnected(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                            notConnected = true;
+                            break;
+                        }
                         selectedFragment = new FragmentProfilesS();
                         resetBadge();
                         break;
                 }
 
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, selectedFragment).commit();
+                if(!notConnected) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, selectedFragment).commit();
+                }else{
+                    return false;
+                }
 
                 return true; // select the item - false would mean not selecting it
             }
@@ -121,23 +158,71 @@ public class MainPageS extends AppCompatActivity {
     }
 
     public static void generateAllPosts(){
+
         allPosts = HelpingFunctions.getAllPosts(student.getUsername());
 
     }
 
+    public void goFromNotification(){
+
+        // Messaging notification
+        if(notificationsFlag.equals("0")){
+            String usernameToMessage = getIntent().getExtras().getString("messaging_username");
+
+            Intent intent = new Intent(getApplicationContext(), MessagingPage.class);
+            intent.putExtra("flag", "0");
+            intent.putExtra("messaging_id", getIntent().getExtras().getString("messaging_id"));
+            intent.putExtra("username_sender", student.getUsername());
+            intent.putExtra("type", 0);
+            intent.putExtra("username_receiver", usernameToMessage);
+            intent.putExtra("blocked", 0);
+            intent.putExtra("image", HelpingFunctions.getProfileImageBasedOnUsername(usernameToMessage));
+            startActivity(intent);
+        }
+
+        // Open post student
+        if(notificationsFlag.equals("1")){
+
+            Intent intent = new Intent(getApplicationContext(), SeePostStudent.class);
+            intent.putExtra("usernameTeacher", getIntent().getExtras().getString("usernameTeacher"));
+            intent.putExtra("folderName", getIntent().getExtras().getString("folderName"));
+            intent.putExtra("subject", getIntent().getExtras().getString("subject"));
+            intent.putExtra("fileName", getIntent().getExtras().getString("fileName"));
+            startActivity(intent);
+        }
+
+        // Open Teacher profile
+        if(notificationsFlag.equals("2")){
+            Intent intent = new Intent(getApplicationContext(), SeeTeacher.class);
+            intent.putExtra("username", getIntent().getExtras().getString("username"));
+            startActivity(intent);
+        }
+
+
+    }
+
+
     public static void resetBadge(){
 
         String numberNotifications = HelpingFunctions.getNumberOfNotifications(student.getUsername());
-        if(numberNotifications.equals("0")){
+        String numberOfUnreadMessages = HelpingFunctions.getNumberOfUnreadMessages(student.getUsername());
+
+        int notifications = Integer.parseInt(numberNotifications) + Integer.parseInt(numberOfUnreadMessages);
+        if(notifications == 0 ){
             badgeDrawable.setVisible(false);
         }else{
-            badgeDrawable.setNumber(Integer.parseInt(numberNotifications));
+            badgeDrawable.setNumber(notifications);
             badgeDrawable.setVisible(true);
         }
     }
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         if (fragment instanceof FragmentSearchS || fragment instanceof FragmentProfilesS || fragment instanceof FragmentHomeS) {

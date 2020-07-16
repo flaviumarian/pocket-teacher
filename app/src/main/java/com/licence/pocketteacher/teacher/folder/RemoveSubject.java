@@ -14,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licence.pocketteacher.R;
 import com.licence.pocketteacher.miscellaneous.HelpingFunctions;
@@ -68,6 +69,7 @@ public class RemoveSubject extends AppCompatActivity {
                             SubjectsAdapter subjectsAdapter = new SubjectsAdapter(getApplicationContext(), subjectNames, domainNames);
                             subjectsLV.setAdapter(subjectsAdapter);
                             HelpingFunctions.setListViewHeightBasedOnChildren(subjectsLV);
+
 
                             setListeners();
 
@@ -149,6 +151,7 @@ public class RemoveSubject extends AppCompatActivity {
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
                         if(endIV.getTag().equals("0")){
                             endIV.setImageResource(R.drawable.ic_delete_forever_red_24dp);
                             endIV.setTag("1");
@@ -168,6 +171,12 @@ public class RemoveSubject extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
 
         if(subjectsToDelete.size() > 0){
             String email = MainPageT.teacher.getEmail();

@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -78,11 +79,12 @@ public class LoginPage extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
 
 
+
         initiateComponents();
         setOnClickListeners();
 
-        facebookLogIn();
-        GoogleLogIn();
+        facebookLogInSetup();
+        GoogleLogInSetup();
 
     }
 
@@ -138,6 +140,11 @@ public class LoginPage extends AppCompatActivity {
         facebookBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 facebookLoginBttn.performClick();
             }
         });
@@ -145,6 +152,11 @@ public class LoginPage extends AppCompatActivity {
         googleBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!HelpingFunctions.isConnected(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(), "An internet connection is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = googleSignInClient.getSignInIntent();
                 startActivityForResult(intent, GOOGLE_SIGN_IN);
             }
@@ -153,6 +165,11 @@ public class LoginPage extends AppCompatActivity {
     }
 
     private void regularLogIn(){
+
+        if(!HelpingFunctions.isConnected(getApplicationContext())){
+            Toast.makeText(this, "An internet connection is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         logInBttn.setEnabled(false);
         boolean canLogIn = true;
@@ -169,7 +186,7 @@ public class LoginPage extends AppCompatActivity {
         if (canLogIn) {
 
             // PASSWORD
-            String loginID = usernameET.getText().toString();
+            String loginID = usernameET.getText().toString().toLowerCase();
             String password = passwordET.getText().toString();
             try {
                 password = PasswordEncryptDecrypt.encrypt(password).trim();
@@ -179,6 +196,7 @@ public class LoginPage extends AppCompatActivity {
                 logInBttn.setEnabled(true);
                 return;
             }
+
 
 
 
@@ -297,7 +315,9 @@ public class LoginPage extends AppCompatActivity {
         }
     }
 
-    private void facebookLogIn(){
+    private void facebookLogInSetup(){
+
+
         callbackManager = CallbackManager.Factory.create();
         facebookLoginBttn.setPermissions(Arrays.asList("email", "public_profile"));
         facebookLoginBttn.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -339,7 +359,6 @@ public class LoginPage extends AppCompatActivity {
                             URL imageURL = new URL(imageUrl);
                             Bitmap bitmap = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
                             String base64Image = HelpingFunctions.convertImageToBase64(bitmap);
-
 
                             intent = new Intent(getApplicationContext(), RegistrationFbGoogle.class);
                             intent.putExtra("firstName", firstName);
@@ -432,7 +451,7 @@ public class LoginPage extends AppCompatActivity {
         request.executeAsync();
     }
 
-    private void GoogleLogIn(){
+    private void GoogleLogInSetup(){
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
     }
@@ -541,7 +560,6 @@ public class LoginPage extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 
     private void registerCurrentToken(final String username){
 
